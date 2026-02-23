@@ -20,9 +20,11 @@
         .bar-open { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
         .bar-closed { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
         .text-wrap { word-wrap: break-word; white-space: normal; }
-        .table-cell-wrap { white-space: normal; word-break: break-word; max-width: 200px; }
-        .break-word { word-break: break-word; overflow-wrap: break-word; }
+        .table-cell-wrap { white-space: normal; word-break: break-word; max-width: 250px; }
+        .break-word { word-break: break-word; overflow-wrap: break-word; hyphens: auto; }
         .toast-message { z-index: 9999; }
+        .chart-item { width: 100%; overflow: visible; }
+        .bar-label { white-space: normal; word-break: break-word; hyphens: auto; }
     </style>
 </head>
 <body class="h-full bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -289,17 +291,17 @@
                                 
                                 <div>
                                     <label class="block text-sm font-semibold uppercase mb-2">ABNORMALITAS</label> 
-                                    <textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                    <textarea id="input-abnormality" required rows="3" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word"></textarea>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-semibold uppercase mb-2">DAMPAK JIKA TIDAK DITANGGULANGI</label> 
-                                    <textarea id="input-impact" required rows="2" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                    <textarea id="input-impact" required rows="3" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word"></textarea>
                                 </div>
                                 
                                 <div id="white-tag-action" class="hidden">
                                     <label class="block text-sm font-semibold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label> 
-                                    <textarea id="input-action" rows="2" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                    <textarea id="input-action" rows="3" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word"></textarea>
                                 </div>
                                 
                                 <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg flex items-center justify-center gap-2"> 
@@ -449,6 +451,52 @@
             app_title: 'TAG MONITORING'
         };
 
+        // ============ AUTO UPDATE FUNCTION ============
+        async function refreshData() {
+            try {
+                // Fetch semua data terbaru
+                const [tagsResult, opsResult, engsResult, machsResult, auditsResult] = await Promise.all([
+                    supabaseClient.from('tags').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('operators').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('engineerings').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('machines').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('audit_logs').select('*').order('created_at', { ascending: false })
+                ]);
+
+                if (tagsResult.error) throw tagsResult.error;
+                if (opsResult.error) throw opsResult.error;
+                if (engsResult.error) throw engsResult.error;
+                if (machsResult.error) throw machsResult.error;
+                if (auditsResult.error) throw auditsResult.error;
+
+                // Update state
+                allData = tagsResult.data || [];
+                operators = (opsResult.data || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
+                engineerings = (engsResult.data || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
+                machines = (machsResult.data || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
+                auditLogs = auditsResult.data || [];
+
+                // Update UI
+                renderManagementLists();
+                updateMachineDropdown();
+                updateFilterDropdowns();
+                
+                // Auto update dashboard jika sedang di halaman dashboard
+                if (!document.getElementById('page-dashboard').classList.contains('hidden')) {
+                    applyDashboardFilter();
+                }
+                
+                // Auto update audit jika sedang di halaman audit
+                if (!document.getElementById('page-audit').classList.contains('hidden')) {
+                    renderAuditTable();
+                }
+
+                console.log('Data refreshed automatically at', new Date().toLocaleTimeString());
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            }
+        }
+
         // ============ AUDIT LOG FUNCTION ============
         async function addAuditLog(activity, detail, tagData = null) {
             try {
@@ -474,6 +522,10 @@
                 if (error) throw error;
                 
                 auditLogs.unshift(data[0]);
+                
+                // Auto refresh setelah audit log ditambahkan
+                setTimeout(refreshData, 100);
+                
                 return data[0];
             } catch (error) {
                 console.error('Error adding audit log:', error);
@@ -482,58 +534,7 @@
 
         // ============ SUPABASE FUNCTIONS ============
         async function fetchAllData() {
-            try {
-                const { data: tags, error: tagsError } = await supabaseClient
-                    .from('tags')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (tagsError) throw tagsError;
-                
-                const { data: ops, error: opsError } = await supabaseClient
-                    .from('operators')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (opsError) throw opsError;
-                
-                const { data: engs, error: engsError } = await supabaseClient
-                    .from('engineerings')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (engsError) throw engsError;
-                
-                const { data: machs, error: machsError } = await supabaseClient
-                    .from('machines')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (machsError) throw machsError;
-                
-                const { data: audits, error: auditsError } = await supabaseClient
-                    .from('audit_logs')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (auditsError) throw auditsError;
-
-                allData = tags || [];
-                operators = (ops || []).map(o => o.initial);
-                engineerings = (engs || []).map(e => e.initial);
-                machines = (machs || []).map(m => m.machine);
-                auditLogs = audits || [];
-
-                renderManagementLists();
-                updateMachineDropdown();
-                updateFilterDropdowns();
-                applyDashboardFilter();
-                renderAuditTable();
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                showToast('GAGAL MEMUAT DATA DARI DATABASE', 'error');
-            }
+            await refreshData(); // Gunakan fungsi refresh yang sama
         }
 
         async function insertTag(tagData) {
@@ -547,6 +548,17 @@
                 
                 await addAuditLog('INSERT TAG', `Menambahkan ${tagData.tag_type} TAG`, data[0]);
                 showToast('TAG BERHASIL DISIMPAN', 'success');
+                
+                // Auto refresh setelah insert
+                await refreshData();
+                
+                // Jika di halaman input, kembali ke dashboard setelah submit
+                if (!document.getElementById('page-input').classList.contains('hidden')) {
+                    setTimeout(() => {
+                        showPage('dashboard');
+                    }, 500);
+                }
+                
                 return data[0];
             } catch (error) {
                 console.error('Error inserting tag:', error);
@@ -569,6 +581,10 @@
                 
                 await addAuditLog('UPDATE TAG', `Mengupdate tag ${oldTag?.tag_type}`, data[0]);
                 showToast('DATA BERHASIL DIUPDATE', 'success');
+                
+                // Auto refresh setelah update
+                await refreshData();
+                
                 return data[0];
             } catch (error) {
                 console.error('Error updating tag:', error);
@@ -588,6 +604,10 @@
                 
                 await addAuditLog('INSERT OPERATOR', `Menambahkan operator: ${initial}`);
                 showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
+                
+                // Auto refresh setelah insert
+                await refreshData();
+                
                 return data[0];
             } catch (error) {
                 console.error('Error inserting operator:', error);
@@ -607,6 +627,10 @@
                 
                 await addAuditLog('UPDATE OPERATOR', `Mengupdate operator: ${oldInitial} -> ${newInitial}`);
                 showToast('OPERATOR BERHASIL DIUPDATE', 'success');
+                
+                // Auto refresh setelah update
+                await refreshData();
+                
                 return true;
             } catch (error) {
                 console.error('Error updating operator:', error);
@@ -626,6 +650,9 @@
                 
                 await addAuditLog('DELETE OPERATOR', `Menghapus operator: ${initial}`);
                 showToast('OPERATOR DIHAPUS', 'success');
+                
+                // Auto refresh setelah delete
+                await refreshData();
             } catch (error) {
                 console.error('Error deleting operator:', error);
                 showToast('GAGAL MENGHAPUS OPERATOR', 'error');
@@ -643,6 +670,10 @@
                 
                 await addAuditLog('INSERT ENGINEERING', `Menambahkan engineering: ${initial}`);
                 showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
+                
+                // Auto refresh setelah insert
+                await refreshData();
+                
                 return data[0];
             } catch (error) {
                 console.error('Error inserting engineering:', error);
@@ -662,6 +693,10 @@
                 
                 await addAuditLog('UPDATE ENGINEERING', `Mengupdate engineering: ${oldInitial} -> ${newInitial}`);
                 showToast('ENGINEERING BERHASIL DIUPDATE', 'success');
+                
+                // Auto refresh setelah update
+                await refreshData();
+                
                 return true;
             } catch (error) {
                 console.error('Error updating engineering:', error);
@@ -681,6 +716,9 @@
                 
                 await addAuditLog('DELETE ENGINEERING', `Menghapus engineering: ${initial}`);
                 showToast('ENGINEERING DIHAPUS', 'success');
+                
+                // Auto refresh setelah delete
+                await refreshData();
             } catch (error) {
                 console.error('Error deleting engineering:', error);
                 showToast('GAGAL MENGHAPUS ENGINEERING', 'error');
@@ -698,6 +736,10 @@
                 
                 await addAuditLog('INSERT MACHINE', `Menambahkan mesin: ${machine}`);
                 showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
+                
+                // Auto refresh setelah insert
+                await refreshData();
+                
                 return data[0];
             } catch (error) {
                 console.error('Error inserting machine:', error);
@@ -717,6 +759,10 @@
                 
                 await addAuditLog('UPDATE MACHINE', `Mengupdate mesin: ${oldMachine} -> ${newMachine}`);
                 showToast('MESIN BERHASIL DIUPDATE', 'success');
+                
+                // Auto refresh setelah update
+                await refreshData();
+                
                 return true;
             } catch (error) {
                 console.error('Error updating machine:', error);
@@ -736,6 +782,9 @@
                 
                 await addAuditLog('DELETE MACHINE', `Menghapus mesin: ${machine}`);
                 showToast('MESIN DIHAPUS', 'success');
+                
+                // Auto refresh setelah delete
+                await refreshData();
             } catch (error) {
                 console.error('Error deleting machine:', error);
                 showToast('GAGAL MENGHAPUS MESIN', 'error');
@@ -743,11 +792,15 @@
         }
 
         function setupRealtimeSubscriptions() {
+            // Subscribe ke semua perubahan tabel
             supabaseClient
                 .channel('tags-channel')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'tags' }, 
-                    () => fetchAllData()
+                    (payload) => {
+                        console.log('Tags changed:', payload);
+                        refreshData();
+                    }
                 )
                 .subscribe();
 
@@ -755,7 +808,10 @@
                 .channel('operators-channel')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'operators' }, 
-                    () => fetchAllData()
+                    (payload) => {
+                        console.log('Operators changed:', payload);
+                        refreshData();
+                    }
                 )
                 .subscribe();
 
@@ -763,7 +819,10 @@
                 .channel('engineerings-channel')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'engineerings' }, 
-                    () => fetchAllData()
+                    (payload) => {
+                        console.log('Engineerings changed:', payload);
+                        refreshData();
+                    }
                 )
                 .subscribe();
 
@@ -771,7 +830,10 @@
                 .channel('machines-channel')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'machines' }, 
-                    () => fetchAllData()
+                    (payload) => {
+                        console.log('Machines changed:', payload);
+                        refreshData();
+                    }
                 )
                 .subscribe();
                 
@@ -779,7 +841,10 @@
                 .channel('audit-channel')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'audit_logs' }, 
-                    () => fetchAllData()
+                    (payload) => {
+                        console.log('Audit logs changed:', payload);
+                        refreshData();
+                    }
                 )
                 .subscribe();
         }
@@ -801,7 +866,7 @@
                 await fetchAllData();
                 setupRealtimeSubscriptions();
 
-                console.log('App initialized with Supabase');
+                console.log('App initialized with Supabase and auto-update feature');
             } catch (error) {
                 console.error('Error initializing app:', error);
                 showToast('GAGAL INISIALISASI APLIKASI', 'error');
@@ -1066,21 +1131,25 @@
                 }
             });
             
+            // Sort by total descending (highest to lowest)
+            const sortedMachines = Object.entries(machineStats)
+                .sort((a, b) => b[1].total - a[1].total);
+            
             const maxTotal = Math.max(...Object.values(machineStats).map(s => s.total), 1);
             
-            container.innerHTML = Object.entries(machineStats).map(([machine, stats]) => {
+            container.innerHTML = sortedMachines.map(([machine, stats]) => {
                 const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
                 const width = (stats.total / maxTotal) * 100;
                 
                 return `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                        <span class="w-20 sm:w-24 text-xs font-semibold uppercase truncate break-word" title="${machine}">${machine}</span>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 chart-item">
+                        <span class="w-20 sm:w-24 text-xs font-semibold uppercase break-word bar-label" title="${machine}">${machine}</span>
                         <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
                                 <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
                             </div>
                         </div>
-                        <span class="w-12 text-xs font-bold text-emerald-500">${percent}%</span>
+                        <span class="w-12 text-xs font-bold text-emerald-500 whitespace-nowrap">${percent}%</span>
                     </div>
                 `;
             }).join('');
@@ -1109,12 +1178,16 @@
                 }
             });
             
+            // Sort by total tags (red + white) descending
+            const sortedMachines = Object.entries(machineStats)
+                .sort((a, b) => (b[1].red + b[1].white) - (a[1].red + a[1].white));
+            
             const maxRed = Math.max(...Object.values(machineStats).map(s => s.red), 1);
             const maxWhite = Math.max(...Object.values(machineStats).map(s => s.white), 1);
             const maxOpen = Math.max(...Object.values(machineStats).map(s => s.open), 1);
             const maxClosed = Math.max(...Object.values(machineStats).map(s => s.closed), 1);
             
-            container.innerHTML = Object.entries(machineStats).map(([machine, stats]) => {
+            container.innerHTML = sortedMachines.map(([machine, stats]) => {
                 const redWidth = (stats.red / maxRed) * 100;
                 const whiteWidth = (stats.white / maxWhite) * 100;
                 const openWidth = (stats.open / maxOpen) * 100;
@@ -1182,21 +1255,25 @@
                 }
             });
             
+            // Sort by total descending (highest to lowest)
+            const sortedOperators = Object.entries(operatorStats)
+                .sort((a, b) => b[1].total - a[1].total);
+            
             const maxTotal = Math.max(...Object.values(operatorStats).map(s => s.total), 1);
             
-            container.innerHTML = Object.entries(operatorStats).map(([operator, stats]) => {
+            container.innerHTML = sortedOperators.map(([operator, stats]) => {
                 const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
                 const width = (stats.total / maxTotal) * 100;
                 
                 return `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                        <span class="w-16 text-xs font-semibold uppercase break-word">${operator}</span>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 chart-item">
+                        <span class="w-16 text-xs font-semibold uppercase break-word bar-label">${operator}</span>
                         <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
                                 <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
                             </div>
                         </div>
-                        <span class="w-12 text-xs font-bold text-blue-500">${percent}%</span>
+                        <span class="w-12 text-xs font-bold text-blue-500 whitespace-nowrap">${percent}%</span>
                     </div>
                 `;
             }).join('');
@@ -1217,10 +1294,14 @@
                 }
             });
             
+            // Sort by total tags (red + white) descending
+            const sortedOperators = Object.entries(operatorStats)
+                .sort((a, b) => (b[1].red + b[1].white) - (a[1].red + a[1].white));
+            
             const maxRed = Math.max(...Object.values(operatorStats).map(s => s.red), 1);
             const maxWhite = Math.max(...Object.values(operatorStats).map(s => s.white), 1);
             
-            container.innerHTML = Object.entries(operatorStats).map(([operator, stats]) => {
+            container.innerHTML = sortedOperators.map(([operator, stats]) => {
                 const redWidth = (stats.red / maxRed) * 100;
                 const whiteWidth = (stats.white / maxWhite) * 100;
                 
@@ -1297,8 +1378,8 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 30) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.progress_note || ''}">${truncateText(tag.progress_note, 20) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.progress_note || ''}">${truncateText(tag.progress_note, 40) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
@@ -1331,8 +1412,8 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${tag.machine || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 30) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.action || ''}">${truncateText(tag.action, 20) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.action || ''}">${truncateText(tag.action, 40) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
@@ -1432,7 +1513,7 @@
                         <div>
                             <label class="block text-sm font-semibold uppercase mb-2">ACTION</label>
                             <textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..."
-                                class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word"></textarea>
                         </div>
                         
                         <div class="flex flex-col sm:flex-row gap-2">
@@ -1533,34 +1614,22 @@
                     return;
                 }
                 success = await updateOperator(oldValue, newValue);
-                if (success) {
-                    operators = operators.map(o => o === oldValue ? newValue : o);
-                }
             } else if (type === 'engineering') {
                 if (engineerings.includes(newValue)) {
                     showToast('INISIAL SUDAH TERDAFTAR', 'error');
                     return;
                 }
                 success = await updateEngineering(oldValue, newValue);
-                if (success) {
-                    engineerings = engineerings.map(e => e === oldValue ? newValue : e);
-                }
             } else if (type === 'machine') {
                 if (machines.includes(newValue)) {
                     showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
                     return;
                 }
                 success = await updateMachine(oldValue, newValue);
-                if (success) {
-                    machines = machines.map(m => m === oldValue ? newValue : m);
-                }
             }
             
             if (success) {
                 closeEditModal();
-                renderManagementLists();
-                updateMachineDropdown();
-                updateFilterDropdowns();
                 showToast('DATA BERHASIL DIUPDATE', 'success');
             }
         };
@@ -1705,9 +1774,6 @@
             const inserted = await insertOperator(value);
             
             if (inserted) {
-                operators.push(value);
-                renderManagementLists();
-                updateFilterDropdowns();
                 input.value = '';
             }
         };
@@ -1715,9 +1781,6 @@
         window.removeOperator = async function(name) {
             if (confirm(`HAPUS OPERATOR ${name}?`)) {
                 await deleteOperator(name);
-                operators = operators.filter(o => o !== name);
-                renderManagementLists();
-                updateFilterDropdowns();
             }
         };
 
@@ -1739,9 +1802,6 @@
             const inserted = await insertEngineering(value);
             
             if (inserted) {
-                engineerings.push(value);
-                renderManagementLists();
-                updateFilterDropdowns();
                 input.value = '';
             }
         };
@@ -1749,9 +1809,6 @@
         window.removeEngineering = async function(name) {
             if (confirm(`HAPUS ENGINEERING ${name}?`)) {
                 await deleteEngineering(name);
-                engineerings = engineerings.filter(e => e !== name);
-                renderManagementLists();
-                updateFilterDropdowns();
             }
         };
 
@@ -1773,10 +1830,6 @@
             const inserted = await insertMachine(value);
             
             if (inserted) {
-                machines.push(value);
-                renderManagementLists();
-                updateMachineDropdown();
-                updateFilterDropdowns();
                 input.value = '';
             }
         };
@@ -1784,10 +1837,6 @@
         window.removeMachine = async function(name) {
             if (confirm(`HAPUS MESIN ${name}?`)) {
                 await deleteMachine(name);
-                machines = machines.filter(m => m !== name);
-                renderManagementLists();
-                updateMachineDropdown();
-                updateFilterDropdowns();
             }
         };
 
@@ -1820,7 +1869,7 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${activityColor}">${log.activity || '-'}</span>
                         </td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${log.detail || ''}">${truncateText(log.detail, 30) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${log.detail || ''}">${truncateText(log.detail, 50) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_date ? formatDate(log.tag_date) : '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_type || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_machine || '-'}</td>
