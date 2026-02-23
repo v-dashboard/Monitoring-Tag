@@ -2,7 +2,7 @@
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>TAG MONITORING SYSTEM</title>
     <!-- Gunakan Tailwind CSS production version -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,6 +21,8 @@
         .bar-closed { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
         .text-wrap { word-wrap: break-word; white-space: normal; }
         .table-cell-wrap { white-space: normal; word-break: break-word; max-width: 200px; }
+        .break-word { word-break: break-word; overflow-wrap: break-word; }
+        .toast-message { z-index: 9999; }
     </style>
 </head>
 <body class="h-full bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -41,9 +43,10 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-semibold uppercase mb-2">INISIAL</label> 
-                            <input type="text" id="login-initial" placeholder="MASUKKAN INISIAL ANDA" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-center font-semibold tracking-widest" autocomplete="off">
+                            <input type="text" id="login-initial" placeholder="MASUKKAN INISIAL ANDA" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-center font-semibold tracking-widest" autocomplete="off" onkeypress="handleKeyPress(event, 'login')">
                         </div>
-                        <button onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg"> MASUK </button>
+                        <button onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg">MASUK</button>
+                        <button onclick="handleGuestLogin()" class="w-full py-3 bg-slate-500 text-white font-bold rounded-xl uppercase tracking-wide hover:bg-slate-600 transition shadow-lg">GUEST</button>
                         <p id="login-error" class="text-red-500 text-center text-sm uppercase hidden"></p>
                     </div>
                     <button onclick="toggleDarkMode()" class="mt-6 w-full py-2 text-slate-500 dark:text-slate-400 text-sm uppercase flex items-center justify-center gap-2 hover:text-slate-700 dark:hover:text-slate-200 transition"> 
@@ -58,31 +61,31 @@
         <div id="main-app" class="hidden min-h-full flex flex-col">
             <!-- Header -->
             <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
                     </div>
-                    <div>
-                        <h1 id="app-title" class="font-bold uppercase text-lg">TAG MONITORING</h1>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">USER: <span id="current-user" class="font-semibold text-emerald-600 dark:text-emerald-400"></span></p>
+                    <div class="min-w-0 flex-1">
+                        <h1 id="app-title" class="font-bold uppercase text-base sm:text-lg truncate">TAG MONITORING</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase truncate">USER: <span id="current-user" class="font-semibold text-emerald-600 dark:text-emerald-400"></span></p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"> 
                         <span id="header-theme-icon">🌙</span> 
                     </button> 
-                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg uppercase transition"> KELUAR </button>
+                    <button onclick="handleLogout()" class="px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs sm:text-sm font-semibold rounded-lg uppercase transition whitespace-nowrap">KELUAR</button>
                 </div>
             </header>
 
             <!-- Navigation -->
             <nav class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
-                <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-emerald-500 text-white"> 📊 DASHBOARD </button> 
-                <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> ➕ INPUT TAG </button> 
-                <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> ⚙️ MANAGEMENT </button> 
-                <button onclick="showPage('audit')" data-nav="audit" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> 📋 AUDIT TRAIL </button>
+                <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-emerald-500 text-white">📊 DASHBOARD</button> 
+                <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600">➕ INPUT TAG</button> 
+                <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600">⚙️ MANAGEMENT</button> 
+                <button onclick="showPage('audit')" data-nav="audit" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600">📋 AUDIT TRAIL</button>
             </nav>
 
             <!-- Content -->
@@ -116,41 +119,41 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="flex gap-2 mt-3">
+                        <div class="flex flex-wrap gap-2 mt-3">
                             <button onclick="applyDashboardFilter()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold uppercase hover:bg-emerald-600 transition">TERAPKAN FILTER</button>
                             <button onclick="resetDashboardFilter()" class="px-4 py-2 bg-slate-500 text-white rounded-lg text-sm font-semibold uppercase hover:bg-slate-600 transition">RESET</button>
                         </div>
                     </div>
 
                     <!-- Score Cards - 7 Cards -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold">TOTAL</p>
-                            <p id="stat-total" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold truncate">TOTAL</p>
+                            <p id="stat-total" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-xs uppercase text-red-500 font-semibold">OPEN</p>
-                            <p id="stat-open" class="text-2xl font-bold text-red-500 mt-1">0</p>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-red-500 font-semibold truncate">OPEN</p>
+                            <p id="stat-open" class="text-lg sm:text-2xl font-bold text-red-500 mt-1">0</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-xs uppercase text-amber-500 font-semibold">% OPEN</p>
-                            <p id="stat-open-percent" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-amber-500 font-semibold truncate">% OPEN</p>
+                            <p id="stat-open-percent" class="text-lg sm:text-2xl font-bold text-amber-500 mt-1">0%</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-xs uppercase text-amber-500 font-semibold">PROGRESS</p>
-                            <p id="stat-progress" class="text-2xl font-bold text-amber-500 mt-1">0</p>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-amber-500 font-semibold truncate">PROGRESS</p>
+                            <p id="stat-progress" class="text-lg sm:text-2xl font-bold text-amber-500 mt-1">0</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-xs uppercase text-amber-500 font-semibold">% PROGRESS</p>
-                            <p id="stat-progress-percent" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-amber-500 font-semibold truncate">% PROGRESS</p>
+                            <p id="stat-progress-percent" class="text-lg sm:text-2xl font-bold text-amber-500 mt-1">0%</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-xs uppercase text-emerald-500 font-semibold">CLOSED</p>
-                            <p id="stat-closed" class="text-2xl font-bold text-emerald-500 mt-1">0</p>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-emerald-500 font-semibold truncate">CLOSED</p>
+                            <p id="stat-closed" class="text-lg sm:text-2xl font-bold text-emerald-500 mt-1">0</p>
                         </div>
-                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-sm">
-                            <p class="text-xs uppercase text-emerald-100 font-semibold">% CLOSED</p>
-                            <p id="stat-percent" class="text-2xl font-bold text-white mt-1">0%</p>
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-2 sm:p-3 shadow-sm">
+                            <p class="text-[10px] sm:text-xs uppercase text-emerald-100 font-semibold truncate">% CLOSED</p>
+                            <p id="stat-percent" class="text-lg sm:text-2xl font-bold text-white mt-1">0%</p>
                         </div>
                     </div>
 
@@ -158,11 +161,11 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         <!-- Tag by Machine dengan Details -->
                         <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <h3 class="font-bold uppercase text-sm mb-4">📊 TAG PER MESIN</h3>
+                            <h3 class="font-bold uppercase text-sm mb-4 break-word">📊 TAG PER MESIN</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
                                 <div id="chart-machine" class="space-y-2"></div>
                                 <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500">DETAIL PER MESIN</h4>
+                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500 break-word">DETAIL PER MESIN</h4>
                                     <div id="machine-detail-bars" class="space-y-3"></div>
                                 </div>
                             </div>
@@ -170,11 +173,11 @@
                         
                         <!-- Tag by Operator dengan Details -->
                         <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <h3 class="font-bold uppercase text-sm mb-4">👷 TAG PER OPERATOR</h3>
+                            <h3 class="font-bold uppercase text-sm mb-4 break-word">👷 TAG PER OPERATOR</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
                                 <div id="chart-operator" class="space-y-2"></div>
                                 <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500">RED VS WHITE PER OPERATOR</h4>
+                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500 break-word">RED VS WHITE PER OPERATOR</h4>
                                     <div id="operator-detail-bars" class="space-y-3"></div>
                                 </div>
                             </div>
@@ -183,7 +186,7 @@
 
                     <!-- Red vs White Chart -->
                     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <h3 class="font-bold uppercase text-sm mb-4">🏷️ PERBANDINGAN RED TAG VS WHITE TAG</h3>
+                        <h3 class="font-bold uppercase text-sm mb-4 break-word">🏷️ PERBANDINGAN RED TAG VS WHITE TAG</h3>
                         <div class="flex flex-col sm:flex-row items-end gap-4 sm:gap-8 justify-center h-48">
                             <div class="flex flex-col items-center w-full sm:w-auto">
                                 <div id="bar-red" class="w-full sm:w-24 bg-gradient-to-t from-red-600 to-red-400 rounded-t-lg transition-all duration-500" style="height: 0px"></div>
@@ -201,21 +204,21 @@
                     <!-- Red Tag Table -->
                     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                            <h3 class="font-bold uppercase text-sm">🔴 DAFTAR RED TAG</h3>
-                            <span id="red-tag-count" class="text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full">0 TAG</span>
+                            <h3 class="font-bold uppercase text-sm break-word">🔴 DAFTAR RED TAG</h3>
+                            <span id="red-tag-count" class="text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full whitespace-nowrap">0 TAG</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50 dark:bg-slate-700">
                                     <tr>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ACTION</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">NO WR</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">STATUS</th>
-                                        <th class="px-4 py-3 text-center uppercase font-bold text-xs">AKSI</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">RESIKO</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI</th>
                                     </tr>
                                 </thead>
                                 <tbody id="red-tag-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
@@ -226,19 +229,19 @@
                     <!-- White Tag Table -->
                     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                         <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                            <h3 class="font-bold uppercase text-sm">⚪ DAFTAR WHITE TAG</h3>
-                            <span id="white-tag-count" class="text-xs bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 px-2 py-1 rounded-full">0 TAG</span>
+                            <h3 class="font-bold uppercase text-sm break-word">⚪ DAFTAR WHITE TAG</h3>
+                            <span id="white-tag-count" class="text-xs bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 px-2 py-1 rounded-full whitespace-nowrap">0 TAG</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50 dark:bg-slate-700">
                                     <tr>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">OPERATOR</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ACTION</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">RESIKO</th>
                                     </tr>
                                 </thead>
                                 <tbody id="white-tag-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
@@ -250,8 +253,8 @@
                 <!-- Input Tag Page -->
                 <div id="page-input" class="page hidden">
                     <div class="max-w-4xl mx-auto">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <h2 class="font-bold uppercase text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">➕</span> INPUT TAG BARU</h2>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h2 class="font-bold uppercase text-lg sm:text-xl mb-6 flex items-center gap-2 break-word"><span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">➕</span> INPUT TAG BARU</h2>
                             <form id="tag-form" class="space-y-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                     <div>
@@ -312,36 +315,36 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-blue-500">
-                                <h3 class="font-bold uppercase text-white flex items-center gap-2">👷 OPERATOR</h3>
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">👷 OPERATOR</h3>
                             </div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-blue-500 focus:outline-none transition uppercase text-sm" maxlength="10"> 
-                                    <button onclick="addOperator()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-blue-600 transition">ADD</button>
+                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-blue-500 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addOperator')"> 
+                                    <button onclick="addOperator()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-blue-600 transition whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="operator-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
                             </div>
                         </div>
                         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-purple-500">
-                                <h3 class="font-bold uppercase text-white flex items-center gap-2">🔧 ENGINEERING</h3>
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🔧 ENGINEERING</h3>
                             </div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-purple-500 focus:outline-none transition uppercase text-sm" maxlength="10"> 
-                                    <button onclick="addEngineering()" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-purple-600 transition">ADD</button>
+                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-purple-500 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addEngineering')"> 
+                                    <button onclick="addEngineering()" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-purple-600 transition whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="engineering-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
                             </div>
                         </div>
                         <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                             <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-emerald-500">
-                                <h3 class="font-bold uppercase text-white flex items-center gap-2">🏭 MESIN</h3>
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏭 MESIN</h3>
                             </div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm" maxlength="20"> 
-                                    <button onclick="addMachine()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-emerald-600 transition">ADD</button>
+                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addMachine')"> 
+                                    <button onclick="addMachine()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-emerald-600 transition whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="machine-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
                             </div>
@@ -353,34 +356,36 @@
                 <div id="page-audit" class="page hidden">
                     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                         <div class="p-4 border-b border-slate-200 dark:border-slate-700">
-                            <h3 class="font-bold uppercase text-lg mb-4">📋 AUDIT TRAIL & HISTORY</h3>
+                            <h3 class="font-bold uppercase text-base sm:text-lg mb-4 break-word">📋 AUDIT TRAIL & HISTORY</h3>
                             <div class="flex flex-wrap gap-4 items-end">
-                                <div>
+                                <div class="w-full sm:w-auto">
                                     <label class="block text-sm font-semibold uppercase mb-2">DARI TANGGAL</label> 
-                                    <input type="date" id="audit-from" class="px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
+                                    <input type="date" id="audit-from" class="w-full px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
                                 </div>
-                                <div>
+                                <div class="w-full sm:w-auto">
                                     <label class="block text-sm font-semibold uppercase mb-2">SAMPAI TANGGAL</label> 
-                                    <input type="date" id="audit-to" class="px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
+                                    <input type="date" id="audit-to" class="w-full px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
                                 </div>
-                                <button onclick="filterAudit()" class="px-6 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase hover:bg-emerald-600 transition"> 🔍 FILTER </button> 
-                                <button onclick="exportExcel()" class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold uppercase hover:bg-green-700 transition"> 📥 EXCEL </button> 
-                                <button onclick="exportPDF()" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold uppercase hover:bg-red-700 transition"> 📄 PDF </button>
-                                <button onclick="resetFilter()" class="px-6 py-2 bg-slate-500 text-white rounded-lg font-semibold uppercase hover:bg-slate-600 transition"> ⟲ RESET </button>
+                                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                                    <button onclick="filterAudit()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-emerald-600 transition">🔍 FILTER</button> 
+                                    <button onclick="exportExcel()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-green-600 text-white rounded-lg font-semibold uppercase text-sm hover:bg-green-700 transition">📥 EXCEL</button> 
+                                    <button onclick="exportPDF()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-red-600 text-white rounded-lg font-semibold uppercase text-sm hover:bg-red-700 transition">📄 PDF</button>
+                                    <button onclick="resetFilter()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-slate-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-slate-600 transition">⟲ RESET</button>
+                                </div>
                             </div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50 dark:bg-slate-700">
                                     <tr>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">INISIAL</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">JENIS</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">STATUS</th>
-                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">NO WR</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">WAKTU</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">USER</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">AKTIVITAS</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">DETAIL</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL TAG</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">JENIS</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th>
                                     </tr>
                                 </thead>
                                 <tbody id="audit-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
@@ -393,23 +398,32 @@
 
         <!-- Update Modal -->
         <div id="update-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeModal()">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
-                <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2">
-                    <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white">✏️</span>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+                <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
+                    <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">✏️</span>
                     UPDATE RED TAG
                 </h3>
                 <div id="modal-content"></div>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="edit-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeEditModal()">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
+                    <span class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">✏️</span>
+                    <span id="edit-modal-title">EDIT</span>
+                </h3>
+                <div id="edit-modal-content"></div>
             </div>
         </div>
     </div>
 
     <script>
         // ============ SUPABASE CONFIG ============
-        // GANTI DENGAN KREDENSIAL SUPABASE ANDA
         const SUPABASE_URL = 'https://hzvjoewuprlkgwetqpau.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6dmpvZXd1cHJsa2d3ZXRxcGF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MTAxNzQsImV4cCI6MjA4NzM4NjE3NH0.i0SgR9fmdb_gDNEDh2lt4Q9cgLEVGX6EDzB_jJQPa8w';
         
-        // Inisialisasi Supabase - PASTIKAN HANYA SEKALI
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ============ STATE ============
@@ -422,6 +436,7 @@
         let engineerings = [];
         let machines = [];
         let filteredAuditData = [];
+        let auditLogs = [];
         
         let currentFilter = {
             date: '',
@@ -434,11 +449,40 @@
             app_title: 'TAG MONITORING'
         };
 
+        // ============ AUDIT LOG FUNCTION ============
+        async function addAuditLog(activity, detail, tagData = null) {
+            try {
+                const log = {
+                    created_at: new Date().toISOString(),
+                    user: currentUser || 'GUEST',
+                    role: userRole || 'guest',
+                    activity: activity,
+                    detail: detail,
+                    tag_id: tagData?.id || null,
+                    tag_date: tagData?.date || null,
+                    tag_type: tagData?.tag_type || null,
+                    tag_machine: tagData?.machine || null,
+                    tag_status: tagData?.status || null,
+                    tag_initial: tagData?.initial || null
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('audit_logs')
+                    .insert([log])
+                    .select();
+
+                if (error) throw error;
+                
+                auditLogs.unshift(data[0]);
+                return data[0];
+            } catch (error) {
+                console.error('Error adding audit log:', error);
+            }
+        }
+
         // ============ SUPABASE FUNCTIONS ============
-        
         async function fetchAllData() {
             try {
-                // Fetch tags
                 const { data: tags, error: tagsError } = await supabaseClient
                     .from('tags')
                     .select('*')
@@ -446,7 +490,6 @@
 
                 if (tagsError) throw tagsError;
                 
-                // Fetch operators
                 const { data: ops, error: opsError } = await supabaseClient
                     .from('operators')
                     .select('*')
@@ -454,7 +497,6 @@
 
                 if (opsError) throw opsError;
                 
-                // Fetch engineerings
                 const { data: engs, error: engsError } = await supabaseClient
                     .from('engineerings')
                     .select('*')
@@ -462,18 +504,25 @@
 
                 if (engsError) throw engsError;
                 
-                // Fetch machines
                 const { data: machs, error: machsError } = await supabaseClient
                     .from('machines')
                     .select('*')
                     .order('created_at', { ascending: false });
 
                 if (machsError) throw machsError;
+                
+                const { data: audits, error: auditsError } = await supabaseClient
+                    .from('audit_logs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (auditsError) throw auditsError;
 
                 allData = tags || [];
                 operators = (ops || []).map(o => o.initial);
                 engineerings = (engs || []).map(e => e.initial);
                 machines = (machs || []).map(m => m.machine);
+                auditLogs = audits || [];
 
                 renderManagementLists();
                 updateMachineDropdown();
@@ -496,6 +545,7 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('INSERT TAG', `Menambahkan ${tagData.tag_type} TAG`, data[0]);
                 showToast('TAG BERHASIL DISIMPAN', 'success');
                 return data[0];
             } catch (error) {
@@ -507,6 +557,8 @@
 
         async function updateTag(tagId, updateData) {
             try {
+                const oldTag = allData.find(t => t.id === tagId);
+                
                 const { data, error } = await supabaseClient
                     .from('tags')
                     .update(updateData)
@@ -515,6 +567,7 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('UPDATE TAG', `Mengupdate tag ${oldTag?.tag_type}`, data[0]);
                 showToast('DATA BERHASIL DIUPDATE', 'success');
                 return data[0];
             } catch (error) {
@@ -533,12 +586,32 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('INSERT OPERATOR', `Menambahkan operator: ${initial}`);
                 showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
                 return data[0];
             } catch (error) {
                 console.error('Error inserting operator:', error);
                 showToast('GAGAL MENAMBAHKAN OPERATOR', 'error');
                 return null;
+            }
+        }
+
+        async function updateOperator(oldInitial, newInitial) {
+            try {
+                const { error } = await supabaseClient
+                    .from('operators')
+                    .update({ initial: newInitial })
+                    .eq('initial', oldInitial);
+
+                if (error) throw error;
+                
+                await addAuditLog('UPDATE OPERATOR', `Mengupdate operator: ${oldInitial} -> ${newInitial}`);
+                showToast('OPERATOR BERHASIL DIUPDATE', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error updating operator:', error);
+                showToast('GAGAL MENGUPDATE OPERATOR', 'error');
+                return false;
             }
         }
 
@@ -551,6 +624,7 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('DELETE OPERATOR', `Menghapus operator: ${initial}`);
                 showToast('OPERATOR DIHAPUS', 'success');
             } catch (error) {
                 console.error('Error deleting operator:', error);
@@ -567,12 +641,32 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('INSERT ENGINEERING', `Menambahkan engineering: ${initial}`);
                 showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
                 return data[0];
             } catch (error) {
                 console.error('Error inserting engineering:', error);
                 showToast('GAGAL MENAMBAHKAN ENGINEERING', 'error');
                 return null;
+            }
+        }
+
+        async function updateEngineering(oldInitial, newInitial) {
+            try {
+                const { error } = await supabaseClient
+                    .from('engineerings')
+                    .update({ initial: newInitial })
+                    .eq('initial', oldInitial);
+
+                if (error) throw error;
+                
+                await addAuditLog('UPDATE ENGINEERING', `Mengupdate engineering: ${oldInitial} -> ${newInitial}`);
+                showToast('ENGINEERING BERHASIL DIUPDATE', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error updating engineering:', error);
+                showToast('GAGAL MENGUPDATE ENGINEERING', 'error');
+                return false;
             }
         }
 
@@ -585,6 +679,7 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('DELETE ENGINEERING', `Menghapus engineering: ${initial}`);
                 showToast('ENGINEERING DIHAPUS', 'success');
             } catch (error) {
                 console.error('Error deleting engineering:', error);
@@ -601,12 +696,32 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('INSERT MACHINE', `Menambahkan mesin: ${machine}`);
                 showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
                 return data[0];
             } catch (error) {
                 console.error('Error inserting machine:', error);
                 showToast('GAGAL MENAMBAHKAN MESIN', 'error');
                 return null;
+            }
+        }
+
+        async function updateMachine(oldMachine, newMachine) {
+            try {
+                const { error } = await supabaseClient
+                    .from('machines')
+                    .update({ machine: newMachine })
+                    .eq('machine', oldMachine);
+
+                if (error) throw error;
+                
+                await addAuditLog('UPDATE MACHINE', `Mengupdate mesin: ${oldMachine} -> ${newMachine}`);
+                showToast('MESIN BERHASIL DIUPDATE', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error updating machine:', error);
+                showToast('GAGAL MENGUPDATE MESIN', 'error');
+                return false;
             }
         }
 
@@ -619,6 +734,7 @@
 
                 if (error) throw error;
                 
+                await addAuditLog('DELETE MACHINE', `Menghapus mesin: ${machine}`);
                 showToast('MESIN DIHAPUS', 'success');
             } catch (error) {
                 console.error('Error deleting machine:', error);
@@ -658,6 +774,14 @@
                     () => fetchAllData()
                 )
                 .subscribe();
+                
+            supabaseClient
+                .channel('audit-channel')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'audit_logs' }, 
+                    () => fetchAllData()
+                )
+                .subscribe();
         }
 
         // ============ INITIALIZATION ============
@@ -667,8 +791,11 @@
                 if (savedDarkMode === 'true') {
                     darkMode = true;
                     document.documentElement.classList.add('dark');
-                    updateThemeUI();
+                } else {
+                    darkMode = false;
+                    document.documentElement.classList.remove('dark');
                 }
+                updateThemeUI();
 
                 setDefaultDates();
                 await fetchAllData();
@@ -684,7 +811,11 @@
         // ============ THEME ============
         function toggleDarkMode() {
             darkMode = !darkMode;
-            document.documentElement.classList.toggle('dark', darkMode);
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
             localStorage.setItem('darkMode', darkMode);
             updateThemeUI();
         }
@@ -702,8 +833,24 @@
             if (headerIcon) headerIcon.textContent = icon;
         }
 
+        // ============ KEYBOARD HANDLER ============
+        window.handleKeyPress = function(event, action) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (action === 'login') {
+                    handleLogin();
+                } else if (action === 'addOperator') {
+                    addOperator();
+                } else if (action === 'addEngineering') {
+                    addEngineering();
+                } else if (action === 'addMachine') {
+                    addMachine();
+                }
+            }
+        };
+
         // ============ LOGIN ============
-        window.handleLogin = function() {
+        window.handleLogin = async function() {
             const initial = document.getElementById('login-initial').value.trim().toUpperCase();
             const errorEl = document.getElementById('login-error');
             
@@ -730,6 +877,8 @@
                 userRole = 'engineering';
             }
             
+            await addAuditLog('LOGIN', `User login dengan role: ${userRole}`);
+            
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('current-user').textContent = `${initial} (${userRole.toUpperCase()})`;
@@ -750,6 +899,23 @@
             applyDashboardFilter();
         };
 
+        window.handleGuestLogin = async function() {
+            currentUser = 'GUEST';
+            userRole = 'guest';
+            
+            await addAuditLog('LOGIN', 'Guest login');
+            
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('current-user').textContent = 'GUEST (GUEST)';
+            
+            document.getElementById('nav-input').classList.add('hidden');
+            document.getElementById('nav-management').classList.add('hidden');
+            
+            showPage('dashboard');
+            applyDashboardFilter();
+        };
+
         function showError(errorEl, message) {
             errorEl.textContent = message;
             errorEl.classList.remove('hidden');
@@ -758,7 +924,9 @@
             }, 3000);
         }
 
-        window.handleLogout = function() {
+        window.handleLogout = async function() {
+            await addAuditLog('LOGOUT', 'User logout');
+            
             currentUser = null;
             userRole = null;
             document.getElementById('login-screen').classList.remove('hidden');
@@ -906,7 +1074,7 @@
                 
                 return `
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                        <span class="w-24 text-xs font-semibold uppercase truncate" title="${machine}">${machine}</span>
+                        <span class="w-20 sm:w-24 text-xs font-semibold uppercase truncate break-word" title="${machine}">${machine}</span>
                         <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
                                 <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
@@ -955,12 +1123,12 @@
                 return `
                     <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
                         <div class="flex items-center justify-between flex-wrap gap-2">
-                            <span class="text-xs font-bold uppercase">${machine}</span>
-                            <span class="text-xs text-slate-500">TOTAL: ${stats.red + stats.white}</span>
+                            <span class="text-xs font-bold uppercase break-word">${machine}</span>
+                            <span class="text-xs text-slate-500 whitespace-nowrap">TOTAL: ${stats.red + stats.white}</span>
                         </div>
                         
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-red-600 font-semibold">RED: ${stats.red}</span>
+                            <span class="w-16 text-red-600 font-semibold whitespace-nowrap">RED: ${stats.red}</span>
                             <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
                                     <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
@@ -969,7 +1137,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-slate-600 font-semibold">WHITE: ${stats.white}</span>
+                            <span class="w-16 text-slate-600 font-semibold whitespace-nowrap">WHITE: ${stats.white}</span>
                             <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
                                     <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
@@ -978,7 +1146,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-red-500 font-semibold">OPEN: ${stats.open}</span>
+                            <span class="w-16 text-red-500 font-semibold whitespace-nowrap">OPEN: ${stats.open}</span>
                             <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div class="h-full bar-open rounded-full flex items-center justify-end px-1" style="width: ${openWidth}%">
                                     <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.open}</span>
@@ -987,7 +1155,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-emerald-600 font-semibold">CLOSED: ${stats.closed}</span>
+                            <span class="w-16 text-emerald-600 font-semibold whitespace-nowrap">CLOSED: ${stats.closed}</span>
                             <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div class="h-full bar-closed rounded-full flex items-center justify-end px-1" style="width: ${closedWidth}%">
                                     <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.closed}</span>
@@ -1022,7 +1190,7 @@
                 
                 return `
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                        <span class="w-16 text-xs font-semibold uppercase">${operator}</span>
+                        <span class="w-16 text-xs font-semibold uppercase break-word">${operator}</span>
                         <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
                                 <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
@@ -1059,12 +1227,12 @@
                 return `
                     <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
                         <div class="flex items-center justify-between flex-wrap gap-2">
-                            <span class="text-xs font-bold uppercase">${operator}</span>
-                            <span class="text-xs text-slate-500">TOTAL: ${stats.red + stats.white}</span>
+                            <span class="text-xs font-bold uppercase break-word">${operator}</span>
+                            <span class="text-xs text-slate-500 whitespace-nowrap">TOTAL: ${stats.red + stats.white}</span>
                         </div>
                         
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-red-600 font-semibold">RED: ${stats.red}</span>
+                            <span class="w-16 text-red-600 font-semibold whitespace-nowrap">RED: ${stats.red}</span>
                             <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
                                     <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
@@ -1073,7 +1241,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-slate-600 font-semibold">WHITE: ${stats.white}</span>
+                            <span class="w-16 text-slate-600 font-semibold whitespace-nowrap">WHITE: ${stats.white}</span>
                             <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                 <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
                                     <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
@@ -1091,7 +1259,7 @@
             if (redTags.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA RED TAG</td>
+                        <td colspan="8" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA RED TAG</td>
                     </tr>
                 `;
                 return;
@@ -1110,13 +1278,13 @@
                     actionButton = `<span class="text-xs text-emerald-600 font-semibold">✓ CLOSED</span>`;
                 } else if (!tag.wr_number) {
                     if (userRole === 'operator' || userRole === 'admin') {
-                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
+                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
                     } else {
                         actionButton = `<span class="text-xs text-slate-500">-</span>`;
                     }
                 } else {
                     if (userRole === 'engineering' || userRole === 'admin') {
-                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
+                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
                     } else {
                         actionButton = `<span class="text-xs text-slate-500">-</span>`;
                     }
@@ -1124,18 +1292,18 @@
                 
                 return `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.machine || '-'}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${tag.machine || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 30) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.progress_note || ''}">${truncateText(tag.progress_note, 20) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
                         </td>
-                        <td class="px-4 py-3 text-center">
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">
                             ${actionButton}
                         </td>
                     </tr>
@@ -1149,7 +1317,7 @@
             if (whiteTags.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA WHITE TAG</td>
+                        <td colspan="6" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA WHITE TAG</td>
                     </tr>
                 `;
                 return;
@@ -1160,23 +1328,42 @@
             tbody.innerHTML = whiteTags.map(tag => {
                 return `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${tag.machine || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.action || ''}">${tag.action || '-'}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${tag.machine || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 30) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.action || ''}">${truncateText(tag.action, 20) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
+        function truncateText(text, maxLength) {
+            if (!text) return '-';
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
         function formatDate(dateStr) {
             if (!dateStr) return '-';
             const date = new Date(dateStr);
             return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
         }
 
         function getRiskColor(risk) {
@@ -1213,13 +1400,13 @@
                 
                 content.innerHTML = `
                     <div class="space-y-4">
-                        <p class="text-sm uppercase text-slate-500">MASUKKAN NOMOR WR UNTUK TAG INI</p>
+                        <p class="text-sm uppercase text-slate-500 break-word">MASUKKAN NOMOR WR UNTUK TAG INI</p>
                         <input type="text" id="modal-wr" placeholder="NOMOR WR"
                             class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"
                             autocomplete="off">
-                        <div class="flex gap-2">
-                            <button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
-                            <button onclick="submitWR('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                            <button onclick="submitWR('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button>
                         </div>
                     </div>
                 `;
@@ -1231,7 +1418,7 @@
                 
                 content.innerHTML = `
                     <div class="space-y-4">
-                        <p class="text-sm uppercase text-slate-500">NO WR: <span class="font-bold text-slate-900 dark:text-white">${tag.wr_number}</span></p>
+                        <p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900 dark:text-white">${tag.wr_number}</span></p>
                         
                         <div>
                             <label class="block text-sm font-semibold uppercase mb-2">STATUS</label>
@@ -1248,9 +1435,9 @@
                                 class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
                         </div>
                         
-                        <div class="flex gap-2">
-                            <button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
-                            <button onclick="submitStatus('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                            <button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button>
                         </div>
                     </div>
                 `;
@@ -1294,6 +1481,87 @@
             if (updated) {
                 closeModal();
                 showToast('STATUS BERHASIL DIUPDATE', 'success');
+            }
+        };
+
+        // ============ EDIT MODAL ============
+        window.openEditModal = function(type, oldValue) {
+            const modal = document.getElementById('edit-modal');
+            const title = document.getElementById('edit-modal-title');
+            const content = document.getElementById('edit-modal-content');
+            
+            title.textContent = `EDIT ${type.toUpperCase()}`;
+            
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <p class="text-sm uppercase text-slate-500 break-word">EDIT: ${oldValue}</p>
+                    <input type="text" id="edit-value" value="${oldValue}" placeholder="MASUKKAN NILAI BARU"
+                        class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-yellow-500 focus:outline-none transition uppercase"
+                        autocomplete="off">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button onclick="closeEditModal()" class="w-full sm:flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                        <button onclick="submitEdit('${type}', '${oldValue}')" class="w-full sm:flex-1 py-3 bg-yellow-500 text-white rounded-xl font-semibold uppercase hover:bg-yellow-600 transition">UPDATE</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        };
+
+        window.closeEditModal = function() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        };
+
+        window.submitEdit = async function(type, oldValue) {
+            const newValue = document.getElementById('edit-value').value.trim().toUpperCase();
+            
+            if (!newValue) {
+                showToast('NILAI BARU HARUS DIISI', 'error');
+                return;
+            }
+            
+            if (newValue === oldValue) {
+                showToast('TIDAK ADA PERUBAHAN', 'error');
+                return;
+            }
+            
+            let success = false;
+            
+            if (type === 'operator') {
+                if (operators.includes(newValue)) {
+                    showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                    return;
+                }
+                success = await updateOperator(oldValue, newValue);
+                if (success) {
+                    operators = operators.map(o => o === oldValue ? newValue : o);
+                }
+            } else if (type === 'engineering') {
+                if (engineerings.includes(newValue)) {
+                    showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                    return;
+                }
+                success = await updateEngineering(oldValue, newValue);
+                if (success) {
+                    engineerings = engineerings.map(e => e === oldValue ? newValue : e);
+                }
+            } else if (type === 'machine') {
+                if (machines.includes(newValue)) {
+                    showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
+                    return;
+                }
+                success = await updateMachine(oldValue, newValue);
+                if (success) {
+                    machines = machines.map(m => m === oldValue ? newValue : m);
+                }
+            }
+            
+            if (success) {
+                closeEditModal();
+                renderManagementLists();
+                updateMachineDropdown();
+                updateFilterDropdowns();
+                showToast('DATA BERHASIL DIUPDATE', 'success');
             }
         };
 
@@ -1384,8 +1652,11 @@
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
                 : operators.map(o => `
                     <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <span class="font-semibold uppercase">${o}</span>
-                        <button onclick="removeOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        <span class="font-semibold uppercase text-sm break-word">${o}</span>
+                        <div class="flex gap-1">
+                            <button onclick="openEditModal('operator', '${o}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
+                            <button onclick="removeOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        </div>
                     </div>
                 `).join('');
             
@@ -1394,8 +1665,11 @@
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
                 : engineerings.map(e => `
                     <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <span class="font-semibold uppercase">${e}</span>
-                        <button onclick="removeEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        <span class="font-semibold uppercase text-sm break-word">${e}</span>
+                        <div class="flex gap-1">
+                            <button onclick="openEditModal('engineering', '${e}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
+                            <button onclick="removeEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        </div>
                     </div>
                 `).join('');
             
@@ -1404,8 +1678,11 @@
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
                 : machines.map(m => `
                     <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <span class="font-semibold uppercase">${m}</span>
-                        <button onclick="removeMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        <span class="font-semibold uppercase text-sm break-word">${m}</span>
+                        <div class="flex gap-1">
+                            <button onclick="openEditModal('machine', '${m}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
+                            <button onclick="removeMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        </div>
                     </div>
                 `).join('');
         }
@@ -1517,42 +1794,37 @@
         // ============ AUDIT TRAIL ============
         function renderAuditTable() {
             const tbody = document.getElementById('audit-table');
-            const dataToShow = filteredAuditData.length > 0 ? filteredAuditData : allData;
+            const dataToShow = filteredAuditData.length > 0 ? filteredAuditData : auditLogs;
             
-            const sortedData = [...dataToShow].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const sortedData = [...dataToShow].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             
             if (sortedData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA DATA</td>
+                        <td colspan="8" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA DATA AUDIT</td>
                     </tr>
                 `;
                 return;
             }
             
-            tbody.innerHTML = sortedData.map(tag => {
-                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                                   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-                
-                const tagTypeColor = tag.tag_type === 'RED' ? 'bg-red-500 text-white' : 'bg-slate-300 text-slate-700';
+            tbody.innerHTML = sortedData.map(log => {
+                const activityColor = log.activity?.includes('INSERT') ? 'bg-green-100 text-green-700' :
+                                     log.activity?.includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
+                                     log.activity?.includes('DELETE') ? 'bg-red-100 text-red-700' :
+                                     'bg-slate-100 text-slate-700';
                 
                 return `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded text-xs font-bold uppercase inline-block ${tagTypeColor}">${tag.tag_type || '-'}</span>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDateTime(log.created_at) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${log.user || '-'} (${log.role || '-'})</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${activityColor}">${log.activity || '-'}</span>
                         </td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${tag.machine || '-'}</td>
-                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
-                        </td>
-                        <td class="px-4 py-3 uppercase text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${log.detail || ''}">${truncateText(log.detail, 30) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_date ? formatDate(log.tag_date) : '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_type || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_machine || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_status || '-'}</td>
                     </tr>
                 `;
             }).join('');
@@ -1567,8 +1839,9 @@
                 return;
             }
             
-            filteredAuditData = allData.filter(tag => {
-                return tag.date >= from && tag.date <= to;
+            filteredAuditData = auditLogs.filter(log => {
+                const logDate = log.created_at.split('T')[0];
+                return logDate >= from && logDate <= to;
             });
             
             renderAuditTable();
@@ -1592,30 +1865,30 @@
 
         // ============ EXPORT FUNCTIONS ============
         window.exportExcel = function() {
-            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : allData;
+            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : auditLogs;
             
             if (dataToExport.length === 0) {
                 showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
                 return;
             }
             
-            let csv = 'TANGGAL,INISIAL,JENIS TAG,MESIN,ABNORMALITAS,DAMPAK,RESIKO,STATUS,NO WR,ACTION,CATATAN PROGRESS\n';
+            let csv = 'WAKTU,USER,ROLE,AKTIVITAS,DETAIL,TANGGAL TAG,JENIS TAG,MESIN,STATUS\n';
             
-            dataToExport.forEach(tag => {
-                csv += `"${tag.date || ''}","${tag.initial || ''}","${tag.tag_type || ''}","${tag.machine || ''}","${tag.abnormality || ''}","${tag.impact || ''}","${tag.risk || ''}","${tag.status || ''}","${tag.wr_number || ''}","${tag.action || ''}","${tag.progress_note || ''}"\n`;
+            dataToExport.forEach(log => {
+                csv += `"${formatDateTime(log.created_at) || ''}","${log.user || ''}","${log.role || ''}","${log.activity || ''}","${log.detail || ''}","${log.tag_date ? formatDate(log.tag_date) : ''}","${log.tag_type || ''}","${log.tag_machine || ''}","${log.tag_status || ''}"\n`;
             });
             
             const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `tag_monitoring_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `audit_trail_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
             
             showToast('FILE EXCEL BERHASIL DIUNDUH', 'success');
         };
 
         window.exportPDF = function() {
-            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : allData;
+            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : auditLogs;
             
             if (dataToExport.length === 0) {
                 showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
@@ -1627,7 +1900,9 @@
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>TAG MONITORING REPORT</title>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>AUDIT TRAIL REPORT</title>
                     <style>
                         body { font-family: 'Space Grotesk', Arial, sans-serif; padding: 20px; }
                         h1 { text-align: center; text-transform: uppercase; color: #059669; }
@@ -1636,14 +1911,12 @@
                         th { background: #059669; color: white; padding: 8px; text-align: left; text-transform: uppercase; }
                         td { border: 1px solid #ddd; padding: 6px; text-transform: uppercase; word-break: break-word; }
                         tr:nth-child(even) { background: #f9f9f9; }
-                        .red-tag { color: #dc2626; font-weight: bold; }
-                        .white-tag { color: #64748b; font-weight: bold; }
                         .footer { margin-top: 20px; text-align: center; font-size: 10px; color: #666; }
                         .summary { margin: 20px 0; padding: 10px; background: #f3f4f6; border-radius: 8px; }
                     </style>
                 </head>
                 <body>
-                    <h1>TAG MONITORING REPORT</h1>
+                    <h1>AUDIT TRAIL REPORT</h1>
                     <h2>${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</h2>
                     
                     <div class="summary">
@@ -1654,27 +1927,29 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>TANGGAL</th>
-                                <th>INISIAL</th>
+                                <th>WAKTU</th>
+                                <th>USER</th>
+                                <th>ROLE</th>
+                                <th>AKTIVITAS</th>
+                                <th>DETAIL</th>
+                                <th>TGL TAG</th>
                                 <th>JENIS</th>
                                 <th>MESIN</th>
-                                <th>ABNORMALITAS</th>
-                                <th>RESIKO</th>
                                 <th>STATUS</th>
-                                <th>NO WR</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${dataToExport.map(tag => `
+                            ${dataToExport.map(log => `
                                 <tr>
-                                    <td>${tag.date || '-'}</td>
-                                    <td>${tag.initial || '-'}</td>
-                                    <td class="${tag.tag_type === 'RED' ? 'red-tag' : 'white-tag'}">${tag.tag_type || '-'}</td>
-                                    <td>${tag.machine || '-'}</td>
-                                    <td>${tag.abnormality || '-'}</td>
-                                    <td>${tag.risk || '-'}</td>
-                                    <td>${tag.status || '-'}</td>
-                                    <td>${tag.wr_number || '-'}</td>
+                                    <td>${formatDateTime(log.created_at) || '-'}</td>
+                                    <td>${log.user || '-'}</td>
+                                    <td>${log.role || '-'}</td>
+                                    <td>${log.activity || '-'}</td>
+                                    <td>${log.detail || '-'}</td>
+                                    <td>${log.tag_date ? formatDate(log.tag_date) : '-'}</td>
+                                    <td>${log.tag_type || '-'}</td>
+                                    <td>${log.tag_machine || '-'}</td>
+                                    <td>${log.tag_status || '-'}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -1697,7 +1972,7 @@
             existingToasts.forEach(t => t.remove());
             
             const toast = document.createElement('div');
-            toast.className = `toast-message fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-sm transition-all duration-300 transform translate-y-0 ${
+            toast.className = `toast-message fixed bottom-4 right-4 px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-xs sm:text-sm transition-all duration-300 transform translate-y-0 ${
                 type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
             }`;
             toast.textContent = message;
