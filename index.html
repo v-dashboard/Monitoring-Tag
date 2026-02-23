@@ -1,1654 +1,1716 @@
 <!doctype html>
 <html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TAG MONITORING SYSTEM</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Space Grotesk', 'system-ui', 'sans-serif']
-          }
-        }
-      }
-    }
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-  <style>
-    * { font-family: 'Space Grotesk', system-ui, sans-serif; }
-    .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: #64748b; border-radius: 3px; }
-    .animate-pulse-slow { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .bar-red { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
-    .bar-white { background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 100%); }
-    .bar-open { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
-    .bar-closed { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
-    .text-wrap { word-wrap: break-word; white-space: normal; }
-    .table-cell-wrap { white-space: normal; word-break: break-word; max-width: 200px; }
-  </style>
- </head>
- <body class="h-full bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
-  <div id="app" class="h-full w-full overflow-auto scrollbar-thin">
-   <!-- Loading Screen -->
-   <div id="loading-screen" class="min-h-full flex items-center justify-center p-4">
-    <div class="text-center">
-     <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg animate-pulse">
-      <svg class="w-10 h-10 text-white animate-spin" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-       </svg>
-      </div>
-      <p class="text-lg font-bold uppercase tracking-wide">LOADING...</p>
-      <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">MENGHUBUNGKAN KE DATABASE</p>
-    </div>
-   </div>
-
-   <!-- Login Screen -->
-   <div id="login-screen" class="hidden min-h-full flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-200 dark:border-slate-700">
-      <div class="text-center mb-8">
-       <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
-        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-        </svg>
-       </div>
-       <h1 class="text-2xl font-bold uppercase tracking-wide">TAG MONITORING</h1>
-       <p class="text-slate-500 dark:text-slate-400 mt-2 uppercase text-sm">SISTEM PEMANTAUAN ABNORMALITAS</p>
-      </div>
-      <div class="space-y-4">
-       <div>
-        <label class="block text-sm font-semibold uppercase mb-2">INISIAL</label> 
-        <input type="text" id="login-initial" placeholder="MASUKKAN INISIAL ANDA" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-center font-semibold tracking-widest" autocomplete="off" onkeydown="if(event.key === 'Enter') handleLogin()">
-       </div>
-       <button onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg"> MASUK </button>
-       <p id="login-error" class="text-red-500 text-center text-sm uppercase hidden"></p>
-      </div>
-      <button onclick="toggleDarkMode()" class="mt-6 w-full py-2 text-slate-500 dark:text-slate-400 text-sm uppercase flex items-center justify-center gap-2 hover:text-slate-700 dark:hover:text-slate-200 transition"> 
-       <span id="theme-icon">🌙</span> 
-       <span id="theme-text">MODE GELAP</span> 
-      </button>
-     </div>
-    </div>
-   </div>
-
-   <!-- Main App -->
-   <div id="main-app" class="hidden min-h-full flex flex-col">
-    <!-- Header -->
-    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
-     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-       <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-       </svg>
-      </div>
-      <div>
-       <h1 id="app-title" class="font-bold uppercase text-lg">TAG MONITORING</h1>
-       <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">USER: <span id="current-user" class="font-semibold text-emerald-600 dark:text-emerald-400"></span></p>
-      </div>
-     </div>
-     <div class="flex items-center gap-2">
-      <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"> 
-       <span id="header-theme-icon">🌙</span> 
-      </button> 
-      <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg uppercase transition"> KELUAR </button>
-     </div>
-    </header>
-
-    <!-- Navigation -->
-    <nav class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
-     <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-emerald-500 text-white"> 📊 DASHBOARD </button> 
-     <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> ➕ INPUT TAG </button> 
-     <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> ⚙️ MANAGEMENT </button> 
-     <button onclick="showPage('audit')" data-nav="audit" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> 📋 AUDIT TRAIL </button>
-    </nav>
-
-    <!-- Content -->
-    <main class="flex-1 p-4 overflow-auto">
-     <!-- Dashboard Page -->
-     <div id="page-dashboard" class="page space-y-6">
-      <!-- Filter Section -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-       <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2">🔍 FILTER DASHBOARD</h3>
-       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div>
-         <label class="block text-xs font-semibold uppercase mb-1">TANGGAL</label>
-         <input type="date" id="filter-date" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
-        </div>
-        <div>
-         <label class="block text-xs font-semibold uppercase mb-1">MESIN</label>
-         <select id="filter-machine" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm uppercase">
-          <option value="">SEMUA MESIN</option>
-         </select>
-        </div>
-        <div>
-         <label class="block text-xs font-semibold uppercase mb-1">OPERATOR</label>
-         <select id="filter-operator" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm uppercase">
-          <option value="">SEMUA OPERATOR</option>
-         </select>
-        </div>
-        <div>
-         <label class="block text-xs font-semibold uppercase mb-1">ENGINEERING</label>
-         <select id="filter-engineering" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm uppercase">
-          <option value="">SEMUA ENGINEERING</option>
-         </select>
-        </div>
-       </div>
-       <div class="flex gap-2 mt-3">
-        <button onclick="applyDashboardFilter()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold uppercase hover:bg-emerald-600 transition">TERAPKAN FILTER</button>
-        <button onclick="resetDashboardFilter()" class="px-4 py-2 bg-slate-500 text-white rounded-lg text-sm font-semibold uppercase hover:bg-slate-600 transition">RESET</button>
-       </div>
-      </div>
-
-      <!-- Score Cards - 7 Cards -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <p class="text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold">TOTAL</p>
-        <p id="stat-total" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
-       </div>
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <p class="text-xs uppercase text-red-500 font-semibold">OPEN</p>
-        <p id="stat-open" class="text-2xl font-bold text-red-500 mt-1">0</p>
-       </div>
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <p class="text-xs uppercase text-amber-500 font-semibold">% OPEN</p>
-        <p id="stat-open-percent" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
-       </div>
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <p class="text-xs uppercase text-amber-500 font-semibold">PROGRESS</p>
-        <p id="stat-progress" class="text-2xl font-bold text-amber-500 mt-1">0</p>
-       </div>
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <p class="text-xs uppercase text-amber-500 font-semibold">% PROGRESS</p>
-        <p id="stat-progress-percent" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
-       </div>
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <p class="text-xs uppercase text-emerald-500 font-semibold">CLOSED</p>
-        <p id="stat-closed" class="text-2xl font-bold text-emerald-500 mt-1">0</p>
-       </div>
-       <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-sm">
-        <p class="text-xs uppercase text-emerald-100 font-semibold">% CLOSED</p>
-        <p id="stat-percent" class="text-2xl font-bold text-white mt-1">0%</p>
-       </div>
-      </div>
-
-      <!-- Charts Row -->
-      <div class="grid md:grid-cols-2 gap-4">
-       <!-- Tag by Machine dengan Details -->
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <h3 class="font-bold uppercase text-sm mb-4">📊 TAG PER MESIN</h3>
-        <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-         <div id="chart-machine" class="space-y-2"></div>
-         <!-- Detail Bar per Mesin -->
-         <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-          <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500">DETAIL PER MESIN</h4>
-          <div id="machine-detail-bars" class="space-y-3"></div>
-         </div>
-        </div>
-       </div>
-       
-       <!-- Tag by Operator dengan Details -->
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <h3 class="font-bold uppercase text-sm mb-4">👷 TAG PER OPERATOR</h3>
-        <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-         <div id="chart-operator" class="space-y-2"></div>
-         <!-- Detail Bar per Operator -->
-         <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-          <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500">RED VS WHITE PER OPERATOR</h4>
-          <div id="operator-detail-bars" class="space-y-3"></div>
-         </div>
-        </div>
-       </div>
-      </div>
-
-      <!-- Red vs White Chart -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-       <h3 class="font-bold uppercase text-sm mb-4">🏷️ PERBANDINGAN RED TAG VS WHITE TAG</h3>
-       <div class="flex flex-col sm:flex-row items-end gap-4 sm:gap-8 justify-center h-48">
-        <div class="flex flex-col items-center w-full sm:w-auto">
-         <div id="bar-red" class="w-full sm:w-24 bg-gradient-to-t from-red-600 to-red-400 rounded-t-lg transition-all duration-500" style="height: 0px"></div>
-         <p class="mt-2 font-bold uppercase text-sm">RED TAG</p>
-         <p id="count-red" class="text-2xl font-bold text-red-500">0</p>
-        </div>
-        <div class="flex flex-col items-center w-full sm:w-auto">
-         <div id="bar-white" class="w-full sm:w-24 bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg transition-all duration-500" style="height: 0px"></div>
-         <p class="mt-2 font-bold uppercase text-sm">WHITE TAG</p>
-         <p id="count-white" class="text-2xl font-bold text-slate-500">0</p>
-        </div>
-       </div>
-      </div>
-
-      <!-- Red Tag Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-       <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h3 class="font-bold uppercase text-sm">🔴 DAFTAR RED TAG</h3>
-        <span id="red-tag-count" class="text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full">0 TAG</span>
-       </div>
-       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-         <thead class="bg-slate-50 dark:bg-slate-700">
-          <tr>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">ACTION</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">NO WR</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">STATUS</th>
-           <th class="px-4 py-3 text-center uppercase font-bold text-xs">AKSI</th>
-          </tr>
-         </thead>
-         <tbody id="red-tag-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
-        </table>
-       </div>
-      </div>
-
-      <!-- White Tag Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-       <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h3 class="font-bold uppercase text-sm">⚪ DAFTAR WHITE TAG</h3>
-        <span id="white-tag-count" class="text-xs bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 px-2 py-1 rounded-full">0 TAG</span>
-       </div>
-       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-         <thead class="bg-slate-50 dark:bg-slate-700">
-          <tr>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">OPERATOR</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">ACTION</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
-          </tr>
-         </thead>
-         <tbody id="white-tag-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
-        </table>
-       </div>
-      </div>
-     </div>
-
-     <!-- Input Tag Page -->
-     <div id="page-input" class="page hidden">
-      <div class="max-w-4xl mx-auto">
-       <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-        <h2 class="font-bold uppercase text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">➕</span> INPUT TAG BARU</h2>
-        <form id="tag-form" class="space-y-4">
-         <!-- 4 Kolom Horizontal: Tanggal, Jenis Tag, Mesin, Resiko -->
-         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div>
-           <label class="block text-sm font-semibold uppercase mb-2">TANGGAL</label> 
-           <input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
-          </div>
-          <div>
-           <label class="block text-sm font-semibold uppercase mb-2">JENIS TAG</label> 
-           <select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm"> 
-            <option value="">PILIH</option> 
-            <option value="RED">🔴 RED</option> 
-            <option value="WHITE">⚪ WHITE</option> 
-           </select>
-          </div>
-          <div>
-           <label class="block text-sm font-semibold uppercase mb-2">MESIN</label> 
-           <select id="input-machine" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm"> 
-            <option value="">PILIH</option> 
-           </select>
-          </div>
-          <div>
-           <label class="block text-sm font-semibold uppercase mb-2">RESIKO</label> 
-           <select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm"> 
-            <option value="">PILIH</option> 
-            <option value="QUALITY">🎯 QUALITY</option> 
-            <option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option> 
-            <option value="SAFETY">🛡️ SAFETY</option> 
-            <option value="5R">🧹 5R</option> 
-           </select>
-          </div>
-         </div>
-         
-         <!-- ABNORMALITAS - Full Width -->
-         <div>
-          <label class="block text-sm font-semibold uppercase mb-2">ABNORMALITAS</label> 
-          <textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
-         </div>
-         
-         <!-- DAMPAK - Full Width -->
-         <div>
-          <label class="block text-sm font-semibold uppercase mb-2">DAMPAK JIKA TIDAK DITANGGULANGI</label> 
-          <textarea id="input-impact" required rows="2" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
-         </div>
-         
-         <!-- White Tag Action Field -->
-         <div id="white-tag-action" class="hidden">
-          <label class="block text-sm font-semibold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label> 
-          <textarea id="input-action" rows="2" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
-         </div>
-         
-         <!-- Submit Button -->
-         <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg flex items-center justify-center gap-2"> 
-          <span>SUBMIT TAG</span> 
-         </button>
-        </form>
-       </div>
-      </div>
-     </div>
-
-     <!-- Management Page - HANYA UNTUK ADMIN ERW -->
-     <div id="page-management" class="page hidden">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-       <!-- Operator Management -->
-       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-blue-500">
-         <h3 class="font-bold uppercase text-white flex items-center gap-2">👷 OPERATOR</h3>
-        </div>
-        <div class="p-4">
-         <div class="flex flex-col sm:flex-row gap-2 mb-4">
-          <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-blue-500 focus:outline-none transition uppercase text-sm" maxlength="10"> 
-          <button onclick="addOperator()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-blue-600 transition">ADD</button>
-         </div>
-         <div id="operator-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
-        </div>
-       </div>
-       <!-- Engineering Management -->
-       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-purple-500">
-         <h3 class="font-bold uppercase text-white flex items-center gap-2">🔧 ENGINEERING</h3>
-        </div>
-        <div class="p-4">
-         <div class="flex flex-col sm:flex-row gap-2 mb-4">
-          <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-purple-500 focus:outline-none transition uppercase text-sm" maxlength="10"> 
-          <button onclick="addEngineering()" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-purple-600 transition">ADD</button>
-         </div>
-         <div id="engineering-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
-        </div>
-       </div>
-       <!-- Machine Management -->
-       <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-emerald-500">
-         <h3 class="font-bold uppercase text-white flex items-center gap-2">🏭 MESIN</h3>
-        </div>
-        <div class="p-4">
-         <div class="flex flex-col sm:flex-row gap-2 mb-4">
-          <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm" maxlength="20"> 
-          <button onclick="addMachine()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-emerald-600 transition">ADD</button>
-         </div>
-         <div id="machine-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
-        </div>
-       </div>
-      </div>
-     </div>
-
-     <!-- Audit Trail Page -->
-     <div id="page-audit" class="page hidden">
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-       <div class="p-4 border-b border-slate-200 dark:border-slate-700">
-        <h3 class="font-bold uppercase text-lg mb-4">📋 AUDIT TRAIL & HISTORY</h3>
-        <div class="flex flex-wrap gap-4 items-end">
-         <div>
-          <label class="block text-sm font-semibold uppercase mb-2">DARI TANGGAL</label> 
-          <input type="date" id="audit-from" class="px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
-         </div>
-         <div>
-          <label class="block text-sm font-semibold uppercase mb-2">SAMPAI TANGGAL</label> 
-          <input type="date" id="audit-to" class="px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
-         </div>
-         <button onclick="filterAudit()" class="px-6 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase hover:bg-emerald-600 transition"> 🔍 FILTER </button> 
-         <button onclick="exportExcel()" class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold uppercase hover:bg-green-700 transition"> 📥 EXCEL </button> 
-         <button onclick="exportPDF()" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold uppercase hover:bg-red-700 transition"> 📄 PDF </button>
-         <button onclick="resetFilter()" class="px-6 py-2 bg-slate-500 text-white rounded-lg font-semibold uppercase hover:bg-slate-600 transition"> ⟲ RESET </button>
-        </div>
-       </div>
-       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-         <thead class="bg-slate-50 dark:bg-slate-700">
-          <tr>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">INISIAL</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">JENIS</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">STATUS</th>
-           <th class="px-4 py-3 text-left uppercase font-bold text-xs">NO WR</th>
-          </tr>
-         </thead>
-         <tbody id="audit-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
-        </table>
-       </div>
-      </div>
-     </div>
-    </main>
-   </div>
-
-   <!-- Update Modal -->
-   <div id="update-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeModal()">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
-     <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2">
-      <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white">✏️</span>
-      UPDATE RED TAG
-     </h3>
-     <div id="modal-content"></div>
-    </div>
-   </div>
-  </div>
-
-  <script>
-    // ============ SUPABASE CONFIG - GANTI DENGAN PUNYA LU ============
-    const SUPABASE_URL = 'https://hzvjoewuprlkgwetqpau.supabase.co';  // GANTI INI
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6dmpvZXd1cHJsa2d3ZXRxcGF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MTAxNzQsImV4cCI6MjA4NzM4NjE3NH0.i0SgR9fmdb_gDNEDh2lt4Q9cgLEVGX6EDzB_jJQPa8w';  // GANTI INI
-    
-    // ============ SUPABASE INITIALIZATION ============
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // ============ STATE ============
-    let allData = [];
-    let filteredData = [];
-    let currentUser = null;
-    let userRole = null;
-    let darkMode = false;
-    let operators = [];
-    let engineerings = [];
-    let machines = [];
-    let filteredAuditData = [];
-    
-    // Filter state
-    let currentFilter = {
-      date: '',
-      machine: '',
-      operator: '',
-      engineering: ''
-    };
-    
-    const defaultConfig = {
-      app_title: 'TAG MONITORING'
-    };
-    
-    // ============ INITIALIZATION ============
-    async function initApp() {
-      // Cek koneksi Supabase
-      const { error } = await supabase.from('operators').select('count', { count: 'exact', head: true });
-      
-      if (error) {
-        console.error('Supabase connection error:', error);
-        document.getElementById('loading-screen').innerHTML = `
-          <div class="text-center text-red-500">
-            <p class="text-xl font-bold">GAGAL TERHUBUNG KE DATABASE</p>
-            <p class="text-sm mt-2">${error.message}</p>
-            <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-emerald-500 text-white rounded-lg">COBA LAGI</button>
-          </div>
-        `;
-        return;
-      }
-      
-      await loadData();
-      setDefaultDates();
-      renderManagementLists();
-      updateMachineDropdown();
-      updateFilterDropdowns();
-      
-      // Hide loading, show login
-      document.getElementById('loading-screen').classList.add('hidden');
-      document.getElementById('login-screen').classList.remove('hidden');
-    }
-    
-    async function loadData() {
-      try {
-        // Load operators
-        const { data: operatorsData } = await supabase.from('operators').select('*').order('initial');
-        operators = operatorsData?.map(o => o.initial) || [];
-        
-        // Load engineerings
-        const { data: engineeringsData } = await supabase.from('engineerings').select('*').order('initial');
-        engineerings = engineeringsData?.map(e => e.initial) || [];
-        
-        // Load machines
-        const { data: machinesData } = await supabase.from('machines').select('*').order('name');
-        machines = machinesData?.map(m => m.name) || [];
-        
-        // Load tags
-        const { data: tagsData } = await supabase.from('tags').select('*').order('created_at', { ascending: false });
-        allData = tagsData || [];
-        filteredData = [...allData];
-        
-      } catch (error) {
-        console.error('Error loading data:', error);
-        showToast('GAGAL MEMUAT DATA', 'error');
-      }
-    }
-    
-    function setDefaultDates() {
-      const today = new Date().toISOString().split('T')[0];
-      const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      
-      document.getElementById('input-date').value = today;
-      document.getElementById('audit-from').value = lastWeek;
-      document.getElementById('audit-to').value = today;
-    }
-    
-    // ============ THEME ============
-    function toggleDarkMode() {
-      darkMode = !darkMode;
-      document.documentElement.classList.toggle('dark', darkMode);
-      localStorage.setItem('darkMode', darkMode);
-      updateThemeUI();
-    }
-    
-    function updateThemeUI() {
-      const icon = darkMode ? '☀️' : '🌙';
-      const text = darkMode ? 'MODE TERANG' : 'MODE GELAP';
-      
-      const themeIcon = document.getElementById('theme-icon');
-      const themeText = document.getElementById('theme-text');
-      const headerIcon = document.getElementById('header-theme-icon');
-      
-      if (themeIcon) themeIcon.textContent = icon;
-      if (themeText) themeText.textContent = text;
-      if (headerIcon) headerIcon.textContent = icon;
-    }
-    
-    // ============ LOGIN ============
-    function handleLogin() {
-      const initial = document.getElementById('login-initial').value.trim().toUpperCase();
-      const errorEl = document.getElementById('login-error');
-      
-      if (!initial) {
-        showError(errorEl, 'MASUKKAN INISIAL ANDA');
-        return;
-      }
-      
-      // Cek apakah admin (ERW)
-      const isAdmin = (initial === 'ERW');
-      
-      // Cek operator/engineering biasa
-      const isOperator = operators.includes(initial);
-      const isEngineering = engineerings.includes(initial);
-      
-      // Jika bukan admin, operator, atau engineering -> error
-      if (!isAdmin && !isOperator && !isEngineering) {
-        showError(errorEl, 'INISIAL TIDAK TERDAFTAR');
-        return;
-      }
-      
-      // Set user role
-      currentUser = initial;
-      if (isAdmin) {
-        userRole = 'admin';
-      } else if (isOperator) {
-        userRole = 'operator';
-      } else if (isEngineering) {
-        userRole = 'engineering';
-      }
-      
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('main-app').classList.remove('hidden');
-      document.getElementById('current-user').textContent = `${initial} (${userRole.toUpperCase()})`;
-      
-      // Atur visibilitas menu berdasarkan role
-      // Menu Input: hanya untuk operator
-      if (userRole === 'operator') {
-        document.getElementById('nav-input').classList.remove('hidden');
-      } else {
-        document.getElementById('nav-input').classList.add('hidden');
-      }
-      
-      // Menu Management: HANYA UNTUK ADMIN (ERW)
-      if (userRole === 'admin') {
-        document.getElementById('nav-management').classList.remove('hidden');
-      } else {
-        document.getElementById('nav-management').classList.add('hidden');
-      }
-      
-      showPage('dashboard');
-      applyDashboardFilter();
-    }
-    
-    function showError(errorEl, message) {
-      errorEl.textContent = message;
-      errorEl.classList.remove('hidden');
-      setTimeout(() => {
-        errorEl.classList.add('hidden');
-      }, 3000);
-    }
-    
-    function handleLogout() {
-      currentUser = null;
-      userRole = null;
-      document.getElementById('login-screen').classList.remove('hidden');
-      document.getElementById('main-app').classList.add('hidden');
-      document.getElementById('login-initial').value = '';
-      document.getElementById('login-error').classList.add('hidden');
-    }
-    
-    // ============ NAVIGATION ============
-    function showPage(page) {
-      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-      document.getElementById(`page-${page}`).classList.remove('hidden');
-      
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('bg-emerald-500', 'text-white');
-        btn.classList.add('bg-slate-100', 'dark:bg-slate-700');
-      });
-      
-      const activeBtn = document.querySelector(`[data-nav="${page}"]`);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-emerald-500', 'text-white');
-        activeBtn.classList.remove('bg-slate-100', 'dark:bg-slate-700');
-      }
-      
-      if (page === 'dashboard') {
-        updateFilterDropdowns();
-        applyDashboardFilter();
-      }
-      if (page === 'audit') renderAuditTable();
-      if (page === 'input') updateMachineDropdown();
-    }
-    
-    // ============ FILTER FUNCTIONS ============
-    function updateFilterDropdowns() {
-      // Machine filter
-      const machineSelect = document.getElementById('filter-machine');
-      machineSelect.innerHTML = '<option value="">SEMUA MESIN</option>' + 
-        machines.map(m => `<option value="${m}">${m}</option>`).join('');
-      
-      // Operator filter
-      const operatorSelect = document.getElementById('filter-operator');
-      operatorSelect.innerHTML = '<option value="">SEMUA OPERATOR</option>' + 
-        operators.map(o => `<option value="${o}">${o}</option>`).join('');
-      
-      // Engineering filter
-      const engineeringSelect = document.getElementById('filter-engineering');
-      engineeringSelect.innerHTML = '<option value="">SEMUA ENGINEERING</option>' + 
-        engineerings.map(e => `<option value="${e}">${e}</option>`).join('');
-    }
-    
-    function applyDashboardFilter() {
-      // Get filter values
-      currentFilter.date = document.getElementById('filter-date').value;
-      currentFilter.machine = document.getElementById('filter-machine').value;
-      currentFilter.operator = document.getElementById('filter-operator').value;
-      currentFilter.engineering = document.getElementById('filter-engineering').value;
-      
-      // Apply filters
-      filteredData = allData.filter(tag => {
-        // Date filter
-        if (currentFilter.date && tag.date !== currentFilter.date) return false;
-        
-        // Machine filter
-        if (currentFilter.machine && tag.machine !== currentFilter.machine) return false;
-        
-        // Operator filter
-        if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
-        
-        // Engineering filter - cek di wr_number atau progress_note
-        if (currentFilter.engineering) {
-          const engineeringMatch = (tag.wr_number && tag.wr_number.includes(currentFilter.engineering)) ||
-                                  (tag.progress_note && tag.progress_note.includes(currentFilter.engineering));
-          if (!engineeringMatch) return false;
-        }
-        
-        return true;
-      });
-      
-      updateDashboard();
-    }
-    
-    function resetDashboardFilter() {
-      document.getElementById('filter-date').value = '';
-      document.getElementById('filter-machine').value = '';
-      document.getElementById('filter-operator').value = '';
-      document.getElementById('filter-engineering').value = '';
-      
-      currentFilter = {
-        date: '',
-        machine: '',
-        operator: '',
-        engineering: ''
-      };
-      
-      filteredData = [...allData];
-      updateDashboard();
-    }
-    
-    // ============ DASHBOARD ============
-    function updateDashboard() {
-      const tags = filteredData.length > 0 ? filteredData : allData;
-      const total = tags.length;
-      const open = tags.filter(t => t.status === 'OPEN').length;
-      const progress = tags.filter(t => t.status === 'ON PROGRESS').length;
-      const closed = tags.filter(t => t.status === 'CLOSED').length;
-      
-      const openPercent = total > 0 ? Math.round((open / total) * 100) : 0;
-      const progressPercent = total > 0 ? Math.round((progress / total) * 100) : 0;
-      const closedPercent = total > 0 ? Math.round((closed / total) * 100) : 0;
-      
-      document.getElementById('stat-total').textContent = total;
-      document.getElementById('stat-open').textContent = open;
-      document.getElementById('stat-open-percent').textContent = openPercent + '%';
-      document.getElementById('stat-progress').textContent = progress;
-      document.getElementById('stat-progress-percent').textContent = progressPercent + '%';
-      document.getElementById('stat-closed').textContent = closed;
-      document.getElementById('stat-percent').textContent = closedPercent + '%';
-      
-      // Red vs White chart
-      const redCount = tags.filter(t => t.tag_type === 'RED').length;
-      const whiteCount = tags.filter(t => t.tag_type === 'WHITE').length;
-      const maxCount = Math.max(redCount, whiteCount, 1);
-      
-      document.getElementById('bar-red').style.height = `${(redCount / maxCount) * 150}px`;
-      document.getElementById('bar-white').style.height = `${(whiteCount / maxCount) * 150}px`;
-      document.getElementById('count-red').textContent = redCount;
-      document.getElementById('count-white').textContent = whiteCount;
-      
-      // Update counts
-      document.getElementById('red-tag-count').textContent = redCount + ' TAG';
-      document.getElementById('white-tag-count').textContent = whiteCount + ' TAG';
-      
-      renderMachineChart(tags);
-      renderOperatorChart(tags);
-      renderRedTagTable(tags.filter(t => t.tag_type === 'RED'));
-      renderWhiteTagTable(tags.filter(t => t.tag_type === 'WHITE'));
-      renderMachineDetailBars(tags);
-      renderOperatorDetailBars(tags);
-    }
-    
-    function renderMachineChart(tags) {
-      const container = document.getElementById('chart-machine');
-      const machineStats = {};
-      
-      machines.forEach(m => {
-        machineStats[m] = { total: 0, closed: 0 };
-      });
-      
-      tags.forEach(t => {
-        if (machineStats[t.machine]) {
-          machineStats[t.machine].total++;
-          if (t.status === 'CLOSED') machineStats[t.machine].closed++;
-        }
-      });
-      
-      const maxTotal = Math.max(...Object.values(machineStats).map(s => s.total), 1);
-      
-      container.innerHTML = Object.entries(machineStats).map(([machine, stats]) => {
-        const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
-        const width = (stats.total / maxTotal) * 100;
-        
-        return `
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <span class="w-24 text-xs font-semibold uppercase truncate" title="${machine}">${machine}</span>
-            <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
-                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
-              </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAG MONITORING SYSTEM</title>
+    <!-- Gunakan Tailwind CSS production version -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Space Grotesk', system-ui, sans-serif; }
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #64748b; border-radius: 3px; }
+        .animate-pulse-slow { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .bar-red { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
+        .bar-white { background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 100%); }
+        .bar-open { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
+        .bar-closed { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
+        .text-wrap { word-wrap: break-word; white-space: normal; }
+        .table-cell-wrap { white-space: normal; word-break: break-word; max-width: 200px; }
+    </style>
+</head>
+<body class="h-full bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div id="app" class="h-full w-full overflow-auto scrollbar-thin">
+        <!-- Login Screen -->
+        <div id="login-screen" class="min-h-full flex items-center justify-center p-4">
+            <div class="w-full max-w-md">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-200 dark:border-slate-700">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            </svg>
+                        </div>
+                        <h1 class="text-2xl font-bold uppercase tracking-wide">TAG MONITORING</h1>
+                        <p class="text-slate-500 dark:text-slate-400 mt-2 uppercase text-sm">SISTEM PEMANTAUAN ABNORMALITAS</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold uppercase mb-2">INISIAL</label> 
+                            <input type="text" id="login-initial" placeholder="MASUKKAN INISIAL ANDA" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-center font-semibold tracking-widest" autocomplete="off">
+                        </div>
+                        <button onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg"> MASUK </button>
+                        <p id="login-error" class="text-red-500 text-center text-sm uppercase hidden"></p>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="mt-6 w-full py-2 text-slate-500 dark:text-slate-400 text-sm uppercase flex items-center justify-center gap-2 hover:text-slate-700 dark:hover:text-slate-200 transition"> 
+                        <span id="theme-icon">🌙</span> 
+                        <span id="theme-text">MODE GELAP</span> 
+                    </button>
+                </div>
             </div>
-            <span class="w-12 text-xs font-bold text-emerald-500">${percent}%</span>
-          </div>
-        `;
-      }).join('');
-    }
-    
-    function renderMachineDetailBars(tags) {
-      const container = document.getElementById('machine-detail-bars');
-      const machineStats = {};
-      
-      machines.forEach(m => {
-        machineStats[m] = { 
-          red: 0, 
-          white: 0,
-          open: 0,
-          closed: 0
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="hidden min-h-full flex flex-col">
+            <!-- Header -->
+            <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 id="app-title" class="font-bold uppercase text-lg">TAG MONITORING</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">USER: <span id="current-user" class="font-semibold text-emerald-600 dark:text-emerald-400"></span></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"> 
+                        <span id="header-theme-icon">🌙</span> 
+                    </button> 
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg uppercase transition"> KELUAR </button>
+                </div>
+            </header>
+
+            <!-- Navigation -->
+            <nav class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
+                <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-emerald-500 text-white"> 📊 DASHBOARD </button> 
+                <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> ➕ INPUT TAG </button> 
+                <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> ⚙️ MANAGEMENT </button> 
+                <button onclick="showPage('audit')" data-nav="audit" class="nav-btn px-4 py-2 rounded-lg font-semibold text-sm uppercase whitespace-nowrap transition bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600"> 📋 AUDIT TRAIL </button>
+            </nav>
+
+            <!-- Content -->
+            <main class="flex-1 p-4 overflow-auto">
+                <!-- Dashboard Page -->
+                <div id="page-dashboard" class="page space-y-6">
+                    <!-- Filter Section -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2">🔍 FILTER DASHBOARD</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-1">TANGGAL</label>
+                                <input type="date" id="filter-date" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-1">MESIN</label>
+                                <select id="filter-machine" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm uppercase">
+                                    <option value="">SEMUA MESIN</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-1">OPERATOR</label>
+                                <select id="filter-operator" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm uppercase">
+                                    <option value="">SEMUA OPERATOR</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-1">ENGINEERING</label>
+                                <select id="filter-engineering" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm uppercase">
+                                    <option value="">SEMUA ENGINEERING</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="applyDashboardFilter()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold uppercase hover:bg-emerald-600 transition">TERAPKAN FILTER</button>
+                            <button onclick="resetDashboardFilter()" class="px-4 py-2 bg-slate-500 text-white rounded-lg text-sm font-semibold uppercase hover:bg-slate-600 transition">RESET</button>
+                        </div>
+                    </div>
+
+                    <!-- Score Cards - 7 Cards -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold">TOTAL</p>
+                            <p id="stat-total" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-xs uppercase text-red-500 font-semibold">OPEN</p>
+                            <p id="stat-open" class="text-2xl font-bold text-red-500 mt-1">0</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-xs uppercase text-amber-500 font-semibold">% OPEN</p>
+                            <p id="stat-open-percent" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-xs uppercase text-amber-500 font-semibold">PROGRESS</p>
+                            <p id="stat-progress" class="text-2xl font-bold text-amber-500 mt-1">0</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-xs uppercase text-amber-500 font-semibold">% PROGRESS</p>
+                            <p id="stat-progress-percent" class="text-2xl font-bold text-amber-500 mt-1">0%</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <p class="text-xs uppercase text-emerald-500 font-semibold">CLOSED</p>
+                            <p id="stat-closed" class="text-2xl font-bold text-emerald-500 mt-1">0</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-sm">
+                            <p class="text-xs uppercase text-emerald-100 font-semibold">% CLOSED</p>
+                            <p id="stat-percent" class="text-2xl font-bold text-white mt-1">0%</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <!-- Tag by Machine dengan Details -->
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h3 class="font-bold uppercase text-sm mb-4">📊 TAG PER MESIN</h3>
+                            <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
+                                <div id="chart-machine" class="space-y-2"></div>
+                                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500">DETAIL PER MESIN</h4>
+                                    <div id="machine-detail-bars" class="space-y-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tag by Operator dengan Details -->
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h3 class="font-bold uppercase text-sm mb-4">👷 TAG PER OPERATOR</h3>
+                            <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
+                                <div id="chart-operator" class="space-y-2"></div>
+                                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500">RED VS WHITE PER OPERATOR</h4>
+                                    <div id="operator-detail-bars" class="space-y-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Red vs White Chart -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold uppercase text-sm mb-4">🏷️ PERBANDINGAN RED TAG VS WHITE TAG</h3>
+                        <div class="flex flex-col sm:flex-row items-end gap-4 sm:gap-8 justify-center h-48">
+                            <div class="flex flex-col items-center w-full sm:w-auto">
+                                <div id="bar-red" class="w-full sm:w-24 bg-gradient-to-t from-red-600 to-red-400 rounded-t-lg transition-all duration-500" style="height: 0px"></div>
+                                <p class="mt-2 font-bold uppercase text-sm">RED TAG</p>
+                                <p id="count-red" class="text-2xl font-bold text-red-500">0</p>
+                            </div>
+                            <div class="flex flex-col items-center w-full sm:w-auto">
+                                <div id="bar-white" class="w-full sm:w-24 bg-gradient-to-t from-slate-400 to-slate-300 rounded-t-lg transition-all duration-500" style="height: 0px"></div>
+                                <p class="mt-2 font-bold uppercase text-sm">WHITE TAG</p>
+                                <p id="count-white" class="text-2xl font-bold text-slate-500">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Red Tag Table -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <h3 class="font-bold uppercase text-sm">🔴 DAFTAR RED TAG</h3>
+                            <span id="red-tag-count" class="text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded-full">0 TAG</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-slate-50 dark:bg-slate-700">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ACTION</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">NO WR</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">STATUS</th>
+                                        <th class="px-4 py-3 text-center uppercase font-bold text-xs">AKSI</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="red-tag-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- White Tag Table -->
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <h3 class="font-bold uppercase text-sm">⚪ DAFTAR WHITE TAG</h3>
+                            <span id="white-tag-count" class="text-xs bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 px-2 py-1 rounded-full">0 TAG</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-slate-50 dark:bg-slate-700">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">OPERATOR</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ACTION</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="white-tag-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Tag Page -->
+                <div id="page-input" class="page hidden">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h2 class="font-bold uppercase text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white">➕</span> INPUT TAG BARU</h2>
+                            <form id="tag-form" class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-semibold uppercase mb-2">TANGGAL</label> 
+                                        <input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold uppercase mb-2">JENIS TAG</label> 
+                                        <select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm"> 
+                                            <option value="">PILIH</option> 
+                                            <option value="RED">🔴 RED</option> 
+                                            <option value="WHITE">⚪ WHITE</option> 
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold uppercase mb-2">MESIN</label> 
+                                        <select id="input-machine" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm"> 
+                                            <option value="">PILIH</option> 
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold uppercase mb-2">RESIKO</label> 
+                                        <select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm"> 
+                                            <option value="">PILIH</option> 
+                                            <option value="QUALITY">🎯 QUALITY</option> 
+                                            <option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option> 
+                                            <option value="SAFETY">🛡️ SAFETY</option> 
+                                            <option value="5R">🧹 5R</option> 
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold uppercase mb-2">ABNORMALITAS</label> 
+                                    <textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold uppercase mb-2">DAMPAK JIKA TIDAK DITANGGULANGI</label> 
+                                    <textarea id="input-impact" required rows="2" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                </div>
+                                
+                                <div id="white-tag-action" class="hidden">
+                                    <label class="block text-sm font-semibold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label> 
+                                    <textarea id="input-action" rows="2" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                                </div>
+                                
+                                <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:to-teal-700 transition shadow-lg flex items-center justify-center gap-2"> 
+                                    <span>SUBMIT TAG</span> 
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Management Page -->
+                <div id="page-management" class="page hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-blue-500">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2">👷 OPERATOR</h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-blue-500 focus:outline-none transition uppercase text-sm" maxlength="10"> 
+                                    <button onclick="addOperator()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-blue-600 transition">ADD</button>
+                                </div>
+                                <div id="operator-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-purple-500">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2">🔧 ENGINEERING</h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-purple-500 focus:outline-none transition uppercase text-sm" maxlength="10"> 
+                                    <button onclick="addEngineering()" class="px-4 py-2 bg-purple-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-purple-600 transition">ADD</button>
+                                </div>
+                                <div id="engineering-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                            <div class="p-4 border-b border-slate-200 dark:border-slate-700 bg-emerald-500">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2">🏭 MESIN</h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase text-sm" maxlength="20"> 
+                                    <button onclick="addMachine()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase text-sm hover:bg-emerald-600 transition">ADD</button>
+                                </div>
+                                <div id="machine-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Trail Page -->
+                <div id="page-audit" class="page hidden">
+                    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+                            <h3 class="font-bold uppercase text-lg mb-4">📋 AUDIT TRAIL & HISTORY</h3>
+                            <div class="flex flex-wrap gap-4 items-end">
+                                <div>
+                                    <label class="block text-sm font-semibold uppercase mb-2">DARI TANGGAL</label> 
+                                    <input type="date" id="audit-from" class="px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold uppercase mb-2">SAMPAI TANGGAL</label> 
+                                    <input type="date" id="audit-to" class="px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition">
+                                </div>
+                                <button onclick="filterAudit()" class="px-6 py-2 bg-emerald-500 text-white rounded-lg font-semibold uppercase hover:bg-emerald-600 transition"> 🔍 FILTER </button> 
+                                <button onclick="exportExcel()" class="px-6 py-2 bg-green-600 text-white rounded-lg font-semibold uppercase hover:bg-green-700 transition"> 📥 EXCEL </button> 
+                                <button onclick="exportPDF()" class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold uppercase hover:bg-red-700 transition"> 📄 PDF </button>
+                                <button onclick="resetFilter()" class="px-6 py-2 bg-slate-500 text-white rounded-lg font-semibold uppercase hover:bg-slate-600 transition"> ⟲ RESET </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-slate-50 dark:bg-slate-700">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">TANGGAL</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">INISIAL</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">JENIS</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">MESIN</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">ABNORMALITAS</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">RESIKO</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">STATUS</th>
+                                        <th class="px-4 py-3 text-left uppercase font-bold text-xs">NO WR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="audit-table" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Update Modal -->
+        <div id="update-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeModal()">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white">✏️</span>
+                    UPDATE RED TAG
+                </h3>
+                <div id="modal-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ SUPABASE CONFIG ============
+        // GANTI DENGAN KREDENSIAL SUPABASE ANDA
+        const SUPABASE_URL = 'https://hzvjoewuprlkgwetqpau.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6dmpvZXd1cHJsa2d3ZXRxcGF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MTAxNzQsImV4cCI6MjA4NzM4NjE3NH0.i0SgR9fmdb_gDNEDh2lt4Q9cgLEVGX6EDzB_jJQPa8w';
+        
+        // Inisialisasi Supabase - PASTIKAN HANYA SEKALI
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ============ STATE ============
+        let allData = [];
+        let filteredData = [];
+        let currentUser = null;
+        let userRole = null;
+        let darkMode = false;
+        let operators = [];
+        let engineerings = [];
+        let machines = [];
+        let filteredAuditData = [];
+        
+        let currentFilter = {
+            date: '',
+            machine: '',
+            operator: '',
+            engineering: ''
         };
-      });
-      
-      tags.forEach(t => {
-        if (machineStats[t.machine]) {
-          if (t.tag_type === 'RED') machineStats[t.machine].red++;
-          else machineStats[t.machine].white++;
-          
-          if (t.status === 'OPEN') machineStats[t.machine].open++;
-          else if (t.status === 'CLOSED') machineStats[t.machine].closed++;
+        
+        const defaultConfig = {
+            app_title: 'TAG MONITORING'
+        };
+
+        // ============ SUPABASE FUNCTIONS ============
+        
+        async function fetchAllData() {
+            try {
+                // Fetch tags
+                const { data: tags, error: tagsError } = await supabaseClient
+                    .from('tags')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (tagsError) throw tagsError;
+                
+                // Fetch operators
+                const { data: ops, error: opsError } = await supabaseClient
+                    .from('operators')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (opsError) throw opsError;
+                
+                // Fetch engineerings
+                const { data: engs, error: engsError } = await supabaseClient
+                    .from('engineerings')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (engsError) throw engsError;
+                
+                // Fetch machines
+                const { data: machs, error: machsError } = await supabaseClient
+                    .from('machines')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (machsError) throw machsError;
+
+                allData = tags || [];
+                operators = (ops || []).map(o => o.initial);
+                engineerings = (engs || []).map(e => e.initial);
+                machines = (machs || []).map(m => m.machine);
+
+                renderManagementLists();
+                updateMachineDropdown();
+                updateFilterDropdowns();
+                applyDashboardFilter();
+                renderAuditTable();
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showToast('GAGAL MEMUAT DATA DARI DATABASE', 'error');
+            }
         }
-      });
-      
-      const maxRed = Math.max(...Object.values(machineStats).map(s => s.red), 1);
-      const maxWhite = Math.max(...Object.values(machineStats).map(s => s.white), 1);
-      const maxOpen = Math.max(...Object.values(machineStats).map(s => s.open), 1);
-      const maxClosed = Math.max(...Object.values(machineStats).map(s => s.closed), 1);
-      
-      container.innerHTML = Object.entries(machineStats).map(([machine, stats]) => {
-        const redWidth = (stats.red / maxRed) * 100;
-        const whiteWidth = (stats.white / maxWhite) * 100;
-        const openWidth = (stats.open / maxOpen) * 100;
-        const closedWidth = (stats.closed / maxClosed) * 100;
-        
-        return `
-          <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <span class="text-xs font-bold uppercase">${machine}</span>
-              <span class="text-xs text-slate-500">TOTAL: ${stats.red + stats.white}</span>
-            </div>
-            
-            <!-- Red Bar -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-              <span class="w-16 text-red-600 font-semibold">RED: ${stats.red}</span>
-              <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
-                  <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- White Bar -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-              <span class="w-16 text-slate-600 font-semibold">WHITE: ${stats.white}</span>
-              <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
-                  <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Open Bar -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-              <span class="w-16 text-red-500 font-semibold">OPEN: ${stats.open}</span>
-              <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                <div class="h-full bar-open rounded-full flex items-center justify-end px-1" style="width: ${openWidth}%">
-                  <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.open}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Closed Bar -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-              <span class="w-16 text-emerald-600 font-semibold">CLOSED: ${stats.closed}</span>
-              <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                <div class="h-full bar-closed rounded-full flex items-center justify-end px-1" style="width: ${closedWidth}%">
-                  <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.closed}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-    
-    function renderOperatorChart(tags) {
-      const container = document.getElementById('chart-operator');
-      const operatorStats = {};
-      
-      operators.forEach(o => {
-        operatorStats[o] = { total: 0, closed: 0 };
-      });
-      
-      tags.forEach(t => {
-        if (operatorStats[t.initial]) {
-          operatorStats[t.initial].total++;
-          if (t.status === 'CLOSED') operatorStats[t.initial].closed++;
+
+        async function insertTag(tagData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tags')
+                    .insert([tagData])
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('TAG BERHASIL DISIMPAN', 'success');
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting tag:', error);
+                showToast('GAGAL MENYIMPAN TAG', 'error');
+                return null;
+            }
         }
-      });
-      
-      const maxTotal = Math.max(...Object.values(operatorStats).map(s => s.total), 1);
-      
-      container.innerHTML = Object.entries(operatorStats).map(([operator, stats]) => {
-        const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
-        const width = (stats.total / maxTotal) * 100;
-        
-        return `
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <span class="w-16 text-xs font-semibold uppercase">${operator}</span>
-            <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
-                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
-              </div>
-            </div>
-            <span class="w-12 text-xs font-bold text-blue-500">${percent}%</span>
-          </div>
-        `;
-      }).join('');
-    }
-    
-    function renderOperatorDetailBars(tags) {
-      const container = document.getElementById('operator-detail-bars');
-      const operatorStats = {};
-      
-      operators.forEach(o => {
-        operatorStats[o] = { red: 0, white: 0 };
-      });
-      
-      tags.forEach(t => {
-        if (operatorStats[t.initial]) {
-          if (t.tag_type === 'RED') operatorStats[t.initial].red++;
-          else operatorStats[t.initial].white++;
+
+        async function updateTag(tagId, updateData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tags')
+                    .update(updateData)
+                    .eq('id', tagId)
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('DATA BERHASIL DIUPDATE', 'success');
+                return data[0];
+            } catch (error) {
+                console.error('Error updating tag:', error);
+                showToast('GAGAL MENGUPDATE DATA', 'error');
+                return null;
+            }
         }
-      });
-      
-      const maxRed = Math.max(...Object.values(operatorStats).map(s => s.red), 1);
-      const maxWhite = Math.max(...Object.values(operatorStats).map(s => s.white), 1);
-      
-      container.innerHTML = Object.entries(operatorStats).map(([operator, stats]) => {
-        const redWidth = (stats.red / maxRed) * 100;
-        const whiteWidth = (stats.white / maxWhite) * 100;
-        
-        return `
-          <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <span class="text-xs font-bold uppercase">${operator}</span>
-              <span class="text-xs text-slate-500">TOTAL: ${stats.red + stats.white}</span>
-            </div>
-            
-            <!-- Red Bar -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-              <span class="w-16 text-red-600 font-semibold">RED: ${stats.red}</span>
-              <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
-                  <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- White Bar -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-              <span class="w-16 text-slate-600 font-semibold">WHITE: ${stats.white}</span>
-              <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
-                  <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-    
-    function renderRedTagTable(redTags) {
-      const tbody = document.getElementById('red-tag-table');
-      
-      if (redTags.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA RED TAG</td>
-          </tr>
-        `;
-        return;
-      }
-      
-      // Sort by date descending
-      redTags.sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      tbody.innerHTML = redTags.map(tag => {
-        const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                           tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                           'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-        
-        // Tentukan tombol aksi berdasarkan role dan status
-        let actionButton = '';
-        
-        if (tag.status === 'CLOSED') {
-          actionButton = `<span class="text-xs text-emerald-600 font-semibold">✓ CLOSED</span>`;
-        } else if (!tag.wr_number) {
-          // Belum ada WR - hanya operator & admin yang bisa input
-          if (userRole === 'operator' || userRole === 'admin') {
-            actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
-          } else {
-            actionButton = `<span class="text-xs text-slate-500">-</span>`;
-          }
-        } else {
-          // Sudah ada WR - hanya engineering & admin yang bisa update
-          if (userRole === 'engineering' || userRole === 'admin') {
-            actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
-          } else {
-            actionButton = `<span class="text-xs text-slate-500">-</span>`;
-          }
+
+        async function insertOperator(initial) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('operators')
+                    .insert([{ initial }])
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting operator:', error);
+                showToast('GAGAL MENAMBAHKAN OPERATOR', 'error');
+                return null;
+            }
         }
-        
-        return `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.machine || '-'}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
-            </td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
-            </td>
-            <td class="px-4 py-3 text-center">
-              ${actionButton}
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-    
-    function renderWhiteTagTable(whiteTags) {
-      const tbody = document.getElementById('white-tag-table');
-      
-      if (whiteTags.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA WHITE TAG</td>
-          </tr>
-        `;
-        return;
-      }
-      
-      // Sort by date descending
-      whiteTags.sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      tbody.innerHTML = whiteTags.map(tag => {
-        return `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${tag.machine || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.action || ''}">${tag.action || '-'}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-    
-    function formatDate(dateStr) {
-      if (!dateStr) return '-';
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    }
-    
-    function getRiskColor(risk) {
-      switch (risk) {
-        case 'SAFETY': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-        case 'QUALITY': return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
-        case 'PRODUCTIVITY': return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
-        case '5R': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-        default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
-      }
-    }
-    
-    // ============ UPDATE MODAL ============
-    function openUpdateModal(tagId) {
-      if (!tagId) {
-        showToast('ID TAG TIDAK DITEMUKAN', 'error');
-        return;
-      }
-      
-      const tag = allData.find(t => t.id === tagId);
-      if (!tag) {
-        showToast('TAG TIDAK DITEMUKAN', 'error');
-        return;
-      }
-      
-      const modal = document.getElementById('update-modal');
-      const content = document.getElementById('modal-content');
-      
-      if (!tag.wr_number) {
-        // Show WR input - hanya untuk operator & admin
-        if (userRole !== 'operator' && userRole !== 'admin') {
-          showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
-          return;
+
+        async function deleteOperator(initial) {
+            try {
+                const { error } = await supabaseClient
+                    .from('operators')
+                    .delete()
+                    .eq('initial', initial);
+
+                if (error) throw error;
+                
+                showToast('OPERATOR DIHAPUS', 'success');
+            } catch (error) {
+                console.error('Error deleting operator:', error);
+                showToast('GAGAL MENGHAPUS OPERATOR', 'error');
+            }
         }
-        
-        content.innerHTML = `
-          <div class="space-y-4">
-            <p class="text-sm uppercase text-slate-500">MASUKKAN NOMOR WR UNTUK TAG INI</p>
-            <input type="text" id="modal-wr" placeholder="NOMOR WR"
-              class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"
-              autocomplete="off">
-            <div class="flex gap-2">
-              <button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
-              <button onclick="submitWR('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button>
-            </div>
-          </div>
-        `;
-      } else {
-        // Show status update - hanya untuk engineering & admin
-        if (userRole !== 'engineering' && userRole !== 'admin') {
-          showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
-          return;
+
+        async function insertEngineering(initial) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('engineerings')
+                    .insert([{ initial }])
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting engineering:', error);
+                showToast('GAGAL MENAMBAHKAN ENGINEERING', 'error');
+                return null;
+            }
         }
-        
-        content.innerHTML = `
-          <div class="space-y-4">
-            <p class="text-sm uppercase text-slate-500">NO WR: <span class="font-bold text-slate-900 dark:text-white">${tag.wr_number}</span></p>
+
+        async function deleteEngineering(initial) {
+            try {
+                const { error } = await supabaseClient
+                    .from('engineerings')
+                    .delete()
+                    .eq('initial', initial);
+
+                if (error) throw error;
+                
+                showToast('ENGINEERING DIHAPUS', 'success');
+            } catch (error) {
+                console.error('Error deleting engineering:', error);
+                showToast('GAGAL MENGHAPUS ENGINEERING', 'error');
+            }
+        }
+
+        async function insertMachine(machine) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('machines')
+                    .insert([{ machine }])
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting machine:', error);
+                showToast('GAGAL MENAMBAHKAN MESIN', 'error');
+                return null;
+            }
+        }
+
+        async function deleteMachine(machine) {
+            try {
+                const { error } = await supabaseClient
+                    .from('machines')
+                    .delete()
+                    .eq('machine', machine);
+
+                if (error) throw error;
+                
+                showToast('MESIN DIHAPUS', 'success');
+            } catch (error) {
+                console.error('Error deleting machine:', error);
+                showToast('GAGAL MENGHAPUS MESIN', 'error');
+            }
+        }
+
+        function setupRealtimeSubscriptions() {
+            supabaseClient
+                .channel('tags-channel')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'tags' }, 
+                    () => fetchAllData()
+                )
+                .subscribe();
+
+            supabaseClient
+                .channel('operators-channel')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'operators' }, 
+                    () => fetchAllData()
+                )
+                .subscribe();
+
+            supabaseClient
+                .channel('engineerings-channel')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'engineerings' }, 
+                    () => fetchAllData()
+                )
+                .subscribe();
+
+            supabaseClient
+                .channel('machines-channel')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'machines' }, 
+                    () => fetchAllData()
+                )
+                .subscribe();
+        }
+
+        // ============ INITIALIZATION ============
+        async function initApp() {
+            try {
+                const savedDarkMode = localStorage.getItem('darkMode');
+                if (savedDarkMode === 'true') {
+                    darkMode = true;
+                    document.documentElement.classList.add('dark');
+                    updateThemeUI();
+                }
+
+                setDefaultDates();
+                await fetchAllData();
+                setupRealtimeSubscriptions();
+
+                console.log('App initialized with Supabase');
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                showToast('GAGAL INISIALISASI APLIKASI', 'error');
+            }
+        }
+
+        // ============ THEME ============
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.documentElement.classList.toggle('dark', darkMode);
+            localStorage.setItem('darkMode', darkMode);
+            updateThemeUI();
+        }
+
+        function updateThemeUI() {
+            const icon = darkMode ? '☀️' : '🌙';
+            const text = darkMode ? 'MODE TERANG' : 'MODE GELAP';
             
-            <div>
-              <label class="block text-sm font-semibold uppercase mb-2">STATUS</label>
-              <select id="modal-status"
-                class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase">
-                <option value="ON PROGRESS" ${tag.status === 'ON PROGRESS' ? 'selected' : ''}>ON PROGRESS</option>
-                <option value="CLOSED" ${tag.status === 'CLOSED' ? 'selected' : ''}>CLOSED</option>
-              </select>
-            </div>
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const headerIcon = document.getElementById('header-theme-icon');
             
-            <div>
-              <label class="block text-sm font-semibold uppercase mb-2">ACTION</label>
-              <textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..."
-                class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase">${tag.progress_note || ''}</textarea>
-            </div>
+            if (themeIcon) themeIcon.textContent = icon;
+            if (themeText) themeText.textContent = text;
+            if (headerIcon) headerIcon.textContent = icon;
+        }
+
+        // ============ LOGIN ============
+        window.handleLogin = function() {
+            const initial = document.getElementById('login-initial').value.trim().toUpperCase();
+            const errorEl = document.getElementById('login-error');
             
-            <div class="flex gap-2">
-              <button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
-              <button onclick="submitStatus('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button>
-            </div>
-          </div>
-        `;
-      }
-      
-      modal.classList.remove('hidden');
-    }
-    
-    function closeModal() {
-      document.getElementById('update-modal').classList.add('hidden');
-    }
-    
-    async function submitWR(tagId) {
-      const wr = document.getElementById('modal-wr').value.trim().toUpperCase();
-      if (!wr) {
-        showToast('NOMOR WR HARUS DIISI', 'error');
-        return;
-      }
-      
-      const { error } = await supabase
-        .from('tags')
-        .update({ 
-          wr_number: wr,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', tagId);
-      
-      if (error) {
-        showToast('GAGAL MENYIMPAN: ' + error.message, 'error');
-        return;
-      }
-      
-      await loadData();
-      closeModal();
-      applyDashboardFilter();
-      showToast('NOMOR WR BERHASIL DISIMPAN', 'success');
-    }
-    
-    async function submitStatus(tagId) {
-      const status = document.getElementById('modal-status').value;
-      const note = document.getElementById('modal-note').value.trim().toUpperCase();
-      
-      const { error } = await supabase
-        .from('tags')
-        .update({ 
-          status: status,
-          progress_note: note,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', tagId);
-      
-      if (error) {
-        showToast('GAGAL MENYIMPAN: ' + error.message, 'error');
-        return;
-      }
-      
-      await loadData();
-      closeModal();
-      applyDashboardFilter();
-      showToast('STATUS BERHASIL DIUPDATE', 'success');
-    }
-    
-    // ============ INPUT TAG ============
-    function handleTagTypeChange() {
-      const tagType = document.getElementById('input-tag-type').value;
-      const actionField = document.getElementById('white-tag-action');
-      const actionInput = document.getElementById('input-action');
-      
-      if (tagType === 'WHITE') {
-        actionField.classList.remove('hidden');
-        actionInput.required = true;
-      } else {
-        actionField.classList.add('hidden');
-        actionInput.required = false;
-      }
-    }
-    
-    function updateMachineDropdown() {
-      const select = document.getElementById('input-machine');
-      if (!select) return;
-      
-      let options = '<option value="">PILIH</option>';
-      
-      if (machines && machines.length > 0) {
-        machines.forEach(m => {
-          options += `<option value="${m}">${m}</option>`;
+            if (!initial) {
+                showError(errorEl, 'MASUKKAN INISIAL ANDA');
+                return;
+            }
+            
+            const isAdmin = (initial === 'ERW');
+            const isOperator = operators.includes(initial);
+            const isEngineering = engineerings.includes(initial);
+            
+            if (!isAdmin && !isOperator && !isEngineering) {
+                showError(errorEl, 'INISIAL TIDAK TERDAFTAR');
+                return;
+            }
+            
+            currentUser = initial;
+            if (isAdmin) {
+                userRole = 'admin';
+            } else if (isOperator) {
+                userRole = 'operator';
+            } else if (isEngineering) {
+                userRole = 'engineering';
+            }
+            
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('current-user').textContent = `${initial} (${userRole.toUpperCase()})`;
+            
+            if (userRole === 'operator') {
+                document.getElementById('nav-input').classList.remove('hidden');
+            } else {
+                document.getElementById('nav-input').classList.add('hidden');
+            }
+            
+            if (userRole === 'admin') {
+                document.getElementById('nav-management').classList.remove('hidden');
+            } else {
+                document.getElementById('nav-management').classList.add('hidden');
+            }
+            
+            showPage('dashboard');
+            applyDashboardFilter();
+        };
+
+        function showError(errorEl, message) {
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+            setTimeout(() => {
+                errorEl.classList.add('hidden');
+            }, 3000);
+        }
+
+        window.handleLogout = function() {
+            currentUser = null;
+            userRole = null;
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-initial').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+        };
+
+        // ============ NAVIGATION ============
+        window.showPage = function(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`page-${page}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500', 'text-white');
+                btn.classList.add('bg-slate-100', 'dark:bg-slate-700');
+            });
+            
+            const activeBtn = document.querySelector(`[data-nav="${page}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-emerald-500', 'text-white');
+                activeBtn.classList.remove('bg-slate-100', 'dark:bg-slate-700');
+            }
+            
+            if (page === 'dashboard') {
+                updateFilterDropdowns();
+                applyDashboardFilter();
+            }
+            if (page === 'audit') renderAuditTable();
+            if (page === 'input') updateMachineDropdown();
+        };
+
+        // ============ FILTER FUNCTIONS ============
+        function updateFilterDropdowns() {
+            const machineSelect = document.getElementById('filter-machine');
+            machineSelect.innerHTML = '<option value="">SEMUA MESIN</option>' + 
+                machines.map(m => `<option value="${m}">${m}</option>`).join('');
+            
+            const operatorSelect = document.getElementById('filter-operator');
+            operatorSelect.innerHTML = '<option value="">SEMUA OPERATOR</option>' + 
+                operators.map(o => `<option value="${o}">${o}</option>`).join('');
+            
+            const engineeringSelect = document.getElementById('filter-engineering');
+            engineeringSelect.innerHTML = '<option value="">SEMUA ENGINEERING</option>' + 
+                engineerings.map(e => `<option value="${e}">${e}</option>`).join('');
+        }
+
+        window.applyDashboardFilter = function() {
+            currentFilter.date = document.getElementById('filter-date').value;
+            currentFilter.machine = document.getElementById('filter-machine').value;
+            currentFilter.operator = document.getElementById('filter-operator').value;
+            currentFilter.engineering = document.getElementById('filter-engineering').value;
+            
+            filteredData = allData.filter(tag => {
+                if (currentFilter.date && tag.date !== currentFilter.date) return false;
+                if (currentFilter.machine && tag.machine !== currentFilter.machine) return false;
+                if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
+                if (currentFilter.engineering) {
+                    const engineeringMatch = tag.wr_number && tag.wr_number.includes(currentFilter.engineering);
+                    if (!engineeringMatch) return false;
+                }
+                return true;
+            });
+            
+            updateDashboard();
+        };
+
+        window.resetDashboardFilter = function() {
+            document.getElementById('filter-date').value = '';
+            document.getElementById('filter-machine').value = '';
+            document.getElementById('filter-operator').value = '';
+            document.getElementById('filter-engineering').value = '';
+            
+            currentFilter = {
+                date: '',
+                machine: '',
+                operator: '',
+                engineering: ''
+            };
+            
+            filteredData = [...allData];
+            updateDashboard();
+        };
+
+        // ============ DASHBOARD ============
+        function updateDashboard() {
+            const tags = filteredData.length > 0 ? filteredData : allData;
+            const total = tags.length;
+            const open = tags.filter(t => t.status === 'OPEN').length;
+            const progress = tags.filter(t => t.status === 'ON PROGRESS').length;
+            const closed = tags.filter(t => t.status === 'CLOSED').length;
+            
+            const openPercent = total > 0 ? Math.round((open / total) * 100) : 0;
+            const progressPercent = total > 0 ? Math.round((progress / total) * 100) : 0;
+            const closedPercent = total > 0 ? Math.round((closed / total) * 100) : 0;
+            
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-open').textContent = open;
+            document.getElementById('stat-open-percent').textContent = openPercent + '%';
+            document.getElementById('stat-progress').textContent = progress;
+            document.getElementById('stat-progress-percent').textContent = progressPercent + '%';
+            document.getElementById('stat-closed').textContent = closed;
+            document.getElementById('stat-percent').textContent = closedPercent + '%';
+            
+            const redCount = tags.filter(t => t.tag_type === 'RED').length;
+            const whiteCount = tags.filter(t => t.tag_type === 'WHITE').length;
+            const maxCount = Math.max(redCount, whiteCount, 1);
+            
+            document.getElementById('bar-red').style.height = `${(redCount / maxCount) * 150}px`;
+            document.getElementById('bar-white').style.height = `${(whiteCount / maxCount) * 150}px`;
+            document.getElementById('count-red').textContent = redCount;
+            document.getElementById('count-white').textContent = whiteCount;
+            
+            document.getElementById('red-tag-count').textContent = redCount + ' TAG';
+            document.getElementById('white-tag-count').textContent = whiteCount + ' TAG';
+            
+            renderMachineChart(tags);
+            renderOperatorChart(tags);
+            renderRedTagTable(tags.filter(t => t.tag_type === 'RED'));
+            renderWhiteTagTable(tags.filter(t => t.tag_type === 'WHITE'));
+            renderMachineDetailBars(tags);
+            renderOperatorDetailBars(tags);
+        }
+
+        function renderMachineChart(tags) {
+            const container = document.getElementById('chart-machine');
+            const machineStats = {};
+            
+            machines.forEach(m => {
+                machineStats[m] = { total: 0, closed: 0 };
+            });
+            
+            tags.forEach(t => {
+                if (machineStats[t.machine]) {
+                    machineStats[t.machine].total++;
+                    if (t.status === 'CLOSED') machineStats[t.machine].closed++;
+                }
+            });
+            
+            const maxTotal = Math.max(...Object.values(machineStats).map(s => s.total), 1);
+            
+            container.innerHTML = Object.entries(machineStats).map(([machine, stats]) => {
+                const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
+                const width = (stats.total / maxTotal) * 100;
+                
+                return `
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <span class="w-24 text-xs font-semibold uppercase truncate" title="${machine}">${machine}</span>
+                        <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
+                                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
+                            </div>
+                        </div>
+                        <span class="w-12 text-xs font-bold text-emerald-500">${percent}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMachineDetailBars(tags) {
+            const container = document.getElementById('machine-detail-bars');
+            const machineStats = {};
+            
+            machines.forEach(m => {
+                machineStats[m] = { 
+                    red: 0, 
+                    white: 0,
+                    open: 0,
+                    closed: 0
+                };
+            });
+            
+            tags.forEach(t => {
+                if (machineStats[t.machine]) {
+                    if (t.tag_type === 'RED') machineStats[t.machine].red++;
+                    else machineStats[t.machine].white++;
+                    
+                    if (t.status === 'OPEN') machineStats[t.machine].open++;
+                    else if (t.status === 'CLOSED') machineStats[t.machine].closed++;
+                }
+            });
+            
+            const maxRed = Math.max(...Object.values(machineStats).map(s => s.red), 1);
+            const maxWhite = Math.max(...Object.values(machineStats).map(s => s.white), 1);
+            const maxOpen = Math.max(...Object.values(machineStats).map(s => s.open), 1);
+            const maxClosed = Math.max(...Object.values(machineStats).map(s => s.closed), 1);
+            
+            container.innerHTML = Object.entries(machineStats).map(([machine, stats]) => {
+                const redWidth = (stats.red / maxRed) * 100;
+                const whiteWidth = (stats.white / maxWhite) * 100;
+                const openWidth = (stats.open / maxOpen) * 100;
+                const closedWidth = (stats.closed / maxClosed) * 100;
+                
+                return `
+                    <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <span class="text-xs font-bold uppercase">${machine}</span>
+                            <span class="text-xs text-slate-500">TOTAL: ${stats.red + stats.white}</span>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+                            <span class="w-16 text-red-600 font-semibold">RED: ${stats.red}</span>
+                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+                            <span class="w-16 text-slate-600 font-semibold">WHITE: ${stats.white}</span>
+                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+                            <span class="w-16 text-red-500 font-semibold">OPEN: ${stats.open}</span>
+                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                <div class="h-full bar-open rounded-full flex items-center justify-end px-1" style="width: ${openWidth}%">
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.open}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+                            <span class="w-16 text-emerald-600 font-semibold">CLOSED: ${stats.closed}</span>
+                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                <div class="h-full bar-closed rounded-full flex items-center justify-end px-1" style="width: ${closedWidth}%">
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.closed}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderOperatorChart(tags) {
+            const container = document.getElementById('chart-operator');
+            const operatorStats = {};
+            
+            operators.forEach(o => {
+                operatorStats[o] = { total: 0, closed: 0 };
+            });
+            
+            tags.forEach(t => {
+                if (operatorStats[t.initial]) {
+                    operatorStats[t.initial].total++;
+                    if (t.status === 'CLOSED') operatorStats[t.initial].closed++;
+                }
+            });
+            
+            const maxTotal = Math.max(...Object.values(operatorStats).map(s => s.total), 1);
+            
+            container.innerHTML = Object.entries(operatorStats).map(([operator, stats]) => {
+                const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
+                const width = (stats.total / maxTotal) * 100;
+                
+                return `
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <span class="w-16 text-xs font-semibold uppercase">${operator}</span>
+                        <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
+                                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
+                            </div>
+                        </div>
+                        <span class="w-12 text-xs font-bold text-blue-500">${percent}%</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderOperatorDetailBars(tags) {
+            const container = document.getElementById('operator-detail-bars');
+            const operatorStats = {};
+            
+            operators.forEach(o => {
+                operatorStats[o] = { red: 0, white: 0 };
+            });
+            
+            tags.forEach(t => {
+                if (operatorStats[t.initial]) {
+                    if (t.tag_type === 'RED') operatorStats[t.initial].red++;
+                    else operatorStats[t.initial].white++;
+                }
+            });
+            
+            const maxRed = Math.max(...Object.values(operatorStats).map(s => s.red), 1);
+            const maxWhite = Math.max(...Object.values(operatorStats).map(s => s.white), 1);
+            
+            container.innerHTML = Object.entries(operatorStats).map(([operator, stats]) => {
+                const redWidth = (stats.red / maxRed) * 100;
+                const whiteWidth = (stats.white / maxWhite) * 100;
+                
+                return `
+                    <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <span class="text-xs font-bold uppercase">${operator}</span>
+                            <span class="text-xs text-slate-500">TOTAL: ${stats.red + stats.white}</span>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+                            <span class="w-16 text-red-600 font-semibold">RED: ${stats.red}</span>
+                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+                            <span class="w-16 text-slate-600 font-semibold">WHITE: ${stats.white}</span>
+                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
+                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRedTagTable(redTags) {
+            const tbody = document.getElementById('red-tag-table');
+            
+            if (redTags.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA RED TAG</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            redTags.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            tbody.innerHTML = redTags.map(tag => {
+                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
+                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
+                                   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+                
+                let actionButton = '';
+                
+                if (tag.status === 'CLOSED') {
+                    actionButton = `<span class="text-xs text-emerald-600 font-semibold">✓ CLOSED</span>`;
+                } else if (!tag.wr_number) {
+                    if (userRole === 'operator' || userRole === 'admin') {
+                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
+                    } else {
+                        actionButton = `<span class="text-xs text-slate-500">-</span>`;
+                    }
+                } else {
+                    if (userRole === 'engineering' || userRole === 'admin') {
+                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
+                    } else {
+                        actionButton = `<span class="text-xs text-slate-500">-</span>`;
+                    }
+                }
+                
+                return `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.machine || '-'}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                        </td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            ${actionButton}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderWhiteTagTable(whiteTags) {
+            const tbody = document.getElementById('white-tag-table');
+            
+            if (whiteTags.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA WHITE TAG</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            whiteTags.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            tbody.innerHTML = whiteTags.map(tag => {
+                return `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${tag.machine || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.action || ''}">${tag.action || '-'}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        function getRiskColor(risk) {
+            switch (risk) {
+                case 'SAFETY': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+                case 'QUALITY': return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
+                case 'PRODUCTIVITY': return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
+                case '5R': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+                default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+            }
+        }
+
+        // ============ UPDATE MODAL ============
+        window.openUpdateModal = function(tagId) {
+            if (!tagId) {
+                showToast('ID TAG TIDAK DITEMUKAN', 'error');
+                return;
+            }
+            
+            const tag = allData.find(t => t.id === tagId);
+            if (!tag) {
+                showToast('TAG TIDAK DITEMUKAN', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('update-modal');
+            const content = document.getElementById('modal-content');
+            
+            if (!tag.wr_number) {
+                if (userRole !== 'operator' && userRole !== 'admin') {
+                    showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
+                    return;
+                }
+                
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-sm uppercase text-slate-500">MASUKKAN NOMOR WR UNTUK TAG INI</p>
+                        <input type="text" id="modal-wr" placeholder="NOMOR WR"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"
+                            autocomplete="off">
+                        <div class="flex gap-2">
+                            <button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                            <button onclick="submitWR('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                if (userRole !== 'engineering' && userRole !== 'admin') {
+                    showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
+                    return;
+                }
+                
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-sm uppercase text-slate-500">NO WR: <span class="font-bold text-slate-900 dark:text-white">${tag.wr_number}</span></p>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold uppercase mb-2">STATUS</label>
+                            <select id="modal-status"
+                                class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase">
+                                <option value="ON PROGRESS" ${tag.status === 'ON PROGRESS' ? 'selected' : ''}>ON PROGRESS</option>
+                                <option value="CLOSED" ${tag.status === 'CLOSED' ? 'selected' : ''}>CLOSED</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold uppercase mb-2">ACTION</label>
+                            <textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..."
+                                class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase"></textarea>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                            <button onclick="submitStatus('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modal.classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('update-modal').classList.add('hidden');
+        };
+
+        window.submitWR = async function(tagId) {
+            const wr = document.getElementById('modal-wr').value.trim().toUpperCase();
+            if (!wr) {
+                showToast('NOMOR WR HARUS DIISI', 'error');
+                return;
+            }
+            
+            const updated = await updateTag(tagId, {
+                wr_number: wr,
+                updated_at: new Date().toISOString()
+            });
+            
+            if (updated) {
+                closeModal();
+                showToast('NOMOR WR BERHASIL DISIMPAN', 'success');
+            }
+        };
+
+        window.submitStatus = async function(tagId) {
+            const status = document.getElementById('modal-status').value;
+            const note = document.getElementById('modal-note').value.trim().toUpperCase();
+            
+            const updated = await updateTag(tagId, {
+                status: status,
+                progress_note: note,
+                updated_at: new Date().toISOString()
+            });
+            
+            if (updated) {
+                closeModal();
+                showToast('STATUS BERHASIL DIUPDATE', 'success');
+            }
+        };
+
+        // ============ INPUT TAG ============
+        window.handleTagTypeChange = function() {
+            const tagType = document.getElementById('input-tag-type').value;
+            const actionField = document.getElementById('white-tag-action');
+            const actionInput = document.getElementById('input-action');
+            
+            if (tagType === 'WHITE') {
+                actionField.classList.remove('hidden');
+                actionInput.required = true;
+            } else {
+                actionField.classList.add('hidden');
+                actionInput.required = false;
+            }
+        };
+
+        function updateMachineDropdown() {
+            const select = document.getElementById('input-machine');
+            if (!select) return;
+            
+            let options = '<option value="">PILIH</option>';
+            
+            if (machines && machines.length > 0) {
+                machines.forEach(m => {
+                    options += `<option value="${m}">${m}</option>`;
+                });
+            } else {
+                options += '<option value="" disabled>BELUM ADA MESIN</option>';
+            }
+            
+            select.innerHTML = options;
+        }
+
+        document.getElementById('tag-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showToast('SILAKAN LOGIN TERLEBIH DAHULU', 'error');
+                return;
+            }
+            
+            const tagType = document.getElementById('input-tag-type').value;
+            const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN';
+            
+            const newTag = {
+                date: document.getElementById('input-date').value,
+                initial: currentUser,
+                tag_type: tagType,
+                machine: document.getElementById('input-machine').value,
+                abnormality: document.getElementById('input-abnormality').value.toUpperCase(),
+                impact: document.getElementById('input-impact').value.toUpperCase(),
+                risk: document.getElementById('input-risk').value,
+                action: document.getElementById('input-action')?.value?.toUpperCase() || '',
+                status: status,
+                wr_number: '',
+                progress_note: '',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">MENYIMPAN...</span>';
+            
+            const inserted = await insertTag(newTag);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>SUBMIT TAG</span>';
+            
+            if (inserted) {
+                document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('input-tag-type').value = '';
+                document.getElementById('input-machine').value = '';
+                document.getElementById('input-abnormality').value = '';
+                document.getElementById('input-impact').value = '';
+                document.getElementById('input-risk').value = '';
+                document.getElementById('input-action').value = '';
+                document.getElementById('white-tag-action').classList.add('hidden');
+            }
         });
-      } else {
-        options += '<option value="" disabled>BELUM ADA MESIN</option>';
-      }
-      
-      select.innerHTML = options;
-    }
-    
-    document.getElementById('tag-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      if (!currentUser) {
-        showToast('SILAKAN LOGIN TERLEBIH DAHULU', 'error');
-        return;
-      }
-      
-      const tagType = document.getElementById('input-tag-type').value;
-      const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN';
-      
-      const newTag = {
-        date: document.getElementById('input-date').value,
-        initial: currentUser,
-        tag_type: tagType,
-        machine: document.getElementById('input-machine').value,
-        abnormality: document.getElementById('input-abnormality').value.toUpperCase(),
-        impact: document.getElementById('input-impact').value.toUpperCase(),
-        risk: document.getElementById('input-risk').value,
-        action: document.getElementById('input-action')?.value?.toUpperCase() || '',
-        status: status,
-        wr_number: '',
-        progress_note: '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      const btn = document.getElementById('submit-btn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="animate-pulse">MENYIMPAN...</span>';
-      
-      const { error } = await supabase.from('tags').insert([newTag]);
-      
-      btn.disabled = false;
-      btn.innerHTML = '<span>SUBMIT TAG</span>';
-      
-      if (error) {
-        showToast('GAGAL MENYIMPAN: ' + error.message, 'error');
-        return;
-      }
-      
-      await loadData();
-      showToast('TAG BERHASIL DISIMPAN', 'success');
-      
-      // Reset form
-      document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('input-tag-type').value = '';
-      document.getElementById('input-machine').value = '';
-      document.getElementById('input-abnormality').value = '';
-      document.getElementById('input-impact').value = '';
-      document.getElementById('input-risk').value = '';
-      document.getElementById('input-action').value = '';
-      document.getElementById('white-tag-action').classList.add('hidden');
-      
-      updateFilterDropdowns();
-      applyDashboardFilter();
-    });
-    
-    // ============ MANAGEMENT ============
-    function renderManagementLists() {
-      // Operators
-      const operatorList = document.getElementById('operator-list');
-      operatorList.innerHTML = operators.length === 0 
-        ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
-        : operators.map(o => `
-          <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <span class="font-semibold uppercase">${o}</span>
-            <button onclick="removeOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-          </div>
-        `).join('');
-      
-      // Engineerings
-      const engineeringList = document.getElementById('engineering-list');
-      engineeringList.innerHTML = engineerings.length === 0
-        ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
-        : engineerings.map(e => `
-          <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <span class="font-semibold uppercase">${e}</span>
-            <button onclick="removeEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-          </div>
-        `).join('');
-      
-      // Machines
-      const machineList = document.getElementById('machine-list');
-      machineList.innerHTML = machines.length === 0
-        ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
-        : machines.map(m => `
-          <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            <span class="font-semibold uppercase">${m}</span>
-            <button onclick="removeMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-          </div>
-        `).join('');
-    }
-    
-    async function addOperator() {
-      const input = document.getElementById('new-operator');
-      const value = input.value.trim().toUpperCase();
-      
-      if (!value) {
-        showToast('MASUKKAN INISIAL OPERATOR', 'error');
-        return;
-      }
-      
-      if (operators.includes(value)) {
-        showToast('INISIAL SUDAH TERDAFTAR', 'error');
-        input.value = '';
-        return;
-      }
-      
-      const { error } = await supabase.from('operators').insert([{ initial: value }]);
-      
-      if (error) {
-        showToast('GAGAL MENAMBAHKAN: ' + error.message, 'error');
-        return;
-      }
-      
-      await loadData();
-      renderManagementLists();
-      updateFilterDropdowns();
-      input.value = '';
-      showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
-    }
-    
-    async function addEngineering() {
-      const input = document.getElementById('new-engineering');
-      const value = input.value.trim().toUpperCase();
-      
-      if (!value) {
-        showToast('MASUKKAN INISIAL ENGINEERING', 'error');
-        return;
-      }
-      
-      if (engineerings.includes(value)) {
-        showToast('INISIAL SUDAH TERDAFTAR', 'error');
-        input.value = '';
-        return;
-      }
-      
-      const { error } = await supabase.from('engineerings').insert([{ initial: value }]);
-      
-      if (error) {
-        showToast('GAGAL MENAMBAHKAN: ' + error.message, 'error');
-        return;
-      }
-      
-      await loadData();
-      renderManagementLists();
-      updateFilterDropdowns();
-      input.value = '';
-      showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
-    }
-    
-    async function addMachine() {
-      const input = document.getElementById('new-machine');
-      const value = input.value.trim().toUpperCase();
-      
-      if (!value) {
-        showToast('MASUKKAN NAMA MESIN', 'error');
-        return;
-      }
-      
-      if (machines.includes(value)) {
-        showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
-        input.value = '';
-        return;
-      }
-      
-      const { error } = await supabase.from('machines').insert([{ name: value }]);
-      
-      if (error) {
-        showToast('GAGAL MENAMBAHKAN: ' + error.message, 'error');
-        return;
-      }
-      
-      await loadData();
-      renderManagementLists();
-      updateMachineDropdown();
-      updateFilterDropdowns();
-      input.value = '';
-      showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
-    }
-    
-    async function removeOperator(name) {
-      if (confirm(`HAPUS OPERATOR ${name}?`)) {
-        const { error } = await supabase.from('operators').delete().eq('initial', name);
-        
-        if (error) {
-          showToast('GAGAL MENGHAPUS: ' + error.message, 'error');
-          return;
+
+        // ============ MANAGEMENT ============
+        function renderManagementLists() {
+            const operatorList = document.getElementById('operator-list');
+            operatorList.innerHTML = operators.length === 0 
+                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
+                : operators.map(o => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="font-semibold uppercase">${o}</span>
+                        <button onclick="removeOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                    </div>
+                `).join('');
+            
+            const engineeringList = document.getElementById('engineering-list');
+            engineeringList.innerHTML = engineerings.length === 0
+                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
+                : engineerings.map(e => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="font-semibold uppercase">${e}</span>
+                        <button onclick="removeEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                    </div>
+                `).join('');
+            
+            const machineList = document.getElementById('machine-list');
+            machineList.innerHTML = machines.length === 0
+                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
+                : machines.map(m => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="font-semibold uppercase">${m}</span>
+                        <button onclick="removeMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                    </div>
+                `).join('');
         }
-        
-        await loadData();
-        renderManagementLists();
-        updateFilterDropdowns();
-        showToast('OPERATOR DIHAPUS', 'success');
-      }
-    }
-    
-    async function removeEngineering(name) {
-      if (confirm(`HAPUS ENGINEERING ${name}?`)) {
-        const { error } = await supabase.from('engineerings').delete().eq('initial', name);
-        
-        if (error) {
-          showToast('GAGAL MENGHAPUS: ' + error.message, 'error');
-          return;
+
+        window.addOperator = async function() {
+            const input = document.getElementById('new-operator');
+            const value = input.value.trim().toUpperCase();
+            
+            if (!value) {
+                showToast('MASUKKAN INISIAL OPERATOR', 'error');
+                return;
+            }
+            
+            if (operators.includes(value)) {
+                showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                input.value = '';
+                return;
+            }
+            
+            const inserted = await insertOperator(value);
+            
+            if (inserted) {
+                operators.push(value);
+                renderManagementLists();
+                updateFilterDropdowns();
+                input.value = '';
+            }
+        };
+
+        window.removeOperator = async function(name) {
+            if (confirm(`HAPUS OPERATOR ${name}?`)) {
+                await deleteOperator(name);
+                operators = operators.filter(o => o !== name);
+                renderManagementLists();
+                updateFilterDropdowns();
+            }
+        };
+
+        window.addEngineering = async function() {
+            const input = document.getElementById('new-engineering');
+            const value = input.value.trim().toUpperCase();
+            
+            if (!value) {
+                showToast('MASUKKAN INISIAL ENGINEERING', 'error');
+                return;
+            }
+            
+            if (engineerings.includes(value)) {
+                showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                input.value = '';
+                return;
+            }
+            
+            const inserted = await insertEngineering(value);
+            
+            if (inserted) {
+                engineerings.push(value);
+                renderManagementLists();
+                updateFilterDropdowns();
+                input.value = '';
+            }
+        };
+
+        window.removeEngineering = async function(name) {
+            if (confirm(`HAPUS ENGINEERING ${name}?`)) {
+                await deleteEngineering(name);
+                engineerings = engineerings.filter(e => e !== name);
+                renderManagementLists();
+                updateFilterDropdowns();
+            }
+        };
+
+        window.addMachine = async function() {
+            const input = document.getElementById('new-machine');
+            const value = input.value.trim().toUpperCase();
+            
+            if (!value) {
+                showToast('MASUKKAN NAMA MESIN', 'error');
+                return;
+            }
+            
+            if (machines.includes(value)) {
+                showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
+                input.value = '';
+                return;
+            }
+            
+            const inserted = await insertMachine(value);
+            
+            if (inserted) {
+                machines.push(value);
+                renderManagementLists();
+                updateMachineDropdown();
+                updateFilterDropdowns();
+                input.value = '';
+            }
+        };
+
+        window.removeMachine = async function(name) {
+            if (confirm(`HAPUS MESIN ${name}?`)) {
+                await deleteMachine(name);
+                machines = machines.filter(m => m !== name);
+                renderManagementLists();
+                updateMachineDropdown();
+                updateFilterDropdowns();
+            }
+        };
+
+        // ============ AUDIT TRAIL ============
+        function renderAuditTable() {
+            const tbody = document.getElementById('audit-table');
+            const dataToShow = filteredAuditData.length > 0 ? filteredAuditData : allData;
+            
+            const sortedData = [...dataToShow].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            if (sortedData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA DATA</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = sortedData.map(tag => {
+                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
+                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
+                                   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+                
+                const tagTypeColor = tag.tag_type === 'RED' ? 'bg-red-500 text-white' : 'bg-slate-300 text-slate-700';
+                
+                return `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded text-xs font-bold uppercase inline-block ${tagTypeColor}">${tag.tag_type || '-'}</span>
+                        </td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${tag.machine || '-'}</td>
+                        <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
+                        </td>
+                        <td class="px-4 py-3 uppercase text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
         }
-        
-        await loadData();
-        renderManagementLists();
-        updateFilterDropdowns();
-        showToast('ENGINEERING DIHAPUS', 'success');
-      }
-    }
-    
-    async function removeMachine(name) {
-      if (confirm(`HAPUS MESIN ${name}?`)) {
-        const { error } = await supabase.from('machines').delete().eq('name', name);
-        
-        if (error) {
-          showToast('GAGAL MENGHAPUS: ' + error.message, 'error');
-          return;
+
+        window.filterAudit = function() {
+            const from = document.getElementById('audit-from').value;
+            const to = document.getElementById('audit-to').value;
+            
+            if (!from || !to) {
+                showToast('PILIH RENTANG TANGGAL', 'error');
+                return;
+            }
+            
+            filteredAuditData = allData.filter(tag => {
+                return tag.date >= from && tag.date <= to;
+            });
+            
+            renderAuditTable();
+            showToast(`MENAMPILKAN ${filteredAuditData.length} DATA`, 'success');
+        };
+
+        window.resetFilter = function() {
+            filteredAuditData = [];
+            setDefaultDates();
+            renderAuditTable();
+        };
+
+        function setDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            
+            document.getElementById('input-date').value = today;
+            document.getElementById('audit-from').value = lastWeek;
+            document.getElementById('audit-to').value = today;
         }
-        
-        await loadData();
-        renderManagementLists();
-        updateMachineDropdown();
-        updateFilterDropdowns();
-        showToast('MESIN DIHAPUS', 'success');
-      }
-    }
-    
-    // ============ AUDIT TRAIL ============
-    function renderAuditTable() {
-      const tbody = document.getElementById('audit-table');
-      const dataToShow = filteredAuditData.length > 0 ? filteredAuditData : allData;
-      
-      // Sort by date descending
-      const sortedData = [...dataToShow].sort((a, b) => new Date(b.date) - new Date(a.date));
-      
-      if (sortedData.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="px-4 py-8 text-center text-slate-500 uppercase">TIDAK ADA DATA</td>
-          </tr>
-        `;
-        return;
-      }
-      
-      tbody.innerHTML = sortedData.map(tag => {
-        const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                           tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                           'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-        
-        const tagTypeColor = tag.tag_type === 'RED' ? 'bg-red-500 text-white' : 'bg-slate-300 text-slate-700';
-        
-        return `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded text-xs font-bold uppercase inline-block ${tagTypeColor}">${tag.tag_type || '-'}</span>
-            </td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap">${tag.machine || '-'}</td>
-            <td class="px-4 py-3 uppercase text-xs table-cell-wrap" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
-            </td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-1 rounded-full text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
-            </td>
-            <td class="px-4 py-3 uppercase text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-    
-    function filterAudit() {
-      const from = document.getElementById('audit-from').value;
-      const to = document.getElementById('audit-to').value;
-      
-      if (!from || !to) {
-        showToast('PILIH RENTANG TANGGAL', 'error');
-        return;
-      }
-      
-      filteredAuditData = allData.filter(tag => {
-        return tag.date >= from && tag.date <= to;
-      });
-      
-      renderAuditTable();
-      showToast(`MENAMPILKAN ${filteredAuditData.length} DATA`, 'success');
-    }
-    
-    function resetFilter() {
-      filteredAuditData = [];
-      setDefaultDates();
-      renderAuditTable();
-    }
-    
-    function exportExcel() {
-      const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : allData;
-      
-      if (dataToExport.length === 0) {
-        showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
-        return;
-      }
-      
-      let csv = 'TANGGAL,INISIAL,JENIS TAG,MESIN,ABNORMALITAS,DAMPAK,RESIKO,STATUS,NO WR,ACTION,CATATAN PROGRESS\n';
-      
-      dataToExport.forEach(tag => {
-        csv += `"${tag.date || ''}","${tag.initial || ''}","${tag.tag_type || ''}","${tag.machine || ''}","${tag.abnormality || ''}","${tag.impact || ''}","${tag.risk || ''}","${tag.status || ''}","${tag.wr_number || ''}","${tag.action || ''}","${tag.progress_note || ''}"\n`;
-      });
-      
-      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `tag_monitoring_${new Date().toISOString().split('T')[0]}.csv`;
-      link.click();
-      
-      showToast('FILE EXCEL BERHASIL DIUNDUH', 'success');
-    }
-    
-    function exportPDF() {
-      const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : allData;
-      
-      if (dataToExport.length === 0) {
-        showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
-        return;
-      }
-      
-      // Create printable HTML
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>TAG MONITORING REPORT</title>
-          <style>
-            body { font-family: 'Space Grotesk', Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; text-transform: uppercase; color: #059669; }
-            h2 { text-align: center; text-transform: uppercase; font-size: 14px; color: #666; margin-top: -10px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10px; }
-            th { background: #059669; color: white; padding: 8px; text-align: left; text-transform: uppercase; }
-            td { border: 1px solid #ddd; padding: 6px; text-transform: uppercase; word-break: break-word; }
-            tr:nth-child(even) { background: #f9f9f9; }
-            .red-tag { color: #dc2626; font-weight: bold; }
-            .white-tag { color: #64748b; font-weight: bold; }
-            .footer { margin-top: 20px; text-align: center; font-size: 10px; color: #666; }
-            .summary { margin: 20px 0; padding: 10px; background: #f3f4f6; border-radius: 8px; }
-          </style>
-        </head>
-        <body>
-          <h1>TAG MONITORING REPORT</h1>
-          <h2>${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</h2>
-          
-          <div class="summary">
-            <p><strong>PERIODE:</strong> ${document.getElementById('audit-from').value} s/d ${document.getElementById('audit-to').value}</p>
-            <p><strong>TOTAL DATA:</strong> ${dataToExport.length}</p>
-          </div>
-          
-          <table>
-            <thead>
-              <tr>
-                <th>TANGGAL</th>
-                <th>INISIAL</th>
-                <th>JENIS</th>
-                <th>MESIN</th>
-                <th>ABNORMALITAS</th>
-                <th>RESIKO</th>
-                <th>STATUS</th>
-                <th>NO WR</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${dataToExport.map(tag => `
-                <tr>
-                  <td>${tag.date || '-'}</td>
-                  <td>${tag.initial || '-'}</td>
-                  <td class="${tag.tag_type === 'RED' ? 'red-tag' : 'white-tag'}">${tag.tag_type || '-'}</td>
-                  <td>${tag.machine || '-'}</td>
-                  <td>${tag.abnormality || '-'}</td>
-                  <td>${tag.risk || '-'}</td>
-                  <td>${tag.status || '-'}</td>
-                  <td>${tag.wr_number || '-'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <div class="footer">
-            <p>DOKUMEN INI DIGENERATE OLEH SISTEM TAG MONITORING</p>
-          </div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
-      
-      showToast('SILAKAN SIMPAN SEBAGAI PDF', 'success');
-    }
-    
-    // ============ TOAST ============
-    function showToast(message, type = 'success') {
-      // Remove existing toasts
-      const existingToasts = document.querySelectorAll('.toast-message');
-      existingToasts.forEach(t => t.remove());
-      
-      const toast = document.createElement('div');
-      toast.className = `toast-message fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-sm transition-all duration-300 transform translate-y-0 ${
-        type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
-      }`;
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-4');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-    
-    // ============ INIT ============
-    initApp();
-  </script>
- </body>
+
+        // ============ EXPORT FUNCTIONS ============
+        window.exportExcel = function() {
+            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : allData;
+            
+            if (dataToExport.length === 0) {
+                showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
+                return;
+            }
+            
+            let csv = 'TANGGAL,INISIAL,JENIS TAG,MESIN,ABNORMALITAS,DAMPAK,RESIKO,STATUS,NO WR,ACTION,CATATAN PROGRESS\n';
+            
+            dataToExport.forEach(tag => {
+                csv += `"${tag.date || ''}","${tag.initial || ''}","${tag.tag_type || ''}","${tag.machine || ''}","${tag.abnormality || ''}","${tag.impact || ''}","${tag.risk || ''}","${tag.status || ''}","${tag.wr_number || ''}","${tag.action || ''}","${tag.progress_note || ''}"\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `tag_monitoring_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showToast('FILE EXCEL BERHASIL DIUNDUH', 'success');
+        };
+
+        window.exportPDF = function() {
+            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : allData;
+            
+            if (dataToExport.length === 0) {
+                showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
+                return;
+            }
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>TAG MONITORING REPORT</title>
+                    <style>
+                        body { font-family: 'Space Grotesk', Arial, sans-serif; padding: 20px; }
+                        h1 { text-align: center; text-transform: uppercase; color: #059669; }
+                        h2 { text-align: center; text-transform: uppercase; font-size: 14px; color: #666; margin-top: -10px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 10px; }
+                        th { background: #059669; color: white; padding: 8px; text-align: left; text-transform: uppercase; }
+                        td { border: 1px solid #ddd; padding: 6px; text-transform: uppercase; word-break: break-word; }
+                        tr:nth-child(even) { background: #f9f9f9; }
+                        .red-tag { color: #dc2626; font-weight: bold; }
+                        .white-tag { color: #64748b; font-weight: bold; }
+                        .footer { margin-top: 20px; text-align: center; font-size: 10px; color: #666; }
+                        .summary { margin: 20px 0; padding: 10px; background: #f3f4f6; border-radius: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>TAG MONITORING REPORT</h1>
+                    <h2>${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</h2>
+                    
+                    <div class="summary">
+                        <p><strong>PERIODE:</strong> ${document.getElementById('audit-from').value} s/d ${document.getElementById('audit-to').value}</p>
+                        <p><strong>TOTAL DATA:</strong> ${dataToExport.length}</p>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TANGGAL</th>
+                                <th>INISIAL</th>
+                                <th>JENIS</th>
+                                <th>MESIN</th>
+                                <th>ABNORMALITAS</th>
+                                <th>RESIKO</th>
+                                <th>STATUS</th>
+                                <th>NO WR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${dataToExport.map(tag => `
+                                <tr>
+                                    <td>${tag.date || '-'}</td>
+                                    <td>${tag.initial || '-'}</td>
+                                    <td class="${tag.tag_type === 'RED' ? 'red-tag' : 'white-tag'}">${tag.tag_type || '-'}</td>
+                                    <td>${tag.machine || '-'}</td>
+                                    <td>${tag.abnormality || '-'}</td>
+                                    <td>${tag.risk || '-'}</td>
+                                    <td>${tag.status || '-'}</td>
+                                    <td>${tag.wr_number || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>DOKUMEN INI DIGENERATE OLEH SISTEM TAG MONITORING</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+            
+            showToast('SILAKAN SIMPAN SEBAGAI PDF', 'success');
+        };
+
+        // ============ TOAST ============
+        function showToast(message, type = 'success') {
+            const existingToasts = document.querySelectorAll('.toast-message');
+            existingToasts.forEach(t => t.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = `toast-message fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-sm transition-all duration-300 transform translate-y-0 ${
+                type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ============ INIT ============
+        initApp();
+    </script>
+</body>
 </html>
