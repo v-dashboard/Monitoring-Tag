@@ -56,8 +56,8 @@
             width: 100%;
         }
         td, th {
-            vertical-align: top;
-            padding: 12px 8px;
+            vertical-align: middle;
+            padding: 10px 8px;
         }
         /* Container untuk teks panjang */
         .text-container {
@@ -72,110 +72,6 @@
             background: #94a3b8;
             border-radius: 3px;
         }
-        /* Score Card Styles - Manual CSS (No @apply) */
-        .score-card {
-            position: relative;
-            border-radius: 1rem;
-            padding: 1.25rem;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            z-index: 1;
-        }
-        .score-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-            z-index: -1;
-        }
-        .score-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-        }
-        .score-card-red {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            border-left: 6px solid #ef4444;
-        }
-        .score-card-amber {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 6px solid #f59e0b;
-        }
-        .score-card-emerald {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-left: 6px solid #10b981;
-        }
-        .score-card-blue {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            border-left: 6px solid #3b82f6;
-        }
-        .score-card-purple {
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-            border-left: 6px solid #8b5cf6;
-        }
-        .score-card-dark {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-left: 6px solid #64748b;
-        }
-        .dark .score-card-red {
-            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
-        }
-        .dark .score-card-amber {
-            background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
-        }
-        .dark .score-card-emerald {
-            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
-        }
-        .dark .score-card-blue {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-        }
-        .dark .score-card-purple {
-            background: linear-gradient(135deg, #5b21b6 0%, #6d28d9 100%);
-        }
-        .dark .score-card-dark {
-            background: linear-gradient(135deg, #334155 0%, #475569 100%);
-        }
-        /* Icon floating effect */
-        .card-icon {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 3rem;
-            opacity: 0.2;
-            transform: rotate(10deg);
-            transition: all 0.3s ease;
-        }
-        .score-card:hover .card-icon {
-            transform: rotate(15deg) scale(1.1);
-            opacity: 0.3;
-        }
-        /* Score title and value */
-        .score-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 2;
-        }
-        .score-value {
-            font-size: 2rem;
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: 0.25rem;
-            position: relative;
-            z-index: 2;
-        }
-        .score-label {
-            font-size: 0.7rem;
-            opacity: 0.7;
-            font-weight: 500;
-            position: relative;
-            z-index: 2;
-        }
         /* Closed by badge */
         .closed-by-badge {
             display: inline-flex;
@@ -189,18 +85,28 @@
             font-weight: 600;
             box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
         }
-        /* Gradient text */
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* Stacked bar untuk operator */
+        .stacked-bar {
+            display: flex;
+            height: 24px;
+            border-radius: 9999px;
+            overflow: hidden;
+            width: 100%;
         }
-        /* Glass effect */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+        .stacked-bar-red {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .stacked-bar-white {
+            background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .stacked-bar-engineering {
+            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+            height: 100%;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -313,109 +219,116 @@
                         </div>
                     </div>
 
-        <!-- Score Cards - 9 Cards (3x3 Layout) - PAKE TAILWIND MURNI -->
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <!-- Baris 1: Total Tags, Tag On, Tag Off -->
-    <div class="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-xl p-5 border-l-4 border-purple-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">📊</div>
-        <div class="text-xs font-bold uppercase text-purple-800 dark:text-purple-200 mb-1">TOTAL TAGS</div>
-        <div id="stat-total-tags" class="text-3xl font-black text-purple-900 dark:text-white">0</div>
-        <div class="text-xs text-purple-600 dark:text-purple-300 mt-1">RED + WHITE</div>
-    </div>
-    
-    <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">🔴</div>
-        <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">TAG ON</div>
-        <div id="stat-tag-on" class="text-3xl font-black text-red-900 dark:text-white">0</div>
-        <div class="text-xs text-red-600 dark:text-red-300 mt-1">OPEN + PROGRESS</div>
-    </div>
-    
-    <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">🟢</div>
-        <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">TAG OFF</div>
-        <div id="stat-tag-off" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
-        <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">WHITE + CLOSED RED</div>
-    </div>
+                    <!-- Score Cards - 9 Cards (3x3 Layout) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Baris 1: Total Tags, Tag On, Tag Off -->
+                        <div class="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-xl p-5 border-l-4 border-purple-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">📊</div>
+                            <div class="text-xs font-bold uppercase text-purple-800 dark:text-purple-200 mb-1">TOTAL TAGS</div>
+                            <div id="stat-total-tags" class="text-3xl font-black text-purple-900 dark:text-white">0</div>
+                            <div class="text-xs text-purple-600 dark:text-purple-300 mt-1">RED + WHITE</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">🔴</div>
+                            <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">TAG ON</div>
+                            <div id="stat-tag-on" class="text-3xl font-black text-red-900 dark:text-white">0</div>
+                            <div class="text-xs text-red-600 dark:text-red-300 mt-1">OPEN + PROGRESS</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">🟢</div>
+                            <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">TAG OFF</div>
+                            <div id="stat-tag-off" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
+                            <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">WHITE + CLOSED RED</div>
+                        </div>
 
-    <!-- Baris 2: Open, Progress, Closed -->
-    <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">📌</div>
-        <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">OPEN</div>
-        <div id="stat-open" class="text-3xl font-black text-red-900 dark:text-white">0</div>
-        <div class="text-xs text-red-600 dark:text-red-300 mt-1">Status OPEN</div>
-    </div>
-    
-    <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">⏳</div>
-        <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">PROGRESS</div>
-        <div id="stat-progress" class="text-3xl font-black text-amber-900 dark:text-white">0</div>
-        <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">ON PROGRESS</div>
-    </div>
-    
-    <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">✅</div>
-        <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">CLOSED</div>
-        <div id="stat-closed" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
-        <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">Status CLOSED</div>
-    </div>
+                        <!-- Baris 2: Open, Progress, Closed -->
+                        <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">📌</div>
+                            <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">OPEN</div>
+                            <div id="stat-open" class="text-3xl font-black text-red-900 dark:text-white">0</div>
+                            <div class="text-xs text-red-600 dark:text-red-300 mt-1">Status OPEN</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">⏳</div>
+                            <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">PROGRESS</div>
+                            <div id="stat-progress" class="text-3xl font-black text-amber-900 dark:text-white">0</div>
+                            <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">ON PROGRESS</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">✅</div>
+                            <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">CLOSED</div>
+                            <div id="stat-closed" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
+                            <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">Status CLOSED</div>
+                        </div>
 
-    <!-- Baris 3: Percentages -->
-    <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">📈</div>
-        <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">% OPEN</div>
-        <div id="stat-open-percent" class="text-3xl font-black text-red-900 dark:text-white">0%</div>
-        <div class="text-xs text-red-600 dark:text-red-300 mt-1">dari TAG ON</div>
-    </div>
-    
-    <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">📊</div>
-        <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">% PROGRESS</div>
-        <div id="stat-progress-percent" class="text-3xl font-black text-amber-900 dark:text-white">0%</div>
-        <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">dari TAG ON</div>
-    </div>
-    
-    <div class="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl p-5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-        <div class="text-4xl mb-2 opacity-30">🎯</div>
-        <div class="text-xs font-bold uppercase text-white mb-1">% CLOSED</div>
-        <div id="stat-closed-percent" class="text-3xl font-black text-white">0%</div>
-        <div class="text-xs text-emerald-100 mt-1">dari TAG ON</div>
-    </div>
-</div>
-                    <!-- Charts Row - 3 Kolom (Operator, Engineering, Mesin) -->
+                        <!-- Baris 3: Percentages -->
+                        <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">📈</div>
+                            <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">% OPEN</div>
+                            <div id="stat-open-percent" class="text-3xl font-black text-red-900 dark:text-white">0%</div>
+                            <div class="text-xs text-red-600 dark:text-red-300 mt-1">dari TAG ON</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">📊</div>
+                            <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">% PROGRESS</div>
+                            <div id="stat-progress-percent" class="text-3xl font-black text-amber-900 dark:text-white">0%</div>
+                            <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">dari TAG ON</div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl p-5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                            <div class="text-4xl mb-2 opacity-30">🎯</div>
+                            <div class="text-xs font-bold uppercase text-white mb-1">% CLOSED</div>
+                            <div id="stat-closed-percent" class="text-3xl font-black text-white">0%</div>
+                            <div class="text-xs text-emerald-100 mt-1">dari TAG ON</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row - 3 Kolom (Operator Bar, Engineering Bar, Mesin Table) -->
                     <div class="grid md:grid-cols-3 gap-4">
-                        <!-- Tag by Operator -->
+                        <!-- Tag by Operator - HORIZONTAL STACKED BAR -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
                             <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">👷</span> TAG PER OPERATOR</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-                                <div id="chart-operator" class="space-y-2"></div>
-                                <div class="mt-4 pt-4 border-t border-white/20 dark:border-slate-700/50">
-                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500 dark:text-slate-400 break-word">RED VS WHITE PER OPERATOR</h4>
-                                    <div id="operator-detail-bars" class="space-y-3"></div>
+                                <div id="operator-stacked-bars" class="space-y-3">
+                                    <!-- Akan diisi JavaScript -->
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Closed Tag by Engineering -->
+                        <!-- Closed Tag by Engineering - HORIZONTAL BAR -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                            <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">🏆</span> CLOSED TAG PER ENGINEERING</h3>
+                            <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">🏆</span> CLOSED PER ENGINEERING</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-                                <div id="chart-engineering" class="space-y-2"></div>
-                                <div class="mt-4 pt-4 border-t border-white/20 dark:border-slate-700/50">
-                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500 dark:text-slate-400 break-word">DETAIL CLOSED TAG</h4>
-                                    <div id="engineering-detail-bars" class="space-y-3"></div>
+                                <div id="engineering-bars" class="space-y-3">
+                                    <!-- Akan diisi JavaScript -->
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Tag by Machine -->
+                        <!-- Tag by Machine - TABEL dengan urutan baru -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
                             <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">📊</span> TAG PER MESIN</h3>
-                            <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-                                <div id="chart-machine" class="space-y-2"></div>
-                                <div class="mt-4 pt-4 border-t border-white/20 dark:border-slate-700/50">
-                                    <h4 class="font-semibold uppercase text-xs mb-3 text-slate-500 dark:text-slate-400 break-word">DETAIL PER MESIN</h4>
-                                    <div id="machine-detail-bars" class="space-y-3"></div>
-                                </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-slate-50/50 dark:bg-slate-700/50">
+                                        <tr>
+                                            <th class="px-2 py-2 text-left uppercase font-bold text-xs">MESIN</th>
+                                            <th class="px-2 py-2 text-left uppercase font-bold text-xs">TOTAL</th>
+                                            <th class="px-2 py-2 text-left uppercase font-bold text-xs">WHITE</th>
+                                            <th class="px-2 py-2 text-left uppercase font-bold text-xs">RED</th>
+                                            <th class="px-2 py-2 text-left uppercase font-bold text-xs">CLOSED</th>
+                                            <th class="px-2 py-2 text-left uppercase font-bold text-xs">OPEN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="machine-table-body" class="divide-y divide-white/20 dark:divide-slate-700/50">
+                                        <!-- Diisi JavaScript -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -1398,146 +1311,33 @@
             document.getElementById('red-tag-count').textContent = redTags + ' TAG';
             document.getElementById('white-tag-count').textContent = whiteTags + ' TAG';
             
-            // Render charts dan tables
-            renderMachineChart(tags);
-            renderOperatorChart(tags);
-            renderEngineeringChart(tags);
+            // Render visualizations
+            renderOperatorStackedBars(tags);
+            renderEngineeringBars(tags);
+            renderMachineTable(tags);
+            
+            // Render red/white tables
             renderRedTagTable(tags.filter(t => t.tag_type === 'RED'));
             renderWhiteTagTable(tags.filter(t => t.tag_type === 'WHITE'));
-            renderMachineDetailBars(tags);
-            renderOperatorDetailBars(tags);
-            renderEngineeringDetailBars(tags);
         }
 
-        function renderMachineChart(tags) {
-            const container = document.getElementById('chart-machine');
-            const machineStats = {};
+        // STACKED BAR untuk Operator (RED vs WHITE)
+        function renderOperatorStackedBars(tags) {
+            const container = document.getElementById('operator-stacked-bars');
+            const operatorStats = {};
             
-            machines.forEach(m => {
-                machineStats[m] = { total: 0 };
-            });
-            
-            tags.forEach(t => {
-                if (machineStats[t.machine]) {
-                    machineStats[t.machine].total++;
-                }
-            });
-            
-            const sortedMachines = Object.entries(machineStats)
-                .sort((a, b) => b[1].total - a[1].total);
-            
-            const maxTotal = Math.max(...Object.values(machineStats).map(s => s.total), 1);
-            
-            container.innerHTML = sortedMachines.map(([machine, stats]) => {
-                const width = (stats.total / maxTotal) * 100;
-                
-                return `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 chart-item">
-                        <span class="w-20 sm:w-24 text-xs font-semibold uppercase break-word bar-label" title="${machine}">${machine}</span>
-                        <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
-                                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderMachineDetailBars(tags) {
-            const container = document.getElementById('machine-detail-bars');
-            const machineStats = {};
-            
-            machines.forEach(m => {
-                machineStats[m] = { 
+            operators.forEach(o => {
+                operatorStats[o] = { 
                     red: 0, 
                     white: 0,
-                    open: 0,
-                    closed: 0
+                    total: 0
                 };
             });
             
             tags.forEach(t => {
-                if (machineStats[t.machine]) {
-                    if (t.tag_type === 'RED') machineStats[t.machine].red++;
-                    else machineStats[t.machine].white++;
-                    
-                    if (t.status === 'OPEN') machineStats[t.machine].open++;
-                    else if (t.status === 'CLOSED') machineStats[t.machine].closed++;
-                }
-            });
-            
-            const sortedMachines = Object.entries(machineStats)
-                .sort((a, b) => (b[1].red + b[1].white) - (a[1].red + a[1].white));
-            
-            const maxRed = Math.max(...Object.values(machineStats).map(s => s.red), 1);
-            const maxWhite = Math.max(...Object.values(machineStats).map(s => s.white), 1);
-            const maxOpen = Math.max(...Object.values(machineStats).map(s => s.open), 1);
-            const maxClosed = Math.max(...Object.values(machineStats).map(s => s.closed), 1);
-            
-            container.innerHTML = sortedMachines.map(([machine, stats]) => {
-                const redWidth = (stats.red / maxRed) * 100;
-                const whiteWidth = (stats.white / maxWhite) * 100;
-                const openWidth = (stats.open / maxOpen) * 100;
-                const closedWidth = (stats.closed / maxClosed) * 100;
-                
-                return `
-                    <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                        <div class="flex items-center justify-between flex-wrap gap-2">
-                            <span class="text-xs font-bold uppercase break-word">${machine}</span>
-                            <span class="text-xs text-slate-500 whitespace-nowrap">TOTAL: ${stats.red + stats.white}</span>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-red-600 font-semibold whitespace-nowrap">RED: ${stats.red}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-slate-600 font-semibold whitespace-nowrap">WHITE: ${stats.white}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-red-500 font-semibold whitespace-nowrap">OPEN: ${stats.open}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-open rounded-full flex items-center justify-end px-1" style="width: ${openWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.open}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-emerald-600 font-semibold whitespace-nowrap">CLOSED: ${stats.closed}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-closed rounded-full flex items-center justify-end px-1" style="width: ${closedWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.closed}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderOperatorChart(tags) {
-            const container = document.getElementById('chart-operator');
-            const operatorStats = {};
-            
-            operators.forEach(o => {
-                operatorStats[o] = { total: 0 };
-            });
-            
-            tags.forEach(t => {
                 if (operatorStats[t.initial]) {
+                    if (t.tag_type === 'RED') operatorStats[t.initial].red++;
+                    else operatorStats[t.initial].white++;
                     operatorStats[t.initial].total++;
                 }
             });
@@ -1548,77 +1348,31 @@
             const maxTotal = Math.max(...Object.values(operatorStats).map(s => s.total), 1);
             
             container.innerHTML = sortedOperators.map(([operator, stats]) => {
-                const width = (stats.total / maxTotal) * 100;
+                const redPercent = (stats.red / maxTotal) * 100;
+                const whitePercent = (stats.white / maxTotal) * 100;
                 
                 return `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 chart-item">
-                        <span class="w-16 text-xs font-semibold uppercase break-word bar-label">${operator}</span>
-                        <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
-                                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
-                            </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold uppercase">${operator}</span>
+                            <span class="text-xs text-slate-500">Total: ${stats.total}</span>
+                        </div>
+                        <div class="stacked-bar bg-slate-200 dark:bg-slate-700">
+                            <div class="stacked-bar-red" style="width: ${redPercent}%"></div>
+                            <div class="stacked-bar-white" style="width: ${whitePercent}%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px]">
+                            <span class="text-red-600">🔴 ${stats.red}</span>
+                            <span class="text-slate-600">⚪ ${stats.white}</span>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function renderOperatorDetailBars(tags) {
-            const container = document.getElementById('operator-detail-bars');
-            const operatorStats = {};
-            
-            operators.forEach(o => {
-                operatorStats[o] = { red: 0, white: 0 };
-            });
-            
-            tags.forEach(t => {
-                if (operatorStats[t.initial]) {
-                    if (t.tag_type === 'RED') operatorStats[t.initial].red++;
-                    else operatorStats[t.initial].white++;
-                }
-            });
-            
-            const sortedOperators = Object.entries(operatorStats)
-                .sort((a, b) => (b[1].red + b[1].white) - (a[1].red + a[1].white));
-            
-            const maxRed = Math.max(...Object.values(operatorStats).map(s => s.red), 1);
-            const maxWhite = Math.max(...Object.values(operatorStats).map(s => s.white), 1);
-            
-            container.innerHTML = sortedOperators.map(([operator, stats]) => {
-                const redWidth = (stats.red / maxRed) * 100;
-                const whiteWidth = (stats.white / maxWhite) * 100;
-                
-                return `
-                    <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                        <div class="flex items-center justify-between flex-wrap gap-2">
-                            <span class="text-xs font-bold uppercase break-word">${operator}</span>
-                            <span class="text-xs text-slate-500 whitespace-nowrap">TOTAL: ${stats.red + stats.white}</span>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-red-600 font-semibold whitespace-nowrap">RED: ${stats.red}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-red rounded-full flex items-center justify-end px-1" style="width: ${redWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.red}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-slate-600 font-semibold whitespace-nowrap">WHITE: ${stats.white}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderEngineeringChart(tags) {
-            const container = document.getElementById('chart-engineering');
+        // HORIZONTAL BAR untuk Engineering
+        function renderEngineeringBars(tags) {
+            const container = document.getElementById('engineering-bars');
             if (!container) return;
             
             const engineeringStats = {};
@@ -1627,10 +1381,8 @@
                 engineeringStats[e] = { closed: 0 };
             });
             
-            // Hitung closed tags yang punya WR number (di-handle oleh engineering)
             tags.forEach(t => {
                 if (t.status === 'CLOSED' && t.wr_number) {
-                    // Cari engineering dari wr_number (asumsi format WR mengandung inisial engineering)
                     const matchedEng = engineerings.find(e => t.wr_number.includes(e));
                     if (matchedEng) {
                         engineeringStats[matchedEng].closed++;
@@ -1647,11 +1399,14 @@
                 const width = (stats.closed / maxClosed) * 100;
                 
                 return `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 chart-item">
-                        <span class="w-16 text-xs font-semibold uppercase break-word bar-label">${eng}</span>
-                        <div class="flex-1 w-full sm:w-auto h-6 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end px-2 transition-all duration-500" style="width: ${width}%">
-                                <span class="text-xs font-bold text-white whitespace-nowrap">${stats.closed}</span>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold uppercase">${eng}</span>
+                            <span class="text-xs font-bold text-emerald-600">${stats.closed} closed</span>
+                        </div>
+                        <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full stacked-bar-engineering rounded-full flex items-center justify-end px-2 text-[10px] font-bold text-white" style="width: ${width}%">
+                                ${stats.closed > 0 ? stats.closed : ''}
                             </div>
                         </div>
                     </div>
@@ -1659,74 +1414,57 @@
             }).join('');
         }
 
-        function renderEngineeringDetailBars(tags) {
-            const container = document.getElementById('engineering-detail-bars');
-            if (!container) return;
+        // TABLE Machine List dengan urutan baru
+        function renderMachineTable(tags) {
+            const tbody = document.getElementById('machine-table-body');
+            const machineStats = {};
             
-            const engineeringStats = {};
-            
-            engineerings.forEach(e => {
-                engineeringStats[e] = { 
+            machines.forEach(m => {
+                machineStats[m] = { 
+                    red: 0, 
+                    white: 0,
+                    open: 0,
                     closed: 0,
-                    red_closed: 0,
-                    white: 0
+                    total: 0
                 };
             });
             
             tags.forEach(t => {
-                // Hitung white tags (langsung closed tanpa engineering)
-                if (t.tag_type === 'WHITE') {
-                    const matchedEng = engineerings.find(e => t.wr_number && t.wr_number.includes(e));
-                    if (matchedEng) {
-                        engineeringStats[matchedEng].white++;
+                if (machineStats[t.machine]) {
+                    if (t.tag_type === 'RED') machineStats[t.machine].red++;
+                    else machineStats[t.machine].white++;
+                    
+                    if (t.status === 'OPEN' || t.status === 'ON PROGRESS') {
+                        machineStats[t.machine].open++;
+                    } else if (t.status === 'CLOSED') {
+                        machineStats[t.machine].closed++;
                     }
-                }
-                
-                // Hitung closed red tags (butuh engineering)
-                if (t.tag_type === 'RED' && t.status === 'CLOSED' && t.wr_number) {
-                    const matchedEng = engineerings.find(e => t.wr_number.includes(e));
-                    if (matchedEng) {
-                        engineeringStats[matchedEng].closed++;
-                        engineeringStats[matchedEng].red_closed++;
-                    }
+                    
+                    machineStats[t.machine].total++;
                 }
             });
             
-            const sortedEngineerings = Object.entries(engineeringStats)
-                .sort((a, b) => (b[1].closed + b[1].white) - (a[1].closed + a[1].white));
+            const sortedMachines = Object.entries(machineStats)
+                .sort((a, b) => b[1].total - a[1].total);
             
-            const maxClosed = Math.max(...Object.values(engineeringStats).map(s => s.closed), 1);
-            const maxWhite = Math.max(...Object.values(engineeringStats).map(s => s.white), 1);
-            
-            container.innerHTML = sortedEngineerings.map(([eng, stats]) => {
-                const closedWidth = (stats.closed / maxClosed) * 100;
-                const whiteWidth = (stats.white / maxWhite) * 100;
-                
+            tbody.innerHTML = sortedMachines.map(([machine, stats]) => {
                 return `
-                    <div class="space-y-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
-                        <div class="flex items-center justify-between flex-wrap gap-2">
-                            <span class="text-xs font-bold uppercase break-word">${eng}</span>
-                            <span class="text-xs text-slate-500 whitespace-nowrap">TOTAL: ${stats.closed + stats.white}</span>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-purple-600 font-semibold whitespace-nowrap">CLOSED RED: ${stats.red_closed}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-engineering rounded-full flex items-center justify-end px-1" style="width: ${closedWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.closed}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-                            <span class="w-16 text-slate-600 font-semibold whitespace-nowrap">WHITE: ${stats.white}</span>
-                            <div class="flex-1 w-full sm:w-auto h-4 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                <div class="h-full bar-white rounded-full flex items-center justify-end px-1" style="width: ${whiteWidth}%">
-                                    <span class="text-[10px] font-bold text-white whitespace-nowrap">${stats.white}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50">
+                        <td class="px-2 py-2 font-semibold">${machine}</td>
+                        <td class="px-2 py-2 font-bold">${stats.total}</td>
+                        <td class="px-2 py-2">
+                            <span class="px-2 py-1 bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300 rounded-full text-xs font-bold">${stats.white}</span>
+                        </td>
+                        <td class="px-2 py-2">
+                            <span class="px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 rounded-full text-xs font-bold">${stats.red}</span>
+                        </td>
+                        <td class="px-2 py-2">
+                            <span class="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-full text-xs font-bold">${stats.closed}</span>
+                        </td>
+                        <td class="px-2 py-2">
+                            <span class="px-2 py-1 bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 rounded-full text-xs font-bold">${stats.open}</span>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
@@ -1753,7 +1491,6 @@
                 let actionButton = '';
                 
                 if (tag.status === 'CLOSED') {
-                    // Tampilkan siapa yang menutup tag
                     actionButton = `
                         <div class="closed-by-badge">
                             <span>✓</span>
@@ -1831,12 +1568,6 @@
                     </tr>
                 `;
             }).join('');
-        }
-
-        function truncateText(text, maxLength) {
-            if (!text) return '-';
-            if (text.length <= maxLength) return text;
-            return text.substring(0, maxLength) + '...';
         }
 
         function formatDate(dateStr) {
@@ -2104,7 +1835,6 @@
                 updated_at: new Date().toISOString()
             };
             
-            // Jika WHITE TAG, langsung set closed_by
             if (tagType === 'WHITE') {
                 newTag.closed_by = currentUser;
                 newTag.closed_at = new Date().toISOString();
