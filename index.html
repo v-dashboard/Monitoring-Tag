@@ -69,6 +69,20 @@
             background: #94a3b8;
             border-radius: 3px;
         }
+        /* Score Card Styles */
+        .score-card {
+            @apply rounded-xl p-3 sm:p-4 border shadow-sm transition-all duration-300;
+        }
+        .score-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .score-title {
+            @apply text-[10px] sm:text-xs font-semibold uppercase mb-1;
+        }
+        .score-value {
+            @apply text-lg sm:text-2xl font-bold;
+        }
     </style>
 </head>
 <body class="h-full bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -180,35 +194,63 @@
                         </div>
                     </div>
 
-                    <!-- Score Cards - 7 Cards -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-slate-500 dark:text-slate-400 font-semibold truncate">TOTAL</p>
-                            <p id="stat-total" class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
+                    <!-- Score Cards - 9 Cards (3x3 Layout) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <!-- Baris 1: Total Tags, Tag On, Tag Off -->
+                        <div class="bg-white dark:bg-slate-800 score-card border-slate-200 dark:border-slate-700">
+                            <p class="score-title text-slate-500 dark:text-slate-400">📊 TOTAL TAGS</p>
+                            <p id="stat-total-tags" class="score-value text-slate-900 dark:text-white">0</p>
+                            <p class="text-[8px] sm:text-xs text-slate-400 mt-1">RED + WHITE</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-red-500 font-semibold truncate">OPEN</p>
-                            <p id="stat-open" class="text-lg sm:text-2xl font-bold text-red-500 mt-1">0</p>
+                        
+                        <div class="bg-white dark:bg-slate-800 score-card border-red-200 dark:border-red-900/30">
+                            <p class="score-title text-red-600">🔴 TAG ON</p>
+                            <p id="stat-tag-on" class="score-value text-red-600">0</p>
+                            <p class="text-[8px] sm:text-xs text-red-400">OPEN + PROGRESS</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-amber-500 font-semibold truncate">% OPEN</p>
-                            <p id="stat-open-percent" class="text-lg sm:text-2xl font-bold text-amber-500 mt-1">0%</p>
+                        
+                        <div class="bg-white dark:bg-slate-800 score-card border-emerald-200 dark:border-emerald-900/30">
+                            <p class="score-title text-emerald-600">🟢 TAG OFF</p>
+                            <p id="stat-tag-off" class="score-value text-emerald-600">0</p>
+                            <p class="text-[8px] sm:text-xs text-emerald-400">WHITE + CLOSED RED</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-amber-500 font-semibold truncate">PROGRESS</p>
-                            <p id="stat-progress" class="text-lg sm:text-2xl font-bold text-amber-500 mt-1">0</p>
+
+                        <!-- Baris 2: Open, Progress, Closed (Counts) -->
+                        <div class="bg-white dark:bg-slate-800 score-card border-red-200 dark:border-red-900/30">
+                            <p class="score-title text-red-600">📌 OPEN</p>
+                            <p id="stat-open" class="score-value text-red-600">0</p>
+                            <p class="text-[8px] sm:text-xs text-red-400">Status OPEN</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-amber-500 font-semibold truncate">% PROGRESS</p>
-                            <p id="stat-progress-percent" class="text-lg sm:text-2xl font-bold text-amber-500 mt-1">0%</p>
+                        
+                        <div class="bg-white dark:bg-slate-800 score-card border-amber-200 dark:border-amber-900/30">
+                            <p class="score-title text-amber-600">⏳ PROGRESS</p>
+                            <p id="stat-progress" class="score-value text-amber-600">0</p>
+                            <p class="text-[8px] sm:text-xs text-amber-400">ON PROGRESS</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-800 rounded-xl p-2 sm:p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-emerald-500 font-semibold truncate">CLOSED</p>
-                            <p id="stat-closed" class="text-lg sm:text-2xl font-bold text-emerald-500 mt-1">0</p>
+                        
+                        <div class="bg-white dark:bg-slate-800 score-card border-emerald-200 dark:border-emerald-900/30">
+                            <p class="score-title text-emerald-600">✅ CLOSED</p>
+                            <p id="stat-closed" class="score-value text-emerald-600">0</p>
+                            <p class="text-[8px] sm:text-xs text-emerald-400">Status CLOSED</p>
                         </div>
-                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-2 sm:p-3 shadow-sm">
-                            <p class="text-[10px] sm:text-xs uppercase text-emerald-100 font-semibold truncate">% CLOSED</p>
-                            <p id="stat-percent" class="text-lg sm:text-2xl font-bold text-white mt-1">0%</p>
+
+                        <!-- Baris 3: Percentages (based on Tag On) -->
+                        <div class="bg-white dark:bg-slate-800 score-card border-red-200 dark:border-red-900/30">
+                            <p class="score-title text-red-600">📊 % OPEN</p>
+                            <p id="stat-open-percent" class="score-value text-red-600">0%</p>
+                            <p class="text-[8px] sm:text-xs text-red-400">dari TAG ON</p>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-slate-800 score-card border-amber-200 dark:border-amber-900/30">
+                            <p class="score-title text-amber-600">📊 % PROGRESS</p>
+                            <p id="stat-progress-percent" class="score-value text-amber-600">0%</p>
+                            <p class="text-[8px] sm:text-xs text-amber-400">dari TAG ON</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 score-card border-emerald-600">
+                            <p class="score-title text-emerald-100">📊 % CLOSED</p>
+                            <p id="stat-closed-percent" class="score-value text-white">0%</p>
+                            <p class="text-[8px] sm:text-xs text-emerald-100">dari TAG ON</p>
                         </div>
                     </div>
 
@@ -1167,35 +1209,50 @@
         // ============ DASHBOARD ============
         function updateDashboard() {
             const tags = filteredData.length > 0 ? filteredData : allData;
-            const total = tags.length;
+            
+            // Hitung metrics
+            const totalTags = tags.length;
+            const redTags = tags.filter(t => t.tag_type === 'RED').length;
+            const whiteTags = tags.filter(t => t.tag_type === 'WHITE').length;
+            
             const open = tags.filter(t => t.status === 'OPEN').length;
             const progress = tags.filter(t => t.status === 'ON PROGRESS').length;
             const closed = tags.filter(t => t.status === 'CLOSED').length;
             
-            const openPercent = total > 0 ? Math.round((open / total) * 100) : 0;
-            const progressPercent = total > 0 ? Math.round((progress / total) * 100) : 0;
-            const closedPercent = total > 0 ? Math.round((closed / total) * 100) : 0;
+            // Tag On = OPEN + PROGRESS
+            const tagOn = open + progress;
             
-            document.getElementById('stat-total').textContent = total;
+            // Tag Off = WHITE + CLOSED RED
+            const closedRedTags = tags.filter(t => t.tag_type === 'RED' && t.status === 'CLOSED').length;
+            const tagOff = whiteTags + closedRedTags;
+            
+            // Persentase berdasarkan Tag On
+            const openPercent = tagOn > 0 ? Math.round((open / tagOn) * 100) : 0;
+            const progressPercent = tagOn > 0 ? Math.round((progress / tagOn) * 100) : 0;
+            const closedPercent = tagOn > 0 ? Math.round((closed / tagOn) * 100) : 0;
+            
+            // Update Score Cards
+            document.getElementById('stat-total-tags').textContent = totalTags;
+            document.getElementById('stat-tag-on').textContent = tagOn;
+            document.getElementById('stat-tag-off').textContent = tagOff;
             document.getElementById('stat-open').textContent = open;
-            document.getElementById('stat-open-percent').textContent = openPercent + '%';
             document.getElementById('stat-progress').textContent = progress;
-            document.getElementById('stat-progress-percent').textContent = progressPercent + '%';
             document.getElementById('stat-closed').textContent = closed;
-            document.getElementById('stat-percent').textContent = closedPercent + '%';
+            document.getElementById('stat-open-percent').textContent = openPercent + '%';
+            document.getElementById('stat-progress-percent').textContent = progressPercent + '%';
+            document.getElementById('stat-closed-percent').textContent = closedPercent + '%';
             
-            const redCount = tags.filter(t => t.tag_type === 'RED').length;
-            const whiteCount = tags.filter(t => t.tag_type === 'WHITE').length;
-            const maxCount = Math.max(redCount, whiteCount, 1);
+            // Update Red/White bars
+            const maxCount = Math.max(redTags, whiteTags, 1);
+            document.getElementById('bar-red').style.height = `${(redTags / maxCount) * 150}px`;
+            document.getElementById('bar-white').style.height = `${(whiteTags / maxCount) * 150}px`;
+            document.getElementById('count-red').textContent = redTags;
+            document.getElementById('count-white').textContent = whiteTags;
             
-            document.getElementById('bar-red').style.height = `${(redCount / maxCount) * 150}px`;
-            document.getElementById('bar-white').style.height = `${(whiteCount / maxCount) * 150}px`;
-            document.getElementById('count-red').textContent = redCount;
-            document.getElementById('count-white').textContent = whiteCount;
+            document.getElementById('red-tag-count').textContent = redTags + ' TAG';
+            document.getElementById('white-tag-count').textContent = whiteTags + ' TAG';
             
-            document.getElementById('red-tag-count').textContent = redCount + ' TAG';
-            document.getElementById('white-tag-count').textContent = whiteCount + ' TAG';
-            
+            // Render charts dan tables
             renderMachineChart(tags);
             renderOperatorChart(tags);
             renderRedTagTable(tags.filter(t => t.tag_type === 'RED'));
