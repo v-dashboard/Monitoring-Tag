@@ -20,16 +20,54 @@
         .bar-open { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
         .bar-closed { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
         .text-wrap { word-wrap: break-word; white-space: normal; }
-        .table-cell-wrap { white-space: normal; word-break: break-word; max-width: 250px; }
-        .break-word { word-break: break-word; overflow-wrap: break-word; hyphens: auto; }
+        .table-cell-wrap { 
+            white-space: normal !important; 
+            word-break: break-word !important; 
+            overflow-wrap: break-word !important;
+            max-width: 300px;
+            min-width: 100px;
+        }
+        .break-word { 
+            word-break: break-word !important; 
+            overflow-wrap: break-word !important; 
+            hyphens: auto !important;
+            white-space: normal !important;
+        }
         .toast-message { z-index: 9999; }
         .chart-item { width: 100%; overflow: visible; }
-        .bar-label { white-space: normal; word-break: break-word; hyphens: auto; }
+        .bar-label { 
+            white-space: normal !important; 
+            word-break: break-word !important; 
+            hyphens: auto !important;
+            line-height: 1.2;
+        }
         #live-clock {
             font-family: 'Space Grotesk', monospace;
             letter-spacing: 1px;
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        /* Fix untuk tabel */
+        table {
+            table-layout: auto;
+            width: 100%;
+        }
+        td, th {
+            vertical-align: top;
+            padding: 12px 8px;
+        }
+        /* Container untuk teks panjang */
+        .text-container {
+            max-height: 100px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .text-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .text-container::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 3px;
         }
     </style>
 </head>
@@ -1418,8 +1456,12 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.progress_note || ''}">${truncateText(tag.progress_note, 40) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <div class="table-cell-wrap break-word text-container" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div>
+                        </td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <div class="table-cell-wrap break-word text-container" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div>
+                        </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
@@ -1452,8 +1494,12 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${tag.machine || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${tag.action || ''}">${truncateText(tag.action, 40) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <div class="table-cell-wrap break-word text-container" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div>
+                        </td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <div class="table-cell-wrap break-word text-container" title="${tag.action || ''}">${tag.action || '-'}</div>
+                        </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
@@ -1909,7 +1955,9 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
                             <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${activityColor}">${log.activity || '-'}</span>
                         </td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap break-word" title="${log.detail || ''}">${truncateText(log.detail, 50) || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3">
+                            <div class="table-cell-wrap break-word text-container" title="${log.detail || ''}">${log.detail || '-'}</div>
+                        </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_date ? formatDate(log.tag_date) : '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_type || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_machine || '-'}</td>
