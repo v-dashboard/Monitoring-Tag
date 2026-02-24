@@ -25,6 +25,12 @@
         .toast-message { z-index: 9999; }
         .chart-item { width: 100%; overflow: visible; }
         .bar-label { white-space: normal; word-break: break-word; hyphens: auto; }
+        #live-clock {
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 1px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
     </style>
 </head>
 <body class="h-full bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -75,6 +81,11 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
+                    <!-- Live Clock -->
+                    <div id="live-clock" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-mono">
+                        <span id="clock-date" class="text-slate-600 dark:text-slate-400"></span>
+                        <span id="clock-time" class="font-bold text-emerald-600 dark:text-emerald-400 ml-1"></span>
+                    </div>
                     <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"> 
                         <span id="header-theme-icon">🌙</span> 
                     </button> 
@@ -96,11 +107,15 @@
                 <div id="page-dashboard" class="page space-y-6">
                     <!-- Filter Section -->
                     <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2">🔍 FILTER DASHBOARD</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2">🔍 FILTER DASHBOARD (RENTANG TANGGAL)</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold uppercase mb-1">TANGGAL</label>
-                                <input type="date" id="filter-date" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
+                                <label class="block text-xs font-semibold uppercase mb-1">TANGGAL DARI</label>
+                                <input type="date" id="filter-date-from" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase mb-1">TANGGAL SAMPAI</label>
+                                <input type="date" id="filter-date-to" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold uppercase mb-1">MESIN</label>
@@ -441,7 +456,8 @@
         let auditLogs = [];
         
         let currentFilter = {
-            date: '',
+            dateFrom: '',
+            dateTo: '',
             machine: '',
             operator: '',
             engineering: ''
@@ -450,6 +466,31 @@
         const defaultConfig = {
             app_title: 'TAG MONITORING'
         };
+
+        // ============ LIVE CLOCK FUNCTION ============
+        function updateLiveClock() {
+            const now = new Date();
+            
+            // Format tanggal: DD/MM/YYYY
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const dateStr = `${day}/${month}/${year}`;
+            
+            // Format waktu: HH:MM:SS
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}:${seconds}`;
+            
+            const dateElement = document.getElementById('clock-date');
+            const timeElement = document.getElementById('clock-time');
+            
+            if (dateElement && timeElement) {
+                dateElement.textContent = dateStr;
+                timeElement.textContent = timeStr;
+            }
+        }
 
         // ============ AUTO UPDATE FUNCTION ============
         async function refreshData() {
@@ -534,7 +575,7 @@
 
         // ============ SUPABASE FUNCTIONS ============
         async function fetchAllData() {
-            await refreshData(); // Gunakan fungsi refresh yang sama
+            await refreshData();
         }
 
         async function insertTag(tagData) {
@@ -549,10 +590,8 @@
                 await addAuditLog('INSERT TAG', `Menambahkan ${tagData.tag_type} TAG`, data[0]);
                 showToast('TAG BERHASIL DISIMPAN', 'success');
                 
-                // Auto refresh setelah insert
                 await refreshData();
                 
-                // Jika di halaman input, kembali ke dashboard setelah submit
                 if (!document.getElementById('page-input').classList.contains('hidden')) {
                     setTimeout(() => {
                         showPage('dashboard');
@@ -582,7 +621,6 @@
                 await addAuditLog('UPDATE TAG', `Mengupdate tag ${oldTag?.tag_type}`, data[0]);
                 showToast('DATA BERHASIL DIUPDATE', 'success');
                 
-                // Auto refresh setelah update
                 await refreshData();
                 
                 return data[0];
@@ -605,7 +643,6 @@
                 await addAuditLog('INSERT OPERATOR', `Menambahkan operator: ${initial}`);
                 showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
                 
-                // Auto refresh setelah insert
                 await refreshData();
                 
                 return data[0];
@@ -628,7 +665,6 @@
                 await addAuditLog('UPDATE OPERATOR', `Mengupdate operator: ${oldInitial} -> ${newInitial}`);
                 showToast('OPERATOR BERHASIL DIUPDATE', 'success');
                 
-                // Auto refresh setelah update
                 await refreshData();
                 
                 return true;
@@ -651,7 +687,6 @@
                 await addAuditLog('DELETE OPERATOR', `Menghapus operator: ${initial}`);
                 showToast('OPERATOR DIHAPUS', 'success');
                 
-                // Auto refresh setelah delete
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting operator:', error);
@@ -671,7 +706,6 @@
                 await addAuditLog('INSERT ENGINEERING', `Menambahkan engineering: ${initial}`);
                 showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
                 
-                // Auto refresh setelah insert
                 await refreshData();
                 
                 return data[0];
@@ -694,7 +728,6 @@
                 await addAuditLog('UPDATE ENGINEERING', `Mengupdate engineering: ${oldInitial} -> ${newInitial}`);
                 showToast('ENGINEERING BERHASIL DIUPDATE', 'success');
                 
-                // Auto refresh setelah update
                 await refreshData();
                 
                 return true;
@@ -717,7 +750,6 @@
                 await addAuditLog('DELETE ENGINEERING', `Menghapus engineering: ${initial}`);
                 showToast('ENGINEERING DIHAPUS', 'success');
                 
-                // Auto refresh setelah delete
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting engineering:', error);
@@ -737,7 +769,6 @@
                 await addAuditLog('INSERT MACHINE', `Menambahkan mesin: ${machine}`);
                 showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
                 
-                // Auto refresh setelah insert
                 await refreshData();
                 
                 return data[0];
@@ -760,7 +791,6 @@
                 await addAuditLog('UPDATE MACHINE', `Mengupdate mesin: ${oldMachine} -> ${newMachine}`);
                 showToast('MESIN BERHASIL DIUPDATE', 'success');
                 
-                // Auto refresh setelah update
                 await refreshData();
                 
                 return true;
@@ -783,7 +813,6 @@
                 await addAuditLog('DELETE MACHINE', `Menghapus mesin: ${machine}`);
                 showToast('MESIN DIHAPUS', 'success');
                 
-                // Auto refresh setelah delete
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting machine:', error);
@@ -792,7 +821,6 @@
         }
 
         function setupRealtimeSubscriptions() {
-            // Subscribe ke semua perubahan tabel
             supabaseClient
                 .channel('tags-channel')
                 .on('postgres_changes', 
@@ -865,6 +893,9 @@
                 setDefaultDates();
                 await fetchAllData();
                 setupRealtimeSubscriptions();
+                
+                updateLiveClock();
+                setInterval(updateLiveClock, 1000);
 
                 console.log('App initialized with Supabase and auto-update feature');
             } catch (error) {
@@ -1040,13 +1071,22 @@
         }
 
         window.applyDashboardFilter = function() {
-            currentFilter.date = document.getElementById('filter-date').value;
+            currentFilter.dateFrom = document.getElementById('filter-date-from').value;
+            currentFilter.dateTo = document.getElementById('filter-date-to').value;
             currentFilter.machine = document.getElementById('filter-machine').value;
             currentFilter.operator = document.getElementById('filter-operator').value;
             currentFilter.engineering = document.getElementById('filter-engineering').value;
             
             filteredData = allData.filter(tag => {
-                if (currentFilter.date && tag.date !== currentFilter.date) return false;
+                // Filter berdasarkan rentang tanggal
+                if (currentFilter.dateFrom && currentFilter.dateTo) {
+                    if (tag.date < currentFilter.dateFrom || tag.date > currentFilter.dateTo) return false;
+                } else if (currentFilter.dateFrom) {
+                    if (tag.date < currentFilter.dateFrom) return false;
+                } else if (currentFilter.dateTo) {
+                    if (tag.date > currentFilter.dateTo) return false;
+                }
+                
                 if (currentFilter.machine && tag.machine !== currentFilter.machine) return false;
                 if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
                 if (currentFilter.engineering) {
@@ -1057,16 +1097,25 @@
             });
             
             updateDashboard();
+            
+            // Tampilkan info rentang tanggal
+            if (currentFilter.dateFrom || currentFilter.dateTo) {
+                const from = currentFilter.dateFrom || 'awal';
+                const to = currentFilter.dateTo || 'akhir';
+                showToast(`Menampilkan data dari ${from} s/d ${to}`, 'success');
+            }
         };
 
         window.resetDashboardFilter = function() {
-            document.getElementById('filter-date').value = '';
+            document.getElementById('filter-date-from').value = '';
+            document.getElementById('filter-date-to').value = '';
             document.getElementById('filter-machine').value = '';
             document.getElementById('filter-operator').value = '';
             document.getElementById('filter-engineering').value = '';
             
             currentFilter = {
-                date: '',
+                dateFrom: '',
+                dateTo: '',
                 machine: '',
                 operator: '',
                 engineering: ''
@@ -1074,6 +1123,7 @@
             
             filteredData = [...allData];
             updateDashboard();
+            showToast('Filter direset ke semua data', 'success');
         };
 
         // ============ DASHBOARD ============
@@ -1131,7 +1181,6 @@
                 }
             });
             
-            // Sort by total descending (highest to lowest)
             const sortedMachines = Object.entries(machineStats)
                 .sort((a, b) => b[1].total - a[1].total);
             
@@ -1178,7 +1227,6 @@
                 }
             });
             
-            // Sort by total tags (red + white) descending
             const sortedMachines = Object.entries(machineStats)
                 .sort((a, b) => (b[1].red + b[1].white) - (a[1].red + a[1].white));
             
@@ -1255,7 +1303,6 @@
                 }
             });
             
-            // Sort by total descending (highest to lowest)
             const sortedOperators = Object.entries(operatorStats)
                 .sort((a, b) => b[1].total - a[1].total);
             
@@ -1294,7 +1341,6 @@
                 }
             });
             
-            // Sort by total tags (red + white) descending
             const sortedOperators = Object.entries(operatorStats)
                 .sort((a, b) => (b[1].red + b[1].white) - (a[1].red + a[1].white));
             
