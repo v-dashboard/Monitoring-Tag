@@ -86,6 +86,16 @@
             height: 100%;
             transition: width 0.3s ease;
         }
+        .stacked-bar-red-open {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .stacked-bar-red-closed {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
         .stacked-bar-white {
             background: linear-gradient(90deg, #94a3b8, #cbd5e1);
             height: 100%;
@@ -96,8 +106,13 @@
             height: 100%;
             transition: width 0.3s ease;
         }
-        .stacked-bar-machine {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        .stacked-bar-machine-red {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .stacked-bar-machine-closed {
+            background: linear-gradient(90deg, #10b981, #34d399);
             height: 100%;
             transition: width 0.3s ease;
         }
@@ -289,7 +304,7 @@
 
                     <!-- 3 KOLOM HORIZONTAL BARS (Operator, Engineering, Mesin) -->
                     <div class="grid md:grid-cols-3 gap-4">
-                        <!-- Tag by Operator - HORIZONTAL STACKED BAR -->
+                        <!-- Tag by Operator - HORIZONTAL STACKED BAR (RED vs WHITE) -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
                             <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">👷</span> TAG PER OPERATOR</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
@@ -309,7 +324,7 @@
                             </div>
                         </div>
                         
-                        <!-- Tag by Machine - HORIZONTAL BAR -->
+                        <!-- Tag by Machine - HORIZONTAL BAR (RED: OPEN vs CLOSED) + TEXT (TOTAL, WHITE) -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
                             <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">📊</span> TAG PER MESIN</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
@@ -1373,7 +1388,7 @@
             }).join('');
         }
 
-        // HORIZONTAL BAR untuk Machine
+        // HORIZONTAL BAR untuk Machine (RED: OPEN vs CLOSED) + TEXT (TOTAL, WHITE)
         function renderMachineBars(tags) {
             const container = document.getElementById('machine-bars');
             if (!container) return;
@@ -1381,11 +1396,27 @@
             const machineStats = {};
             
             machines.forEach(m => {
-                machineStats[m] = { total: 0 };
+                machineStats[m] = { 
+                    red: 0,
+                    white: 0,
+                    red_open: 0,
+                    red_closed: 0,
+                    total: 0
+                };
             });
             
             tags.forEach(t => {
                 if (machineStats[t.machine]) {
+                    if (t.tag_type === 'RED') {
+                        machineStats[t.machine].red++;
+                        if (t.status === 'OPEN' || t.status === 'ON PROGRESS') {
+                            machineStats[t.machine].red_open++;
+                        } else if (t.status === 'CLOSED') {
+                            machineStats[t.machine].red_closed++;
+                        }
+                    } else {
+                        machineStats[t.machine].white++;
+                    }
                     machineStats[t.machine].total++;
                 }
             });
@@ -1393,20 +1424,32 @@
             const sortedMachines = Object.entries(machineStats)
                 .sort((a, b) => b[1].total - a[1].total);
             
-            const maxTotal = Math.max(...Object.values(machineStats).map(s => s.total), 1);
+            const maxRed = Math.max(...Object.values(machineStats).map(s => s.red), 1);
             
             container.innerHTML = sortedMachines.map(([machine, stats]) => {
-                const width = (stats.total / maxTotal) * 100;
+                const redOpenPercent = (stats.red_open / maxRed) * 100;
+                const redClosedPercent = (stats.red_closed / maxRed) * 100;
                 
                 return `
-                    <div class="space-y-1">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-semibold uppercase">${machine}</span>
-                            <span class="text-xs font-bold text-blue-600">${stats.total} tag</span>
+                            <div class="text-xs">
+                                <span class="text-slate-600 mr-2">⚪ ${stats.white}</span>
+                                <span class="font-bold text-blue-600">📊 ${stats.total}</span>
+                            </div>
                         </div>
-                        <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div class="h-full stacked-bar-machine rounded-full flex items-center justify-end px-2 text-[10px] font-bold text-white" style="width: ${width}%">
-                                ${stats.total > 0 ? stats.total : ''}
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px]">
+                                <span class="text-red-600">🔴 Open: ${stats.red_open}</span>
+                                <span class="text-emerald-600">✅ Closed: ${stats.red_closed}</span>
+                            </div>
+                            <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex">
+                                <div class="h-full stacked-bar-red-open" style="width: ${redOpenPercent}%"></div>
+                                <div class="h-full stacked-bar-red-closed" style="width: ${redClosedPercent}%"></div>
+                            </div>
+                            <div class="text-[10px] text-center text-slate-500">
+                                Total Red: ${stats.red}
                             </div>
                         </div>
                     </div>
