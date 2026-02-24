@@ -313,75 +313,74 @@
                         </div>
                     </div>
 
-                    <!-- Score Cards - 9 Cards (3x3 Layout) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <!-- Baris 1: Total Tags, Tag On, Tag Off -->
-                        <div class="score-card score-card-purple">
-                            <div class="card-icon">📊</div>
-                            <p class="score-title text-purple-800 dark:text-purple-200">TOTAL TAGS</p>
-                            <p id="stat-total-tags" class="score-value text-purple-900 dark:text-white">0</p>
-                            <p class="score-label text-purple-700 dark:text-purple-300">RED + WHITE</p>
-                        </div>
-                        
-                        <div class="score-card score-card-red">
-                            <div class="card-icon">🔴</div>
-                            <p class="score-title text-red-800 dark:text-red-200">TAG ON</p>
-                            <p id="stat-tag-on" class="score-value text-red-900 dark:text-white">0</p>
-                            <p class="score-label text-red-700 dark:text-red-300">OPEN + PROGRESS</p>
-                        </div>
-                        
-                        <div class="score-card score-card-emerald">
-                            <div class="card-icon">🟢</div>
-                            <p class="score-title text-emerald-800 dark:text-emerald-200">TAG OFF</p>
-                            <p id="stat-tag-off" class="score-value text-emerald-900 dark:text-white">0</p>
-                            <p class="score-label text-emerald-700 dark:text-emerald-300">WHITE + CLOSED RED</p>
-                        </div>
+        <!-- Score Cards - 9 Cards (3x3 Layout) - PAKE TAILWIND MURNI -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <!-- Baris 1: Total Tags, Tag On, Tag Off -->
+    <div class="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-xl p-5 border-l-4 border-purple-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">📊</div>
+        <div class="text-xs font-bold uppercase text-purple-800 dark:text-purple-200 mb-1">TOTAL TAGS</div>
+        <div id="stat-total-tags" class="text-3xl font-black text-purple-900 dark:text-white">0</div>
+        <div class="text-xs text-purple-600 dark:text-purple-300 mt-1">RED + WHITE</div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">🔴</div>
+        <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">TAG ON</div>
+        <div id="stat-tag-on" class="text-3xl font-black text-red-900 dark:text-white">0</div>
+        <div class="text-xs text-red-600 dark:text-red-300 mt-1">OPEN + PROGRESS</div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">🟢</div>
+        <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">TAG OFF</div>
+        <div id="stat-tag-off" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
+        <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">WHITE + CLOSED RED</div>
+    </div>
 
-                        <!-- Baris 2: Open, Progress, Closed (Counts) -->
-                        <div class="score-card score-card-red">
-                            <div class="card-icon">📌</div>
-                            <p class="score-title text-red-800 dark:text-red-200">OPEN</p>
-                            <p id="stat-open" class="score-value text-red-900 dark:text-white">0</p>
-                            <p class="score-label text-red-700 dark:text-red-300">Status OPEN</p>
-                        </div>
-                        
-                        <div class="score-card score-card-amber">
-                            <div class="card-icon">⏳</div>
-                            <p class="score-title text-amber-800 dark:text-amber-200">PROGRESS</p>
-                            <p id="stat-progress" class="score-value text-amber-900 dark:text-white">0</p>
-                            <p class="score-label text-amber-700 dark:text-amber-300">ON PROGRESS</p>
-                        </div>
-                        
-                        <div class="score-card score-card-emerald">
-                            <div class="card-icon">✅</div>
-                            <p class="score-title text-emerald-800 dark:text-emerald-200">CLOSED</p>
-                            <p id="stat-closed" class="score-value text-emerald-900 dark:text-white">0</p>
-                            <p class="score-label text-emerald-700 dark:text-emerald-300">Status CLOSED</p>
-                        </div>
+    <!-- Baris 2: Open, Progress, Closed -->
+    <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">📌</div>
+        <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">OPEN</div>
+        <div id="stat-open" class="text-3xl font-black text-red-900 dark:text-white">0</div>
+        <div class="text-xs text-red-600 dark:text-red-300 mt-1">Status OPEN</div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">⏳</div>
+        <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">PROGRESS</div>
+        <div id="stat-progress" class="text-3xl font-black text-amber-900 dark:text-white">0</div>
+        <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">ON PROGRESS</div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">✅</div>
+        <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">CLOSED</div>
+        <div id="stat-closed" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
+        <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">Status CLOSED</div>
+    </div>
 
-                        <!-- Baris 3: Percentages (based on Tag On) -->
-                        <div class="score-card score-card-red">
-                            <div class="card-icon">📈</div>
-                            <p class="score-title text-red-800 dark:text-red-200">% OPEN</p>
-                            <p id="stat-open-percent" class="score-value text-red-900 dark:text-white">0%</p>
-                            <p class="score-label text-red-700 dark:text-red-300">dari TAG ON</p>
-                        </div>
-                        
-                        <div class="score-card score-card-amber">
-                            <div class="card-icon">📊</div>
-                            <p class="score-title text-amber-800 dark:text-amber-200">% PROGRESS</p>
-                            <p id="stat-progress-percent" class="score-value text-amber-900 dark:text-white">0%</p>
-                            <p class="score-label text-amber-700 dark:text-amber-300">dari TAG ON</p>
-                        </div>
-                        
-                        <div class="score-card score-card-emerald">
-                            <div class="card-icon">🎯</div>
-                            <p class="score-title text-emerald-800 dark:text-emerald-200">% CLOSED</p>
-                            <p id="stat-closed-percent" class="score-value text-emerald-900 dark:text-white">0%</p>
-                            <p class="score-label text-emerald-700 dark:text-emerald-300">dari TAG ON</p>
-                        </div>
-                    </div>
-
+    <!-- Baris 3: Percentages -->
+    <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">📈</div>
+        <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">% OPEN</div>
+        <div id="stat-open-percent" class="text-3xl font-black text-red-900 dark:text-white">0%</div>
+        <div class="text-xs text-red-600 dark:text-red-300 mt-1">dari TAG ON</div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">📊</div>
+        <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">% PROGRESS</div>
+        <div id="stat-progress-percent" class="text-3xl font-black text-amber-900 dark:text-white">0%</div>
+        <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">dari TAG ON</div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl p-5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <div class="text-4xl mb-2 opacity-30">🎯</div>
+        <div class="text-xs font-bold uppercase text-white mb-1">% CLOSED</div>
+        <div id="stat-closed-percent" class="text-3xl font-black text-white">0%</div>
+        <div class="text-xs text-emerald-100 mt-1">dari TAG ON</div>
+    </div>
+</div>
                     <!-- Charts Row - 3 Kolom (Operator, Engineering, Mesin) -->
                     <div class="grid md:grid-cols-3 gap-4">
                         <!-- Tag by Operator -->
