@@ -176,7 +176,7 @@
 
                     <!-- Charts Row -->
                     <div class="grid md:grid-cols-2 gap-4">
-                        <!-- Tag by Machine dengan Details -->
+                        <!-- Tag by Machine dengan Details (Tanpa Persentase) -->
                         <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
                             <h3 class="font-bold uppercase text-sm mb-4 break-word">📊 TAG PER MESIN</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
@@ -188,7 +188,7 @@
                             </div>
                         </div>
                         
-                        <!-- Tag by Operator dengan Details -->
+                        <!-- Tag by Operator dengan Details (Tanpa Persentase) -->
                         <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
                             <h3 class="font-bold uppercase text-sm mb-4 break-word">👷 TAG PER OPERATOR</h3>
                             <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
@@ -1171,13 +1171,12 @@
             const machineStats = {};
             
             machines.forEach(m => {
-                machineStats[m] = { total: 0, closed: 0 };
+                machineStats[m] = { total: 0 };
             });
             
             tags.forEach(t => {
                 if (machineStats[t.machine]) {
                     machineStats[t.machine].total++;
-                    if (t.status === 'CLOSED') machineStats[t.machine].closed++;
                 }
             });
             
@@ -1187,7 +1186,6 @@
             const maxTotal = Math.max(...Object.values(machineStats).map(s => s.total), 1);
             
             container.innerHTML = sortedMachines.map(([machine, stats]) => {
-                const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
                 const width = (stats.total / maxTotal) * 100;
                 
                 return `
@@ -1198,7 +1196,6 @@
                                 <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
                             </div>
                         </div>
-                        <span class="w-12 text-xs font-bold text-emerald-500 whitespace-nowrap">${percent}%</span>
                     </div>
                 `;
             }).join('');
@@ -1293,13 +1290,12 @@
             const operatorStats = {};
             
             operators.forEach(o => {
-                operatorStats[o] = { total: 0, closed: 0 };
+                operatorStats[o] = { total: 0 };
             });
             
             tags.forEach(t => {
                 if (operatorStats[t.initial]) {
                     operatorStats[t.initial].total++;
-                    if (t.status === 'CLOSED') operatorStats[t.initial].closed++;
                 }
             });
             
@@ -1309,7 +1305,6 @@
             const maxTotal = Math.max(...Object.values(operatorStats).map(s => s.total), 1);
             
             container.innerHTML = sortedOperators.map(([operator, stats]) => {
-                const percent = stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) : 0;
                 const width = (stats.total / maxTotal) * 100;
                 
                 return `
@@ -1320,7 +1315,6 @@
                                 <span class="text-xs font-bold text-white whitespace-nowrap">${stats.total}</span>
                             </div>
                         </div>
-                        <span class="w-12 text-xs font-bold text-blue-500 whitespace-nowrap">${percent}%</span>
                     </div>
                 `;
             }).join('');
