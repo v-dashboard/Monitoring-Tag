@@ -119,24 +119,67 @@
         /* Horizontal bar untuk red vs white */
         .red-white-bar {
             display: flex;
-            height: 32px;
+            height: 40px;
             border-radius: 9999px;
             overflow: hidden;
             width: 100%;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
         }
         .red-bar {
             background: linear-gradient(90deg, #ef4444, #f87171);
             height: 100%;
             transition: width 0.3s ease;
+            position: relative;
+        }
+        .red-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
         }
         .white-bar {
             background: linear-gradient(90deg, #94a3b8, #cbd5e1);
             height: 100%;
             transition: width 0.3s ease;
+            position: relative;
         }
-        /* Score card styles */
+        .white-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        /* Score card styles - UPDATED */
         .score-card {
             @apply rounded-xl p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+        }
+        /* New card styles */
+        .glass-card {
+            @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border border-white/20 dark:border-slate-700/50 shadow-xl;
+        }
+        .gradient-border {
+            position: relative;
+            border: double 1px transparent;
+            border-radius: 0.75rem;
+            background-image: linear-gradient(var(--tw-gradient-stops));
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+        }
+        /* Active filter badge */
+        .filter-badge {
+            @apply inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200;
         }
     </style>
 </head>
@@ -210,149 +253,219 @@
 
             <!-- Content -->
             <main class="flex-1 p-4 overflow-auto">
-                <!-- Dashboard Page -->
+                <!-- Dashboard Page - UPDATED FOR BETTER UI -->
                 <div id="page-dashboard" class="page space-y-6">
-                    <!-- Filter Section -->
-                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                        <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2">🔍 FILTER DASHBOARD (RENTANG TANGGAL)</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <!-- Filter Section with Active Filters Display -->
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <h3 class="font-bold uppercase text-sm flex items-center gap-2">
+                                <span class="text-xl">🔍</span> FILTER DASHBOARD
+                            </h3>
+                            <div id="active-filters" class="flex flex-wrap gap-2">
+                                <!-- Active filters will be displayed here via JS -->
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase mb-1">TANGGAL DARI</label>
-                                <input type="date" id="filter-date-from" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm">
+                                <label class="block text-xs font-bold uppercase mb-1 text-slate-600 dark:text-slate-400">DARI TANGGAL</label>
+                                <input type="date" id="filter-date-from" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase mb-1">TANGGAL SAMPAI</label>
-                                <input type="date" id="filter-date-to" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm">
+                                <label class="block text-xs font-bold uppercase mb-1 text-slate-600 dark:text-slate-400">SAMPAI TANGGAL</label>
+                                <input type="date" id="filter-date-to" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase mb-1">MESIN</label>
-                                <select id="filter-machine" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase">
+                                <label class="block text-xs font-bold uppercase mb-1 text-slate-600 dark:text-slate-400">MESIN</label>
+                                <select id="filter-machine" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase">
                                     <option value="">SEMUA MESIN</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase mb-1">OPERATOR</label>
-                                <select id="filter-operator" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase">
+                                <label class="block text-xs font-bold uppercase mb-1 text-slate-600 dark:text-slate-400">OPERATOR</label>
+                                <select id="filter-operator" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase">
                                     <option value="">SEMUA OPERATOR</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase mb-1">ENGINEERING</label>
-                                <select id="filter-engineering" class="w-full px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase">
+                                <label class="block text-xs font-bold uppercase mb-1 text-slate-600 dark:text-slate-400">ENGINEERING</label>
+                                <select id="filter-engineering" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase">
                                     <option value="">SEMUA ENGINEERING</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            <button onclick="applyDashboardFilter()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition shadow-lg shadow-emerald-500/30">TERAPKAN FILTER</button>
-                            <button onclick="resetDashboardFilter()" class="px-4 py-2 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg text-sm font-bold uppercase hover:from-slate-600 hover:to-slate-700 transition shadow-lg shadow-slate-500/30">RESET</button>
+                        
+                        <div class="flex flex-wrap gap-3 mt-5">
+                            <button onclick="applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2">
+                                <span>🔍</span> TERAPKAN FILTER
+                            </button>
+                            <button onclick="resetDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg text-sm font-bold uppercase hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg shadow-slate-500/30 flex items-center gap-2">
+                                <span>⟲</span> RESET
+                            </button>
                         </div>
                     </div>
 
-                    <!-- RED VS WHITE COMPARISON - SIMPLE HORIZONTAL BAR (TANPA %) -->
-                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-5 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="font-bold uppercase text-sm flex items-center gap-2"><span class="text-xl">🏷️</span> RED TAG VS WHITE TAG</h3>
-                            <div class="text-sm font-bold">
-                                <span class="text-red-600 mr-3">🔴 <span id="count-red">0</span></span>
-                                <span class="text-slate-600">⚪ <span id="count-white">0</span></span>
+                    <!-- Score Cards - EYE CATCHING REDESIGN -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <!-- Open Card -->
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-[2px] shadow-2xl">
+                            <div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6">
+                                <div class="absolute top-0 right-0 w-20 h-20 bg-red-500 rounded-full filter blur-3xl opacity-20"></div>
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold uppercase text-red-600 dark:text-red-400 mb-1">OPEN</p>
+                                        <p id="stat-open" class="text-4xl font-black text-slate-900 dark:text-white">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center text-2xl">
+                                        📌
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Menunggu tindakan</p>
                             </div>
                         </div>
+
+                        <!-- Progress Card -->
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 p-[2px] shadow-2xl">
+                            <div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6">
+                                <div class="absolute top-0 right-0 w-20 h-20 bg-amber-500 rounded-full filter blur-3xl opacity-20"></div>
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold uppercase text-amber-600 dark:text-amber-400 mb-1">PROGRESS</p>
+                                        <p id="stat-progress" class="text-4xl font-black text-slate-900 dark:text-white">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center text-2xl">
+                                        ⏳
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Dalam pengerjaan</p>
+                            </div>
+                        </div>
+
+                        <!-- Closed Card -->
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-[2px] shadow-2xl">
+                            <div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6">
+                                <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500 rounded-full filter blur-3xl opacity-20"></div>
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold uppercase text-emerald-600 dark:text-emerald-400 mb-1">CLOSED</p>
+                                        <p id="stat-closed" class="text-4xl font-black text-slate-900 dark:text-white">0</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-2xl">
+                                        ✅
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Telah diselesaikan</p>
+                            </div>
+                        </div>
+
+                        <!-- % Closed Card -->
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-[2px] shadow-2xl">
+                            <div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6">
+                                <div class="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full filter blur-3xl opacity-20"></div>
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold uppercase text-purple-600 dark:text-purple-400 mb-1">% CLOSED</p>
+                                        <p id="stat-closed-percent" class="text-4xl font-black text-slate-900 dark:text-white">0%</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-2xl">
+                                        📊
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">dari total RED TAG</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RED VS WHITE COMPARISON - EYE CATCHING BAR -->
+                    <div class="glass-card rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold uppercase text-lg flex items-center gap-2">
+                                <span class="text-2xl">🏷️</span> RED TAG VS WHITE TAG
+                            </h3>
+                            <div class="flex items-center gap-4 text-sm font-bold">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                    <span class="text-slate-700 dark:text-slate-300">RED:</span>
+                                    <span id="count-red" class="text-red-600">0</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                                    <span class="text-slate-700 dark:text-slate-300">WHITE:</span>
+                                    <span id="count-white" class="text-slate-600">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="red-white-bar bg-slate-200 dark:bg-slate-700">
                             <div id="red-bar-width" class="red-bar" style="width: 0%"></div>
                             <div id="white-bar-width" class="white-bar" style="width: 0%"></div>
                         </div>
-                        <div class="flex justify-between text-xs text-slate-500 mt-2">
-                            <span>Total: <span id="total-tags-display">0</span> tag</span>
+                        
+                        <div class="flex justify-between mt-3">
+                            <span class="text-sm text-slate-500">Total Tag: <span id="total-tags-display" class="font-bold text-slate-700 dark:text-slate-300">0</span></span>
+                            <span class="text-sm text-slate-500">Progress penyelesaian: <span class="font-bold text-emerald-600">{{closedPercentage}}%</span></span>
                         </div>
                     </div>
 
-                    <!-- Score Cards - HANYA 4 CARD -->
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                        <!-- Open Card -->
-                        <div class="bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 rounded-xl p-5 border-l-4 border-red-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-4xl mb-2 opacity-30">📌</div>
-                            <div class="text-xs font-bold uppercase text-red-800 dark:text-red-200 mb-1">OPEN</div>
-                            <div id="stat-open" class="text-3xl font-black text-red-900 dark:text-white">0</div>
-                            <div class="text-xs text-red-600 dark:text-red-300 mt-1">Status OPEN</div>
-                        </div>
-                        
-                        <!-- Progress Card -->
-                        <div class="bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900 dark:to-amber-800 rounded-xl p-5 border-l-4 border-amber-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-4xl mb-2 opacity-30">⏳</div>
-                            <div class="text-xs font-bold uppercase text-amber-800 dark:text-amber-200 mb-1">PROGRESS</div>
-                            <div id="stat-progress" class="text-3xl font-black text-amber-900 dark:text-white">0</div>
-                            <div class="text-xs text-amber-600 dark:text-amber-300 mt-1">ON PROGRESS</div>
-                        </div>
-                        
-                        <!-- Closed Card -->
-                        <div class="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 rounded-xl p-5 border-l-4 border-emerald-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-4xl mb-2 opacity-30">✅</div>
-                            <div class="text-xs font-bold uppercase text-emerald-800 dark:text-emerald-200 mb-1">CLOSED</div>
-                            <div id="stat-closed" class="text-3xl font-black text-emerald-900 dark:text-white">0</div>
-                            <div class="text-xs text-emerald-600 dark:text-emerald-300 mt-1">Status CLOSED</div>
-                        </div>
-
-                        <!-- % Closed Card -->
-                        <div class="bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 rounded-xl p-5 border-l-4 border-purple-500 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-                            <div class="text-4xl mb-2 opacity-30">📊</div>
-                            <div class="text-xs font-bold uppercase text-purple-800 dark:text-purple-200 mb-1">% CLOSED</div>
-                            <div id="stat-closed-percent" class="text-3xl font-black text-purple-900 dark:text-white">0%</div>
-                            <div class="text-xs text-purple-600 dark:text-purple-300 mt-1">dari RED TAG</div>
-                        </div>
-                    </div>
-
-                    <!-- 3 KOLOM HORIZONTAL BARS (Operator, Engineering, Mesin) -->
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <!-- Tag by Operator - HORIZONTAL STACKED BAR (RED vs WHITE) -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                            <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">👷</span> TAG PER OPERATOR</h3>
-                            <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-                                <div id="operator-stacked-bars" class="space-y-3">
-                                    <!-- Akan diisi JavaScript -->
-                                </div>
+                    <!-- 3 KOLOM HORIZONTAL BARS - REDESIGNED -->
+                    <div class="grid lg:grid-cols-3 gap-5">
+                        <!-- Tag by Operator -->
+                        <div class="glass-card rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2">
+                                    <span>👷</span> TAG PER OPERATOR
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="operator-stacked-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
 
-                        <!-- Closed Tag by Engineering - HORIZONTAL BAR -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                            <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">🏆</span> CLOSED PER ENGINEERING</h3>
-                            <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-                                <div id="engineering-bars" class="space-y-3">
-                                    <!-- Akan diisi JavaScript -->
-                                </div>
+                        <!-- Closed Tag by Engineering -->
+                        <div class="glass-card rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2">
+                                    <span>🏆</span> CLOSED PER ENGINEERING
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="engineering-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
-                        
-                        <!-- Tag by Machine - HORIZONTAL BAR (RED: OPEN vs CLOSED) + TEXT (TOTAL, WHITE) -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                            <h3 class="font-bold uppercase text-sm mb-4 flex items-center gap-2"><span class="text-2xl">📊</span> TAG PER MESIN</h3>
-                            <div class="space-y-4 max-h-96 overflow-auto scrollbar-thin pr-2">
-                                <div id="machine-bars" class="space-y-3">
-                                    <!-- Akan diisi JavaScript -->
-                                </div>
+
+                        <!-- Tag by Machine -->
+                        <div class="glass-card rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2">
+                                    <span>🏭</span> TAG PER MESIN
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="machine-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Red Tag Table -->
-                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                        <div class="p-4 border-b border-white/20 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-gradient-to-r from-red-500/10 to-transparent">
-                            <h3 class="font-bold uppercase text-sm flex items-center gap-2"><span class="text-2xl">🔴</span> DAFTAR RED TAG</h3>
-                            <span id="red-tag-count" class="text-xs bg-red-500 text-white px-3 py-1.5 rounded-full font-bold shadow-lg shadow-red-500/30 whitespace-nowrap">0 TAG</span>
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
+                            <h3 class="font-bold uppercase text-white flex items-center gap-2">
+                                <span>🔴</span> DAFTAR RED TAG
+                            </h3>
+                            <span id="red-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50/50 dark:bg-slate-700/50">
                                     <tr>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">RESIKO</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">RESIKO</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th>
+                                        <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th>
                                     </tr>
                                 </thead>
                                 <tbody id="red-tag-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
@@ -361,21 +474,23 @@
                     </div>
 
                     <!-- White Tag Table -->
-                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                        <div class="p-4 border-b border-white/20 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-gradient-to-r from-slate-500/10 to-transparent">
-                            <h3 class="font-bold uppercase text-sm flex items-center gap-2"><span class="text-2xl">⚪</span> DAFTAR WHITE TAG</h3>
-                            <span id="white-tag-count" class="text-xs bg-slate-500 text-white px-3 py-1.5 rounded-full font-bold shadow-lg shadow-slate-500/30 whitespace-nowrap">0 TAG</span>
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
+                            <h3 class="font-bold uppercase text-white flex items-center gap-2">
+                                <span>⚪</span> DAFTAR WHITE TAG
+                            </h3>
+                            <span id="white-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50/50 dark:bg-slate-700/50">
                                     <tr>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
-                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">RESIKO</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">RESIKO</th>
                                     </tr>
                                 </thead>
                                 <tbody id="white-tag-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
@@ -1194,6 +1309,28 @@
                 engineerings.map(e => `<option value="${e}">${e}</option>`).join('');
         }
 
+        // New function to update active filters display
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('active-filters');
+            if (!container) return;
+            
+            const filters = [];
+            
+            if (currentFilter.dateFrom) filters.push(`Dari: ${currentFilter.dateFrom}`);
+            if (currentFilter.dateTo) filters.push(`Sampai: ${currentFilter.dateTo}`);
+            if (currentFilter.machine) filters.push(`Mesin: ${currentFilter.machine}`);
+            if (currentFilter.operator) filters.push(`Operator: ${currentFilter.operator}`);
+            if (currentFilter.engineering) filters.push(`Engineering: ${currentFilter.engineering}`);
+            
+            if (filters.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-400">Tidak ada filter aktif</span>';
+            } else {
+                container.innerHTML = filters.map(f => 
+                    `<span class="filter-badge">${f}</span>`
+                ).join('');
+            }
+        }
+
         window.applyDashboardFilter = function() {
             currentFilter.dateFrom = document.getElementById('filter-date-from').value;
             currentFilter.dateTo = document.getElementById('filter-date-to').value;
@@ -1220,6 +1357,7 @@
                 return true;
             });
             
+            updateActiveFiltersDisplay();
             updateDashboard();
             
             // Tampilkan info rentang tanggal
@@ -1246,6 +1384,7 @@
             };
             
             filteredData = [...allData];
+            updateActiveFiltersDisplay();
             updateDashboard();
             showToast('Filter direset ke semua data', 'success');
         };
@@ -1263,8 +1402,8 @@
             const progress = tags.filter(t => t.status === 'ON PROGRESS').length;
             const closed = tags.filter(t => t.status === 'CLOSED').length;
             
-            // % Closed = ((OPEN + PROGRESS) - CLOSED) / RED
-            const closedPercent = redTags > 0 ? Math.round((((open + progress) - closed) / redTags) * 100) : 0;
+            // % Closed dari RED TAG (fix perhitungan: closed / redTags * 100)
+            const closedPercent = redTags > 0 ? Math.round((closed / redTags) * 100) : 0;
             
             // Update Score Cards
             document.getElementById('stat-open').textContent = open;
@@ -1281,6 +1420,12 @@
             const whiteWidth = totalTags > 0 ? (whiteTags / totalTags) * 100 : 0;
             document.getElementById('red-bar-width').style.width = redWidth + '%';
             document.getElementById('white-bar-width').style.width = whiteWidth + '%';
+            
+            // Update closed percentage in the bar caption
+            const closedPercentageSpan = document.querySelector('.red-white-bar + .flex .text-emerald-600');
+            if (closedPercentageSpan) {
+                closedPercentageSpan.textContent = closedPercent + '%';
+            }
             
             document.getElementById('red-tag-count').textContent = redTags + ' TAG';
             document.getElementById('white-tag-count').textContent = whiteTags + ' TAG';
@@ -1326,18 +1471,18 @@
                 const whitePercent = (stats.white / maxTotal) * 100;
                 
                 return `
-                    <div class="space-y-1">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-semibold uppercase">${operator}</span>
-                            <span class="text-xs text-slate-500">Total: ${stats.total}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${operator}</span>
+                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${stats.total}</span>
                         </div>
                         <div class="stacked-bar bg-slate-200 dark:bg-slate-700">
-                            <div class="stacked-bar-red" style="width: ${redPercent}%"></div>
-                            <div class="stacked-bar-white" style="width: ${whitePercent}%"></div>
+                            <div class="stacked-bar-red" style="width: ${redPercent}%" title="RED: ${stats.red}"></div>
+                            <div class="stacked-bar-white" style="width: ${whitePercent}%" title="WHITE: ${stats.white}"></div>
                         </div>
-                        <div class="flex justify-between text-[10px]">
-                            <span class="text-red-600">🔴 ${stats.red}</span>
-                            <span class="text-slate-600">⚪ ${stats.white}</span>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-red-600 font-semibold">🔴 ${stats.red}</span>
+                            <span class="text-slate-600 dark:text-slate-400 font-semibold">⚪ ${stats.white}</span>
                         </div>
                     </div>
                 `;
@@ -1373,13 +1518,13 @@
                 const width = (stats.closed / maxClosed) * 100;
                 
                 return `
-                    <div class="space-y-1">
+                    <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-semibold uppercase">${eng}</span>
-                            <span class="text-xs font-bold text-emerald-600">${stats.closed} closed</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${eng}</span>
+                            <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">${stats.closed}</span>
                         </div>
-                        <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div class="h-full stacked-bar-engineering rounded-full flex items-center justify-end px-2 text-[10px] font-bold text-white" style="width: ${width}%">
+                        <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end px-3 text-xs font-bold text-white" style="width: ${width}%">
                                 ${stats.closed > 0 ? stats.closed : ''}
                             </div>
                         </div>
@@ -1433,23 +1578,23 @@
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-semibold uppercase">${machine}</span>
-                            <div class="text-xs">
-                                <span class="text-slate-600 mr-2">⚪ ${stats.white}</span>
-                                <span class="font-bold text-blue-600">📊 ${stats.total}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${machine}</span>
+                            <div class="text-sm space-x-3">
+                                <span class="text-slate-600 dark:text-slate-400">⚪ ${stats.white}</span>
+                                <span class="font-bold text-blue-600 dark:text-blue-400">📊 ${stats.total}</span>
                             </div>
                         </div>
                         <div class="space-y-1">
-                            <div class="flex justify-between text-[10px]">
-                                <span class="text-red-600">🔴 Open: ${stats.red_open}</span>
-                                <span class="text-emerald-600">✅ Closed: ${stats.red_closed}</span>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-red-600 font-semibold">🔴 OPEN: ${stats.red_open}</span>
+                                <span class="text-emerald-600 font-semibold">✅ CLOSED: ${stats.red_closed}</span>
                             </div>
-                            <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex">
-                                <div class="h-full stacked-bar-red-open" style="width: ${redOpenPercent}%"></div>
-                                <div class="h-full stacked-bar-red-closed" style="width: ${redClosedPercent}%"></div>
+                            <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex">
+                                <div class="h-full bg-gradient-to-r from-red-500 to-red-400" style="width: ${redOpenPercent}%" title="RED OPEN: ${stats.red_open}"></div>
+                                <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width: ${redClosedPercent}%" title="RED CLOSED: ${stats.red_closed}"></div>
                             </div>
-                            <div class="text-[10px] text-center text-slate-500">
-                                Total Red: ${stats.red}
+                            <div class="text-xs text-center text-slate-500 dark:text-slate-400 font-semibold">
+                                Total RED: ${stats.red}
                             </div>
                         </div>
                     </div>
@@ -1500,21 +1645,21 @@
                 }
                 
                 return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap font-medium">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                            <span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <div class="table-cell-wrap break-word text-container" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div>
+                            <div class="table-cell-wrap break-word text-container max-w-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <div class="table-cell-wrap break-word text-container" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div>
+                            <div class="table-cell-wrap break-word text-container max-w-xs" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono table-cell-wrap">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
+                            <span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">
                             ${actionButton}
@@ -1540,18 +1685,18 @@
             
             tbody.innerHTML = whiteTags.map(tag => {
                 return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDate(tag.date) || '-'}</td>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap font-medium">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${tag.initial || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <div class="table-cell-wrap break-word text-container" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div>
+                            <div class="table-cell-wrap break-word text-container max-w-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <div class="table-cell-wrap break-word text-container" title="${tag.action || ''}">${tag.action || '-'}</div>
+                            <div class="table-cell-wrap break-word text-container max-w-xs" title="${tag.action || ''}">${tag.action || '-'}</div>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
+                            <span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span>
                         </td>
                     </tr>
                 `;
@@ -1998,14 +2143,14 @@
                                      'bg-slate-100 text-slate-700';
                 
                 return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${formatDateTime(log.created_at) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold table-cell-wrap">${log.user || '-'} (${log.role || '-'})</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <span class="px-1 sm:px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${activityColor}">${log.activity || '-'}</span>
+                            <span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${activityColor}">${log.activity || '-'}</span>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3">
-                            <div class="table-cell-wrap break-word text-container" title="${log.detail || ''}">${log.detail || '-'}</div>
+                            <div class="table-cell-wrap break-word text-container max-w-xs" title="${log.detail || ''}">${log.detail || '-'}</div>
                         </td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_date ? formatDate(log.tag_date) : '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs table-cell-wrap">${log.tag_type || '-'}</td>
