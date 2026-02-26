@@ -389,7 +389,7 @@
                             </div>
                         </div>
 
-                        <!-- Closed Card -->
+                        <!-- Closed Card - FIXED: Now shows only RED tags with CLOSED status -->
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-[2px] shadow-2xl">
                             <div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6">
                                 <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500 rounded-full filter blur-3xl opacity-20"></div>
@@ -402,7 +402,7 @@
                                         ✅
                                     </div>
                                 </div>
-                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Telah diselesaikan</p>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Red tag selesai</p>
                             </div>
                         </div>
 
@@ -1421,9 +1421,11 @@
             
             const open = tags.filter(t => t.status === 'OPEN').length;
             const progress = tags.filter(t => t.status === 'ON PROGRESS').length;
-            const closed = tags.filter(t => t.status === 'CLOSED').length;
             
-            // PERBAIKAN RUMUS % CLOSED: (Red Tags Closed / Total Red Tags) * 100
+            // FIXED: CLOSED sekarang hanya menghitung RED tag dengan status CLOSED
+            const closed = tags.filter(t => t.tag_type === 'RED' && t.status === 'CLOSED').length;
+            
+            // % CLOSED: (Red Tags Closed / Total Red Tags) * 100
             const redTagsClosed = tags.filter(t => t.tag_type === 'RED' && t.status === 'CLOSED').length;
             const closedPercent = redTags > 0 ? Math.round((redTagsClosed / redTags) * 100) : 0;
             
