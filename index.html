@@ -73,19 +73,6 @@
             font-weight: 600;
             box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
         }
-        /* Update date badge */
-        .update-date-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.75rem;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
-        }
         /* Stacked bar untuk operator */
         .stacked-bar {
             display: flex;
@@ -206,6 +193,15 @@
                 flex-direction: row;
                 justify-content: center;
             }
+        }
+        /* Simple date style */
+        .simple-date {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+        .dark .simple-date {
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -1689,8 +1685,8 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">
                             ${actionButton}
                         </td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">
-                            <span class="update-date-badge">📅 ${updateDateDisplay}</span>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600 dark:text-slate-400">
+                            ${updateDateDisplay}
                         </td>
                     </tr>
                 `;
