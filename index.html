@@ -108,6 +108,21 @@
         }
         .stacked-bar-red { background: linear-gradient(90deg, #ef4444, #f87171); height: 100%; }
         .stacked-bar-white { background: linear-gradient(90deg, #94a3b8, #cbd5e1); height: 100%; }
+        
+        /* Hide foto section for white tag */
+        .foto-section-hidden {
+            display: none !important;
+        }
+        
+        /* Empty state styling */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -223,11 +238,37 @@
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-purple-600 dark:text-purple-400 mb-1">% CLOSED</p><p id="stat-closed-percent" class="text-4xl font-black text-slate-900 dark:text-white">0%</p></div><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-2xl">📊</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">dari total RED TAG</p></div></div>
                     </div>
 
-                    <!-- 3 KOLOM HORIZONTAL BARS -->
+                    <!-- 3 KOLOM HORIZONTAL BARS - HANYA TAMPILKAN YANG PUNYA NILAI -->
                     <div class="grid lg:grid-cols-3 gap-5">
-                        <div class="glass-card rounded-xl overflow-hidden"><div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> TAG PER OPERATOR</h3></div><div class="p-4"><div id="operator-stacked-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div></div></div>
-                        <div class="glass-card rounded-xl overflow-hidden"><div class="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏆</span> CLOSED PER ENGINEERING</h3></div><div class="p-4"><div id="engineering-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div></div></div>
-                        <div class="glass-card rounded-xl overflow-hidden"><div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> TAG PER MESIN</h3></div><div class="p-4"><div id="machine-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div></div></div>
+                        <!-- Tag by Operator - Hanya tampil yang punya nilai -->
+                        <div class="glass-card rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> TAG PER OPERATOR</h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="operator-stacked-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Closed by Engineering - Hanya tampil yang punya nilai -->
+                        <div class="glass-card rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏆</span> CLOSED PER ENGINEERING</h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="engineering-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tag by Machine - Hanya tampil yang punya nilai -->
+                        <div class="glass-card rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> TAG PER MESIN</h3>
+                            </div>
+                            <div class="p-4">
+                                <div id="machine-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Red Tag Table WITH PHOTO COLUMNS -->
@@ -258,7 +299,7 @@
                         </div>
                     </div>
 
-                    <!-- White Tag Table -->
+                    <!-- White Tag Table (NO PHOTO) -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                             <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚪</span> DAFTAR WHITE TAG</h3>
@@ -282,11 +323,11 @@
                     </div>
                 </div>
 
-                <!-- Input Tag Page WITH PHOTO UPLOAD -->
+                <!-- Input Tag Page - WITH PHOTO ONLY FOR RED TAG -->
                 <div id="page-input" class="page hidden">
                     <div class="max-w-4xl mx-auto">
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 dark:border-slate-700/50 shadow-xl">
-                            <h2 class="font-black uppercase text-lg sm:text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white shadow-lg">➕</span> INPUT TAG BARU DENGAN FOTO</h2>
+                            <h2 class="font-black uppercase text-lg sm:text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white shadow-lg">➕</span> INPUT TAG BARU</h2>
                             <form id="tag-form" class="space-y-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                     <div><label class="block text-sm font-bold uppercase mb-2">TANGGAL</label><input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
@@ -297,8 +338,8 @@
                                 
                                 <div><label class="block text-sm font-bold uppercase mb-2">ABNORMALITAS</label><textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
                                 
-                                <!-- FOTO BEFORE SECTION -->
-                                <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-700">
+                                <!-- FOTO BEFORE SECTION - ONLY SHOW FOR RED TAG -->
+                                <div id="foto-before-section" class="foto-section-hidden bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-700">
                                     <label class="block text-sm font-bold uppercase mb-3 text-emerald-600 dark:text-emerald-400 flex items-center gap-2"><span>📸</span> FOTO BEFORE (ABNORMALITAS) - MAX 100KB</label>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
@@ -330,7 +371,7 @@
                                 
                                 <div id="white-tag-action" class="hidden"><label class="block text-sm font-bold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label><textarea id="input-action" rows="2" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
                                 
-                                <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-black rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"><span>SUBMIT TAG DENGAN FOTO</span></button>
+                                <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-black rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"><span>SUBMIT TAG</span></button>
                             </form>
                         </div>
                     </div>
@@ -401,7 +442,7 @@
             </main>
         </div>
 
-        <!-- Update Modal WITH FOTO AFTER -->
+        <!-- Update Modal WITH FOTO AFTER (ONLY FOR RED TAG) -->
         <div id="update-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeModal()">
             <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/20 dark:border-slate-700/50">
                 <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
@@ -705,9 +746,12 @@
         // ============ CRUD OPERATIONS ============
         async function insertTag(tagData) {
             try {
-                const fotoBefore = document.getElementById('foto-before-data')?.value || '';
-                if (fotoBefore) {
-                    tagData.foto_before = fotoBefore;
+                // Foto before hanya untuk RED TAG
+                if (tagData.tag_type === 'RED') {
+                    const fotoBefore = document.getElementById('foto-before-data')?.value || '';
+                    if (fotoBefore) {
+                        tagData.foto_before = fotoBefore;
+                    }
                 }
                 
                 const { data, error } = await supabaseClient
@@ -717,7 +761,7 @@
 
                 if (error) throw error;
                 
-                await addAuditLog('INSERT TAG', `Menambahkan ${tagData.tag_type} TAG dengan foto`, data[0]);
+                await addAuditLog('INSERT TAG', `Menambahkan ${tagData.tag_type} TAG`, data[0]);
                 showToast('TAG BERHASIL DISIMPAN', 'success');
                 await refreshData();
                 
@@ -742,7 +786,7 @@
                     updateData.closed_at = new Date().toISOString();
                 }
                 
-                // Ambil foto after dari modal
+                // Ambil foto after dari modal (hanya untuk RED TAG)
                 const fotoAfter = document.getElementById('modal-foto-after-data')?.value;
                 if (fotoAfter) {
                     updateData.foto_after = fotoAfter;
@@ -758,7 +802,7 @@
 
                 if (error) throw error;
                 
-                await addAuditLog('UPDATE TAG', `Mengupdate tag ${oldTag?.tag_type} dengan foto after`, data[0]);
+                await addAuditLog('UPDATE TAG', `Mengupdate tag ${oldTag?.tag_type}`, data[0]);
                 showToast('DATA BERHASIL DIUPDATE', 'success');
                 await refreshData();
                 
@@ -1031,6 +1075,7 @@
                 document.getElementById('preview-before').src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
                 document.getElementById('foto-before-data').value = '';
                 document.getElementById('white-tag-action').classList.add('hidden');
+                document.getElementById('foto-before-section').classList.add('foto-section-hidden');
             }
         };
 
@@ -1136,11 +1181,15 @@
             renderWhiteTagTable(tags.filter(t => t.tag_type === 'WHITE'));
         }
 
+        // ============ RENDER BAR CHARTS - HANYA TAMPILKAN YANG PUNYA NILAI ============
         function renderOperatorStackedBars(tags) {
             const container = document.getElementById('operator-stacked-bars');
             const operatorStats = {};
+            
+            // Inisialisasi semua operator dengan 0
             operators.forEach(o => operatorStats[o] = { red: 0, white: 0, total: 0 });
             
+            // Hitung statistik
             tags.forEach(t => {
                 if (operatorStats[t.initial]) {
                     if (t.tag_type === 'RED') operatorStats[t.initial].red++;
@@ -1149,12 +1198,23 @@
                 }
             });
             
-            const sorted = Object.entries(operatorStats).sort((a, b) => b[1].total - a[1].total);
-            const maxTotal = Math.max(...Object.values(operatorStats).map(s => s.total), 1);
+            // Filter hanya yang punya total > 0
+            const filteredStats = Object.entries(operatorStats)
+                .filter(([_, stats]) => stats.total > 0)
+                .sort((a, b) => b[1].total - a[1].total);
             
-            container.innerHTML = sorted.map(([operator, stats]) => {
+            // Jika tidak ada data, tampilkan pesan empty
+            if (filteredStats.length === 0) {
+                container.innerHTML = '<div class="empty-state">Tidak ada data operator</div>';
+                return;
+            }
+            
+            const maxTotal = Math.max(...filteredStats.map(([_, stats]) => stats.total), 1);
+            
+            container.innerHTML = filteredStats.map(([operator, stats]) => {
                 const redPercent = (stats.red / maxTotal) * 100;
                 const whitePercent = (stats.white / maxTotal) * 100;
+                
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
@@ -1179,19 +1239,34 @@
             if (!container) return;
             
             const engineeringStats = {};
+            
+            // Inisialisasi semua engineering dengan 0
             engineerings.forEach(e => engineeringStats[e] = { closed: 0 });
             
+            // Hitung statistik closed
             tags.forEach(t => {
                 if (t.status === 'CLOSED' && t.wr_number) {
                     const matchedEng = engineerings.find(e => t.wr_number.includes(e));
-                    if (matchedEng) engineeringStats[matchedEng].closed++;
+                    if (matchedEng) {
+                        engineeringStats[matchedEng].closed++;
+                    }
                 }
             });
             
-            const sorted = Object.entries(engineeringStats).sort((a, b) => b[1].closed - a[1].closed);
-            const maxClosed = Math.max(...Object.values(engineeringStats).map(s => s.closed), 1);
+            // Filter hanya yang punya closed > 0
+            const filteredStats = Object.entries(engineeringStats)
+                .filter(([_, stats]) => stats.closed > 0)
+                .sort((a, b) => b[1].closed - a[1].closed);
             
-            container.innerHTML = sorted.map(([eng, stats]) => {
+            // Jika tidak ada data, tampilkan pesan empty
+            if (filteredStats.length === 0) {
+                container.innerHTML = '<div class="empty-state">Tidak ada closed tag</div>';
+                return;
+            }
+            
+            const maxClosed = Math.max(...filteredStats.map(([_, stats]) => stats.closed), 1);
+            
+            container.innerHTML = filteredStats.map(([eng, stats]) => {
                 const width = (stats.closed / maxClosed) * 100;
                 return `
                     <div class="space-y-2">
@@ -1200,7 +1275,9 @@
                             <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">${stats.closed}</span>
                         </div>
                         <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end px-3 text-xs font-bold text-white" style="width: ${width}%">${stats.closed > 0 ? stats.closed : ''}</div>
+                            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end px-3 text-xs font-bold text-white" style="width: ${width}%">
+                                ${stats.closed > 0 ? stats.closed : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1212,14 +1289,22 @@
             if (!container) return;
             
             const machineStats = {};
-            machines.forEach(m => machineStats[m] = { red: 0, white: 0, red_open: 0, red_closed: 0, total: 0 });
             
+            // Inisialisasi semua mesin dengan 0
+            machines.forEach(m => machineStats[m] = { 
+                red: 0, white: 0, red_open: 0, red_closed: 0, total: 0 
+            });
+            
+            // Hitung statistik
             tags.forEach(t => {
                 if (machineStats[t.machine]) {
                     if (t.tag_type === 'RED') {
                         machineStats[t.machine].red++;
-                        if (t.status === 'OPEN' || t.status === 'ON PROGRESS') machineStats[t.machine].red_open++;
-                        else if (t.status === 'CLOSED') machineStats[t.machine].red_closed++;
+                        if (t.status === 'OPEN' || t.status === 'ON PROGRESS') {
+                            machineStats[t.machine].red_open++;
+                        } else if (t.status === 'CLOSED') {
+                            machineStats[t.machine].red_closed++;
+                        }
                     } else {
                         machineStats[t.machine].white++;
                     }
@@ -1227,12 +1312,23 @@
                 }
             });
             
-            const sorted = Object.entries(machineStats).sort((a, b) => b[1].total - a[1].total);
-            const maxRed = Math.max(...Object.values(machineStats).map(s => s.red), 1);
+            // Filter hanya yang punya total > 0
+            const filteredStats = Object.entries(machineStats)
+                .filter(([_, stats]) => stats.total > 0)
+                .sort((a, b) => b[1].total - a[1].total);
             
-            container.innerHTML = sorted.map(([machine, stats]) => {
+            // Jika tidak ada data, tampilkan pesan empty
+            if (filteredStats.length === 0) {
+                container.innerHTML = '<div class="empty-state">Tidak ada data mesin</div>';
+                return;
+            }
+            
+            const maxRed = Math.max(...filteredStats.map(([_, stats]) => stats.red), 1);
+            
+            container.innerHTML = filteredStats.map(([machine, stats]) => {
                 const redOpenPercent = (stats.red_open / maxRed) * 100;
                 const redClosedPercent = (stats.red_closed / maxRed) * 100;
+                
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
@@ -1251,7 +1347,9 @@
                                 <div class="h-full bg-gradient-to-r from-red-500 to-red-400" style="width: ${redOpenPercent}%" title="RED OPEN: ${stats.red_open}"></div>
                                 <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width: ${redClosedPercent}%" title="RED CLOSED: ${stats.red_closed}"></div>
                             </div>
-                            <div class="text-xs text-center text-slate-500 dark:text-slate-400 font-semibold">Total RED: ${stats.red}</div>
+                            <div class="text-xs text-center text-slate-500 dark:text-slate-400 font-semibold">
+                                Total RED: ${stats.red}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1290,7 +1388,7 @@
                     }
                 }
                 
-                // Foto before & after
+                // Foto before & after (hanya untuk RED TAG)
                 const fotoBeforeHtml = tag.foto_before ? 
                     `<img src="${tag.foto_before}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_before}')" title="Klik untuk perbesar">` : 
                     `<span class="text-xs text-slate-400">-</span>`;
@@ -1355,6 +1453,202 @@
             }
         }
 
+        // ============ HANDLE TAG TYPE CHANGE ============
+        window.handleTagTypeChange = function() {
+            const tagType = document.getElementById('input-tag-type').value;
+            const actionField = document.getElementById('white-tag-action');
+            const fotoSection = document.getElementById('foto-before-section');
+            const actionInput = document.getElementById('input-action');
+            
+            if (tagType === 'WHITE') {
+                // WHITE TAG: Tampilkan action field, sembunyikan foto
+                actionField.classList.remove('hidden');
+                fotoSection.classList.add('foto-section-hidden');
+                actionInput.required = true;
+            } else if (tagType === 'RED') {
+                // RED TAG: Tampilkan foto, sembunyikan action field
+                actionField.classList.add('hidden');
+                fotoSection.classList.remove('foto-section-hidden');
+                actionInput.required = false;
+            } else {
+                // No selection
+                actionField.classList.add('hidden');
+                fotoSection.classList.add('foto-section-hidden');
+                actionInput.required = false;
+            }
+        };
+
+        function updateMachineDropdown() {
+            const select = document.getElementById('input-machine');
+            if (!select) return;
+            select.innerHTML = '<option value="">PILIH</option>' + 
+                (machines.length > 0 ? machines.map(m => `<option value="${m}">${m}</option>`).join('') : '<option value="" disabled>BELUM ADA MESIN</option>');
+        }
+
+        document.getElementById('tag-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                showToast('SILAKAN LOGIN TERLEBIH DAHULU', 'error');
+                return;
+            }
+            
+            const tagType = document.getElementById('input-tag-type').value;
+            const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN';
+            
+            const newTag = {
+                date: document.getElementById('input-date').value,
+                initial: currentUser,
+                tag_type: tagType,
+                machine: document.getElementById('input-machine').value,
+                abnormality: document.getElementById('input-abnormality').value.toUpperCase(),
+                impact: document.getElementById('input-impact').value.toUpperCase(),
+                risk: document.getElementById('input-risk').value,
+                action: document.getElementById('input-action')?.value?.toUpperCase() || '',
+                status: status,
+                wr_number: '',
+                progress_note: '',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            if (tagType === 'WHITE') {
+                newTag.closed_by = currentUser;
+                newTag.closed_at = new Date().toISOString();
+            }
+            
+            // Foto before hanya untuk RED TAG
+            if (tagType === 'RED') {
+                const fotoBefore = document.getElementById('foto-before-data')?.value;
+                if (fotoBefore) {
+                    newTag.foto_before = fotoBefore;
+                }
+            }
+            
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">MENYIMPAN...</span>';
+            
+            const inserted = await insertTag(newTag);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span>SUBMIT TAG</span>';
+            
+            if (inserted) {
+                document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('input-tag-type').value = '';
+                document.getElementById('input-machine').value = '';
+                document.getElementById('input-abnormality').value = '';
+                document.getElementById('input-impact').value = '';
+                document.getElementById('input-risk').value = '';
+                document.getElementById('input-action').value = '';
+                document.getElementById('white-tag-action').classList.add('hidden');
+                document.getElementById('foto-before-section').classList.add('foto-section-hidden');
+                document.getElementById('preview-before').src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
+                document.getElementById('foto-before-data').value = '';
+                document.getElementById('file-size-before').textContent = '';
+            }
+        });
+
+        // ============ MANAGEMENT ============
+        function renderManagementLists() {
+            const operatorList = document.getElementById('operator-list');
+            operatorList.innerHTML = operators.length === 0 
+                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
+                : operators.map(o => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="font-semibold uppercase text-sm break-word">${o}</span>
+                        <div class="flex gap-1">
+                            <button onclick="openEditModal('operator', '${o}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
+                            <button onclick="deleteOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        </div>
+                    </div>
+                `).join('');
+            
+            const engineeringList = document.getElementById('engineering-list');
+            engineeringList.innerHTML = engineerings.length === 0
+                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
+                : engineerings.map(e => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="font-semibold uppercase text-sm break-word">${e}</span>
+                        <div class="flex gap-1">
+                            <button onclick="openEditModal('engineering', '${e}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
+                            <button onclick="deleteEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        </div>
+                    </div>
+                `).join('');
+            
+            const machineList = document.getElementById('machine-list');
+            machineList.innerHTML = machines.length === 0
+                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
+                : machines.map(m => `
+                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <span class="font-semibold uppercase text-sm break-word">${m}</span>
+                        <div class="flex gap-1">
+                            <button onclick="openEditModal('machine', '${m}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
+                            <button onclick="deleteMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        window.addOperator = async function() {
+            const input = document.getElementById('new-operator');
+            const value = input.value.trim().toUpperCase();
+            if (!value) return showToast('MASUKKAN INISIAL OPERATOR', 'error');
+            if (operators.includes(value)) {
+                showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                input.value = '';
+                return;
+            }
+            await insertOperator(value);
+            input.value = '';
+        };
+
+        window.deleteOperator = async function(name) {
+            if (confirm(`HAPUS OPERATOR ${name}?`)) {
+                await deleteOperator(name);
+            }
+        };
+
+        window.addEngineering = async function() {
+            const input = document.getElementById('new-engineering');
+            const value = input.value.trim().toUpperCase();
+            if (!value) return showToast('MASUKKAN INISIAL ENGINEERING', 'error');
+            if (engineerings.includes(value)) {
+                showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                input.value = '';
+                return;
+            }
+            await insertEngineering(value);
+            input.value = '';
+        };
+
+        window.deleteEngineering = async function(name) {
+            if (confirm(`HAPUS ENGINEERING ${name}?`)) {
+                await deleteEngineering(name);
+            }
+        };
+
+        window.addMachine = async function() {
+            const input = document.getElementById('new-machine');
+            const value = input.value.trim().toUpperCase();
+            if (!value) return showToast('MASUKKAN NAMA MESIN', 'error');
+            if (machines.includes(value)) {
+                showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
+                input.value = '';
+                return;
+            }
+            await insertMachine(value);
+            input.value = '';
+        };
+
+        window.deleteMachine = async function(name) {
+            if (confirm(`HAPUS MESIN ${name}?`)) {
+                await deleteMachine(name);
+            }
+        };
+
         // ============ UPDATE MODAL ============
         window.openUpdateModal = function(tagId) {
             if (!tagId) {
@@ -1410,7 +1704,7 @@
                             <textarea id="modal-note" rows="2" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word">${tag.progress_note || ''}</textarea>
                         </div>
                         
-                        <!-- FOTO AFTER SECTION -->
+                        <!-- FOTO AFTER SECTION - ONLY FOR RED TAG -->
                         <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-700">
                             <label class="block text-sm font-bold uppercase mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-2">
                                 <span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB
@@ -1556,188 +1850,6 @@
                 closeEditModal();
                 showToast('DATA BERHASIL DIUPDATE', 'success');
                 await refreshData();
-            }
-        };
-
-        // ============ INPUT TAG ============
-        window.handleTagTypeChange = function() {
-            const tagType = document.getElementById('input-tag-type').value;
-            const actionField = document.getElementById('white-tag-action');
-            const actionInput = document.getElementById('input-action');
-            
-            if (tagType === 'WHITE') {
-                actionField.classList.remove('hidden');
-                actionInput.required = true;
-            } else {
-                actionField.classList.add('hidden');
-                actionInput.required = false;
-            }
-        };
-
-        function updateMachineDropdown() {
-            const select = document.getElementById('input-machine');
-            if (!select) return;
-            select.innerHTML = '<option value="">PILIH</option>' + 
-                (machines.length > 0 ? machines.map(m => `<option value="${m}">${m}</option>`).join('') : '<option value="" disabled>BELUM ADA MESIN</option>');
-        }
-
-        document.getElementById('tag-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!currentUser) {
-                showToast('SILAKAN LOGIN TERLEBIH DAHULU', 'error');
-                return;
-            }
-            
-            const tagType = document.getElementById('input-tag-type').value;
-            const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN';
-            
-            const newTag = {
-                date: document.getElementById('input-date').value,
-                initial: currentUser,
-                tag_type: tagType,
-                machine: document.getElementById('input-machine').value,
-                abnormality: document.getElementById('input-abnormality').value.toUpperCase(),
-                impact: document.getElementById('input-impact').value.toUpperCase(),
-                risk: document.getElementById('input-risk').value,
-                action: document.getElementById('input-action')?.value?.toUpperCase() || '',
-                status: status,
-                wr_number: '',
-                progress_note: '',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
-            
-            if (tagType === 'WHITE') {
-                newTag.closed_by = currentUser;
-                newTag.closed_at = new Date().toISOString();
-            }
-            
-            const fotoBefore = document.getElementById('foto-before-data')?.value;
-            if (fotoBefore) {
-                newTag.foto_before = fotoBefore;
-            }
-            
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="animate-pulse">MENYIMPAN...</span>';
-            
-            const inserted = await insertTag(newTag);
-            
-            btn.disabled = false;
-            btn.innerHTML = '<span>SUBMIT TAG DENGAN FOTO</span>';
-            
-            if (inserted) {
-                document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
-                document.getElementById('input-tag-type').value = '';
-                document.getElementById('input-machine').value = '';
-                document.getElementById('input-abnormality').value = '';
-                document.getElementById('input-impact').value = '';
-                document.getElementById('input-risk').value = '';
-                document.getElementById('input-action').value = '';
-                document.getElementById('white-tag-action').classList.add('hidden');
-                document.getElementById('preview-before').src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
-                document.getElementById('foto-before-data').value = '';
-                document.getElementById('file-size-before').textContent = '';
-            }
-        });
-
-        // ============ MANAGEMENT ============
-        function renderManagementLists() {
-            const operatorList = document.getElementById('operator-list');
-            operatorList.innerHTML = operators.length === 0 
-                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
-                : operators.map(o => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <span class="font-semibold uppercase text-sm break-word">${o}</span>
-                        <div class="flex gap-1">
-                            <button onclick="openEditModal('operator', '${o}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                            <button onclick="deleteOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-                        </div>
-                    </div>
-                `).join('');
-            
-            const engineeringList = document.getElementById('engineering-list');
-            engineeringList.innerHTML = engineerings.length === 0
-                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
-                : engineerings.map(e => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <span class="font-semibold uppercase text-sm break-word">${e}</span>
-                        <div class="flex gap-1">
-                            <button onclick="openEditModal('engineering', '${e}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                            <button onclick="deleteEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-                        </div>
-                    </div>
-                `).join('');
-            
-            const machineList = document.getElementById('machine-list');
-            machineList.innerHTML = machines.length === 0
-                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
-                : machines.map(m => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                        <span class="font-semibold uppercase text-sm break-word">${m}</span>
-                        <div class="flex gap-1">
-                            <button onclick="openEditModal('machine', '${m}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                            <button onclick="deleteMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-                        </div>
-                    </div>
-                `).join('');
-        }
-
-        window.addOperator = async function() {
-            const input = document.getElementById('new-operator');
-            const value = input.value.trim().toUpperCase();
-            if (!value) return showToast('MASUKKAN INISIAL OPERATOR', 'error');
-            if (operators.includes(value)) {
-                showToast('INISIAL SUDAH TERDAFTAR', 'error');
-                input.value = '';
-                return;
-            }
-            await insertOperator(value);
-            input.value = '';
-        };
-
-        window.deleteOperator = async function(name) {
-            if (confirm(`HAPUS OPERATOR ${name}?`)) {
-                await deleteOperator(name);
-            }
-        };
-
-        window.addEngineering = async function() {
-            const input = document.getElementById('new-engineering');
-            const value = input.value.trim().toUpperCase();
-            if (!value) return showToast('MASUKKAN INISIAL ENGINEERING', 'error');
-            if (engineerings.includes(value)) {
-                showToast('INISIAL SUDAH TERDAFTAR', 'error');
-                input.value = '';
-                return;
-            }
-            await insertEngineering(value);
-            input.value = '';
-        };
-
-        window.deleteEngineering = async function(name) {
-            if (confirm(`HAPUS ENGINEERING ${name}?`)) {
-                await deleteEngineering(name);
-            }
-        };
-
-        window.addMachine = async function() {
-            const input = document.getElementById('new-machine');
-            const value = input.value.trim().toUpperCase();
-            if (!value) return showToast('MASUKKAN NAMA MESIN', 'error');
-            if (machines.includes(value)) {
-                showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
-                input.value = '';
-                return;
-            }
-            await insertMachine(value);
-            input.value = '';
-        };
-
-        window.deleteMachine = async function(name) {
-            if (confirm(`HAPUS MESIN ${name}?`)) {
-                await deleteMachine(name);
             }
         };
 
