@@ -184,12 +184,11 @@
                 </div>
             </header>
 
-            <!-- Navigation (AUDIT TRAIL DIHAPUS) -->
+            <!-- Navigation -->
             <nav class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-white/20 dark:border-slate-700/50 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
                 <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30">📊 DASHBOARD</button> 
                 <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">➕ INPUT TAG</button> 
                 <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">⚙️ MANAGEMENT</button> 
-                <!-- Tombol AUDIT TRAIL dihapus -->
             </nav>
 
             <!-- Content -->
@@ -284,7 +283,7 @@
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th> <!-- KOLOM OPERATOR DITAMBAHKAN -->
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
@@ -413,9 +412,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Audit Trail Page (DIHAPUS, namun jika masih diperlukan bisa diaktifkan dengan menambahkan tombol di nav) -->
-                <!-- <div id="page-audit" class="page hidden">...</div> -->
             </main>
         </div>
 
@@ -1029,10 +1025,7 @@
                 
                 if (currentFilter.machine && tag.machine !== currentFilter.machine) return false;
                 if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
-                if (currentFilter.engineering) {
-                    const engineeringMatch = tag.wr_number && tag.wr_number.includes(currentFilter.engineering);
-                    if (!engineeringMatch) return false;
-                }
+                
                 return true;
             });
             
@@ -1163,12 +1156,12 @@
             // Inisialisasi semua engineering dengan 0
             engineerings.forEach(e => engineeringStats[e] = { closed: 0 });
             
-            // Hitung statistik closed
+            // Hitung statistik closed berdasarkan closed_by
             tags.forEach(t => {
-                if (t.status === 'CLOSED' && t.wr_number) {
-                    const matchedEng = engineerings.find(e => t.wr_number.includes(e));
-                    if (matchedEng) {
-                        engineeringStats[matchedEng].closed++;
+                if (t.status === 'CLOSED' && t.closed_by) {
+                    // Cek apakah closed_by ada di daftar engineering
+                    if (engineerings.includes(t.closed_by)) {
+                        engineeringStats[t.closed_by].closed++;
                     }
                 }
             });
