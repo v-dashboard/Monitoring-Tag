@@ -184,12 +184,12 @@
                 </div>
             </header>
 
-            <!-- Navigation -->
+            <!-- Navigation (AUDIT TRAIL DIHAPUS) -->
             <nav class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-white/20 dark:border-slate-700/50 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
                 <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30">📊 DASHBOARD</button> 
                 <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">➕ INPUT TAG</button> 
                 <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">⚙️ MANAGEMENT</button> 
-                <button onclick="showPage('audit')" data-nav="audit" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">📋 AUDIT TRAIL</button>
+                <!-- Tombol AUDIT TRAIL dihapus -->
             </nav>
 
             <!-- Content -->
@@ -271,7 +271,7 @@
                         </div>
                     </div>
 
-                    <!-- Red Tag Table WITH PHOTO COLUMNS -->
+                    <!-- Red Tag Table WITH PHOTO COLUMNS & KOLOM OPERATOR -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                             <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔴</span> DAFTAR RED TAG</h3>
@@ -284,6 +284,7 @@
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th>
+                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th> <!-- KOLOM OPERATOR DITAMBAHKAN -->
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
@@ -413,32 +414,8 @@
                     </div>
                 </div>
 
-                <!-- Audit Trail Page -->
-                <div id="page-audit" class="page hidden">
-                    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl">
-                        <div class="p-4 border-b border-white/20 dark:border-slate-700/50">
-                            <h3 class="font-black uppercase text-base sm:text-lg mb-4 flex items-center gap-2"><span class="text-2xl">📋</span> AUDIT TRAIL & HISTORY</h3>
-                            <div class="flex flex-wrap gap-4 items-end">
-                                <div class="w-full sm:w-auto"><label class="block text-sm font-bold uppercase mb-2">DARI TANGGAL</label><input type="date" id="audit-from" class="w-full px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition"></div>
-                                <div class="w-full sm:w-auto"><label class="block text-sm font-bold uppercase mb-2">SAMPAI TANGGAL</label><input type="date" id="audit-to" class="w-full px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition"></div>
-                                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-                                    <button onclick="filterAudit()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-bold uppercase text-sm hover:from-emerald-600 hover:to-teal-600 transition shadow-lg shadow-emerald-500/30">🔍 FILTER</button> 
-                                    <button onclick="exportExcel()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-bold uppercase text-sm hover:from-green-600 hover:to-emerald-600 transition shadow-lg shadow-green-500/30">📥 EXCEL</button> 
-                                    <button onclick="exportPDF()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-white rounded-lg font-bold uppercase text-sm hover:from-red-600 hover:to-rose-600 transition shadow-lg shadow-red-500/30">📄 PDF</button>
-                                    <button onclick="resetFilter()" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg font-bold uppercase text-sm hover:from-slate-600 hover:to-slate-700 transition shadow-lg shadow-slate-500/30">⟲ RESET</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 dark:bg-slate-700/50">
-                                    <tr><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">WAKTU</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">USER</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">AKTIVITAS</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">DETAIL</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL TAG</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">JENIS</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th><th class="px-2 sm:px-4 py-2 sm:py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th></tr>
-                                </thead>
-                                <tbody id="audit-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <!-- Audit Trail Page (DIHAPUS, namun jika masih diperlukan bisa diaktifkan dengan menambahkan tombol di nav) -->
+                <!-- <div id="page-audit" class="page hidden">...</div> -->
             </main>
         </div>
 
@@ -489,8 +466,6 @@
         let operators = [];
         let engineerings = [];
         let machines = [];
-        let filteredAuditData = [];
-        let auditLogs = [];
         
         // State untuk kamera
         let currentStream = null;
@@ -675,25 +650,22 @@
         // ============ REFRESH DATA ============
         async function refreshData() {
             try {
-                const [tagsResult, opsResult, engsResult, machsResult, auditsResult] = await Promise.all([
+                const [tagsResult, opsResult, engsResult, machsResult] = await Promise.all([
                     supabaseClient.from('tags').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('operators').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('engineerings').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('machines').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('audit_logs').select('*').order('created_at', { ascending: false })
+                    supabaseClient.from('machines').select('*').order('created_at', { ascending: false })
                 ]);
 
                 if (tagsResult.error) throw tagsResult.error;
                 if (opsResult.error) throw opsResult.error;
                 if (engsResult.error) throw engsResult.error;
                 if (machsResult.error) throw machsResult.error;
-                if (auditsResult.error) throw auditsResult.error;
 
                 allData = tagsResult.data || [];
                 operators = (opsResult.data || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
                 engineerings = (engsResult.data || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
                 machines = (machsResult.data || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
-                auditLogs = auditsResult.data || [];
 
                 renderManagementLists();
                 updateMachineDropdown();
@@ -702,44 +674,8 @@
                 if (!document.getElementById('page-dashboard').classList.contains('hidden')) {
                     applyDashboardFilter();
                 }
-                if (!document.getElementById('page-audit').classList.contains('hidden')) {
-                    renderAuditTable();
-                }
             } catch (error) {
                 console.error('Error refreshing data:', error);
-            }
-        }
-
-        // ============ AUDIT LOG ============
-        async function addAuditLog(activity, detail, tagData = null) {
-            try {
-                const log = {
-                    created_at: new Date().toISOString(),
-                    user: currentUser || 'GUEST',
-                    role: userRole || 'guest',
-                    activity: activity,
-                    detail: detail,
-                    tag_id: tagData?.id || null,
-                    tag_date: tagData?.date || null,
-                    tag_type: tagData?.tag_type || null,
-                    tag_machine: tagData?.machine || null,
-                    tag_status: tagData?.status || null,
-                    tag_initial: tagData?.initial || null,
-                    closed_by: tagData?.closed_by || null
-                };
-                
-                const { data, error } = await supabaseClient
-                    .from('audit_logs')
-                    .insert([log])
-                    .select();
-
-                if (error) throw error;
-                
-                auditLogs.unshift(data[0]);
-                setTimeout(refreshData, 100);
-                return data[0];
-            } catch (error) {
-                console.error('Error adding audit log:', error);
             }
         }
 
@@ -761,7 +697,6 @@
 
                 if (error) throw error;
                 
-                await addAuditLog('INSERT TAG', `Menambahkan ${tagData.tag_type} TAG`, data[0]);
                 showToast('TAG BERHASIL DISIMPAN', 'success');
                 await refreshData();
                 
@@ -802,7 +737,6 @@
 
                 if (error) throw error;
                 
-                await addAuditLog('UPDATE TAG', `Mengupdate tag ${oldTag?.tag_type}`, data[0]);
                 showToast('DATA BERHASIL DIUPDATE', 'success');
                 await refreshData();
                 
@@ -819,7 +753,6 @@
             try {
                 const { data, error } = await supabaseClient.from('operators').insert([{ initial }]).select();
                 if (error) throw error;
-                await addAuditLog('INSERT OPERATOR', `Menambahkan operator: ${initial}`);
                 showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
                 await refreshData();
                 return data[0];
@@ -834,7 +767,6 @@
             try {
                 const { error } = await supabaseClient.from('operators').delete().eq('initial', initial);
                 if (error) throw error;
-                await addAuditLog('DELETE OPERATOR', `Menghapus operator: ${initial}`);
                 showToast('OPERATOR DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
@@ -848,7 +780,6 @@
             try {
                 const { data, error } = await supabaseClient.from('engineerings').insert([{ initial }]).select();
                 if (error) throw error;
-                await addAuditLog('INSERT ENGINEERING', `Menambahkan engineering: ${initial}`);
                 showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
                 await refreshData();
                 return data[0];
@@ -863,7 +794,6 @@
             try {
                 const { error } = await supabaseClient.from('engineerings').delete().eq('initial', initial);
                 if (error) throw error;
-                await addAuditLog('DELETE ENGINEERING', `Menghapus engineering: ${initial}`);
                 showToast('ENGINEERING DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
@@ -877,7 +807,6 @@
             try {
                 const { data, error } = await supabaseClient.from('machines').insert([{ machine }]).select();
                 if (error) throw error;
-                await addAuditLog('INSERT MACHINE', `Menambahkan mesin: ${machine}`);
                 showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
                 await refreshData();
                 return data[0];
@@ -892,7 +821,6 @@
             try {
                 const { error } = await supabaseClient.from('machines').delete().eq('machine', machine);
                 if (error) throw error;
-                await addAuditLog('DELETE MACHINE', `Menghapus mesin: ${machine}`);
                 showToast('MESIN DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
@@ -906,7 +834,6 @@
             supabaseClient.channel('operators-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'operators' }, () => refreshData()).subscribe();
             supabaseClient.channel('engineerings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'engineerings' }, () => refreshData()).subscribe();
             supabaseClient.channel('machines-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => refreshData()).subscribe();
-            supabaseClient.channel('audit-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'audit_logs' }, () => refreshData()).subscribe();
         }
 
         // ============ INIT ============
@@ -992,8 +919,6 @@
             else if (isOperator) userRole = 'operator';
             else if (isEngineering) userRole = 'engineering';
             
-            await addAuditLog('LOGIN', `User login dengan role: ${userRole}`);
-            
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('current-user').textContent = `${initial} (${userRole.toUpperCase()})`;
@@ -1008,8 +933,6 @@
         window.handleGuestLogin = async function() {
             currentUser = 'GUEST';
             userRole = 'guest';
-            
-            await addAuditLog('LOGIN', 'Guest login');
             
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
@@ -1029,8 +952,6 @@
         }
 
         window.handleLogout = async function() {
-            await addAuditLog('LOGOUT', 'User logout');
-            
             currentUser = null;
             userRole = null;
             document.getElementById('login-screen').classList.remove('hidden');
@@ -1068,7 +989,6 @@
                 updateFilterDropdowns();
                 applyDashboardFilter();
             }
-            if (page === 'audit') renderAuditTable();
             if (page === 'input') {
                 updateMachineDropdown();
                 document.getElementById('tag-form').reset();
@@ -1360,7 +1280,7 @@
             const tbody = document.getElementById('red-tag-table');
             
             if (redTags.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA RED TAG</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA RED TAG</td></tr>';
                 return;
             }
             
@@ -1402,6 +1322,7 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td> <!-- KOLOM OPERATOR -->
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoBeforeHtml}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div></td>
@@ -1846,136 +1767,17 @@
             }
             
             if (success) {
-                await addAuditLog('UPDATE', `Mengupdate ${type}: ${oldValue} -> ${newValue}`);
                 closeEditModal();
                 showToast('DATA BERHASIL DIUPDATE', 'success');
                 await refreshData();
             }
         };
 
-        // ============ AUDIT TRAIL ============
-        function renderAuditTable() {
-            const tbody = document.getElementById('audit-table');
-            const dataToShow = filteredAuditData.length > 0 ? filteredAuditData : auditLogs;
-            const sortedData = [...dataToShow].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            
-            if (sortedData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA DATA AUDIT</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = sortedData.map(log => {
-                const activityColor = log.activity?.includes('INSERT') ? 'bg-green-100 text-green-700' :
-                                     log.activity?.includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
-                                     log.activity?.includes('DELETE') ? 'bg-red-100 text-red-700' :
-                                     'bg-slate-100 text-slate-700';
-                
-                return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${formatDateTime(log.created_at) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${log.user || '-'} (${log.role || '-'})</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${activityColor}">${log.activity || '-'}</span></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${log.detail || ''}">${log.detail || '-'}</div></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${log.tag_date ? formatDate(log.tag_date) : '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${log.tag_type || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${log.tag_machine || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${log.tag_status || '-'}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function formatDateTime(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('id-ID', { 
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-        }
-
-        window.filterAudit = function() {
-            const from = document.getElementById('audit-from').value;
-            const to = document.getElementById('audit-to').value;
-            if (!from || !to) {
-                showToast('PILIH RENTANG TANGGAL', 'error');
-                return;
-            }
-            filteredAuditData = auditLogs.filter(log => {
-                const logDate = log.created_at.split('T')[0];
-                return logDate >= from && logDate <= to;
-            });
-            renderAuditTable();
-            showToast(`MENAMPILKAN ${filteredAuditData.length} DATA`, 'success');
-        };
-
-        window.resetFilter = function() {
-            filteredAuditData = [];
-            setDefaultDates();
-            renderAuditTable();
-        };
-
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
             const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
             document.getElementById('input-date').value = today;
-            document.getElementById('audit-from').value = lastWeek;
-            document.getElementById('audit-to').value = today;
         }
-
-        // ============ EXPORT FUNCTIONS ============
-        window.exportExcel = function() {
-            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : auditLogs;
-            if (dataToExport.length === 0) {
-                showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
-                return;
-            }
-            
-            let csv = 'WAKTU,USER,ROLE,AKTIVITAS,DETAIL,TANGGAL TAG,JENIS TAG,MESIN,STATUS\n';
-            dataToExport.forEach(log => {
-                csv += `"${formatDateTime(log.created_at) || ''}","${log.user || ''}","${log.role || ''}","${log.activity || ''}","${log.detail || ''}","${log.tag_date ? formatDate(log.tag_date) : ''}","${log.tag_type || ''}","${log.tag_machine || ''}","${log.tag_status || ''}"\n`;
-            });
-            
-            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `audit_trail_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            showToast('FILE EXCEL BERHASIL DIUNDUH', 'success');
-        };
-
-        window.exportPDF = function() {
-            const dataToExport = filteredAuditData.length > 0 ? filteredAuditData : auditLogs;
-            if (dataToExport.length === 0) {
-                showToast('TIDAK ADA DATA UNTUK DIEKSPOR', 'error');
-                return;
-            }
-            
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head><meta charset="UTF-8"><title>AUDIT TRAIL REPORT</title>
-                <style>body{font-family:Arial;padding:20px;}h1{text-align:center;color:#059669;}table{width:100%;border-collapse:collapse;font-size:10px;}th{background:#059669;color:white;padding:8px;text-align:left;}td{border:1px solid #ddd;padding:6px;}</style>
-                </head>
-                <body>
-                    <h1>AUDIT TRAIL REPORT</h1>
-                    <p>Periode: ${document.getElementById('audit-from').value} s/d ${document.getElementById('audit-to').value}</p>
-                    <table>
-                        <thead><tr><th>WAKTU</th><th>USER</th><th>AKTIVITAS</th><th>DETAIL</th><th>TGL TAG</th><th>JENIS</th><th>MESIN</th><th>STATUS</th></tr></thead>
-                        <tbody>
-                            ${dataToExport.map(log => `
-                                <tr><td>${formatDateTime(log.created_at) || '-'}</td><td>${log.user || '-'}</td><td>${log.activity || '-'}</td><td>${log.detail || '-'}</td><td>${log.tag_date ? formatDate(log.tag_date) : '-'}</td><td>${log.tag_type || '-'}</td><td>${log.tag_machine || '-'}</td><td>${log.tag_status || '-'}</td></tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-            showToast('SILAKAN SIMPAN SEBAGAI PDF', 'success');
-        };
 
         // ============ TOAST ============
         function showToast(message, type = 'success') {
