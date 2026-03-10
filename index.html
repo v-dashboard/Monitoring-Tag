@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en" class="h-full">
 <head>
@@ -89,18 +90,7 @@
             font-size: 0.7rem;
             font-weight: 600;
         }
-        .blue-closed-by-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.75rem;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .red-white-blue-bar {
+        .red-white-bar {
             display: flex;
             height: 40px;
             border-radius: 9999px;
@@ -110,7 +100,6 @@
         }
         .red-bar { background: linear-gradient(90deg, #ef4444, #f87171); height: 100%; transition: width 0.3s ease; }
         .white-bar { background: linear-gradient(90deg, #94a3b8, #cbd5e1); height: 100%; transition: width 0.3s ease; }
-        .blue-bar { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; transition: width 0.3s ease; }
         .stacked-bar {
             display: flex;
             height: 24px;
@@ -120,7 +109,6 @@
         }
         .stacked-bar-red { background: linear-gradient(90deg, #ef4444, #f87171); height: 100%; }
         .stacked-bar-white { background: linear-gradient(90deg, #94a3b8, #cbd5e1); height: 100%; }
-        .stacked-bar-blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; }
         
         /* Hide foto section for white tag */
         .foto-section-hidden {
@@ -135,19 +123,6 @@
             font-size: 0.875rem;
             text-transform: uppercase;
             font-weight: 500;
-        }
-        
-        /* Utility badge */
-        .utility-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.25rem 0.5rem;
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            color: white;
-            border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: 600;
         }
     </style>
 </head>
@@ -194,7 +169,7 @@
                         </svg>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h1 id="app-title" class="font-black uppercase text-base sm:text-lg truncate bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">DASHBOARD MESIN & BANGUNAN</h1>
+                        <h1 id="app-title" class="font-black uppercase text-base sm:text-lg truncate bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">TAG MONITORING</h1>
                         <p class="text-xs text-slate-500 dark:text-slate-400 uppercase truncate">USER: <span id="current-user" class="font-bold text-emerald-600 dark:text-emerald-400"></span></p>
                     </div>
                 </div>
@@ -230,9 +205,9 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                             <div><label class="block text-xs font-bold uppercase mb-1">DARI TANGGAL</label><input type="date" id="filter-date-from" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
                             <div><label class="block text-xs font-bold uppercase mb-1">SAMPAI TANGGAL</label><input type="date" id="filter-date-to" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">LOKASI</label><select id="filter-location" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA LOKASI</option><option value="MACHINE">🏭 MESIN</option><option value="BUILDING">🏢 BANGUNAN</option></select></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">MESIN/RUANGAN</label><input type="text" id="filter-machine" placeholder="CARI..." class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">OPERATOR/UTILITY</label><select id="filter-operator" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA</option></select></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">MESIN</label><select id="filter-machine" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA MESIN</option></select></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">OPERATOR</label><select id="filter-operator" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA OPERATOR</option></select></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">ENGINEERING</label><select id="filter-engineering" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA ENGINEERING</option></select></div>
                         </div>
                         <div class="flex flex-wrap gap-3 mt-5">
                             <button onclick="applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2"><span>🔍</span> TERAPKAN FILTER</button>
@@ -240,58 +215,55 @@
                         </div>
                     </div>
 
-                    <!-- RED VS WHITE VS BLUE COMPARISON -->
+                    <!-- RED VS WHITE COMPARISON -->
                     <div class="glass-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold uppercase text-lg flex items-center gap-2"><span class="text-2xl">🏷️</span> RED TAG VS WHITE TAG VS BLUE TAG</h3>
+                            <h3 class="font-bold uppercase text-lg flex items-center gap-2"><span class="text-2xl">🏷️</span> RED TAG VS WHITE TAG</h3>
                             <div class="flex items-center gap-4 text-sm font-bold">
                                 <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-slate-700 dark:text-slate-300">RED:</span><span id="count-red" class="text-red-600">0</span></div>
                                 <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-400"></span><span class="text-slate-700 dark:text-slate-300">WHITE:</span><span id="count-white" class="text-slate-600">0</span></div>
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-slate-700 dark:text-slate-300">BLUE:</span><span id="count-blue" class="text-blue-600">0</span></div>
                             </div>
                         </div>
-                        <div class="red-white-blue-bar bg-slate-200 dark:bg-slate-700">
+                        <div class="red-white-bar bg-slate-200 dark:bg-slate-700">
                             <div id="red-bar-width" class="red-bar" style="width: 0%"></div>
                             <div id="white-bar-width" class="white-bar" style="width: 0%"></div>
-                            <div id="blue-bar-width" class="blue-bar" style="width: 0%"></div>
                         </div>
                     </div>
 
                     <!-- Score Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-red-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-red-600 dark:text-red-400 mb-1">OPEN</p><p id="stat-open" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center text-2xl">📌</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Menunggu tindakan</p></div></div>
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-amber-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-amber-600 dark:text-amber-400 mb-1">PROGRESS</p><p id="stat-progress" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center text-2xl">⏳</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Dalam pengerjaan</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-emerald-600 dark:text-emerald-400 mb-1">CLOSED</p><p id="stat-closed" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-2xl">✅</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Red/Blue tag selesai</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-purple-600 dark:text-purple-400 mb-1">% CLOSED</p><p id="stat-closed-percent" class="text-4xl font-black text-slate-900 dark:text-white">0%</p></div><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-2xl">📊</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">dari total RED+BLUE</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-blue-600 dark:text-blue-400 mb-1">BLUE TAG</p><p id="stat-blue" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-2xl">🔵</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Total untuk bangunan</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-emerald-600 dark:text-emerald-400 mb-1">CLOSED</p><p id="stat-closed" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-2xl">✅</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Red tag selesai</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-purple-600 dark:text-purple-400 mb-1">% CLOSED</p><p id="stat-closed-percent" class="text-4xl font-black text-slate-900 dark:text-white">0%</p></div><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-2xl">📊</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">dari total RED TAG</p></div></div>
                     </div>
 
                     <!-- 3 KOLOM HORIZONTAL BARS - HANYA TAMPILKAN YANG PUNYA NILAI -->
                     <div class="grid lg:grid-cols-3 gap-5">
-                        <!-- Tag by Operator/Utility -->
+                        <!-- Tag by Operator - Hanya tampil yang punya nilai -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3">
-                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> TAG PER INITIAL</h3>
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> TAG PER OPERATOR</h3>
                             </div>
                             <div class="p-4">
                                 <div id="operator-stacked-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
 
-                        <!-- Closed by Engineering/Utility -->
+                        <!-- Closed by Engineering - Hanya tampil yang punya nilai -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3">
-                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏆</span> CLOSED PER INITIAL</h3>
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏆</span> CLOSED PER ENGINEERING</h3>
                             </div>
                             <div class="p-4">
                                 <div id="engineering-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
 
-                        <!-- Tag by Machine/Ruangan -->
+                        <!-- Tag by Machine - Hanya tampil yang punya nilai -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3">
-                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> TAG PER LOKASI</h3>
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> TAG PER MESIN</h3>
                             </div>
                             <div class="p-4">
                                 <div id="machine-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
@@ -299,10 +271,10 @@
                         </div>
                     </div>
 
-                    <!-- Red Tag Table (MESIN) -->
+                    <!-- Red Tag Table WITH PHOTO COLUMNS & KOLOM OPERATOR -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
-                            <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔴</span> DAFTAR RED TAG (MESIN)</h3>
+                            <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔴</span> DAFTAR RED TAG</h3>
                             <span id="red-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
                         <div class="overflow-x-auto">
@@ -328,10 +300,10 @@
                         </div>
                     </div>
 
-                    <!-- White Tag Table (MESIN - NO PHOTO) -->
+                    <!-- White Tag Table (NO PHOTO) -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
-                            <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚪</span> DAFTAR WHITE TAG (MESIN)</h3>
+                            <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚪</span> DAFTAR WHITE TAG</h3>
                             <span id="white-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
                         <div class="overflow-x-auto">
@@ -350,38 +322,9 @@
                             </table>
                         </div>
                     </div>
-
-                    <!-- Blue Tag Table (BANGUNAN) - DENGAN HEADER BARU -->
-                    <div class="glass-card rounded-xl overflow-hidden">
-                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
-                            <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔵</span> DAFTAR BLUE TAG (BANGUNAN)</h3>
-                            <span id="blue-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 dark:bg-slate-700/50">
-                                    <tr>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NOMOR RUANGAN</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO AFTER</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th>
-                                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th>
-                                        <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th>
-                                        <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="blue-tag-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Input Tag Page - WITH PHOTO FOR RED & BLUE TAG -->
+                <!-- Input Tag Page - WITH PHOTO ONLY FOR RED TAG -->
                 <div id="page-input" class="page hidden">
                     <div class="max-w-4xl mx-auto">
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 dark:border-slate-700/50 shadow-xl">
@@ -389,28 +332,14 @@
                             <form id="tag-form" class="space-y-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                     <div><label class="block text-sm font-bold uppercase mb-2">TANGGAL</label><input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
-                                    <div><label class="block text-sm font-bold uppercase mb-2">JENIS TAG</label><select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="RED">🔴 RED (MESIN)</option><option value="WHITE">⚪ WHITE (MESIN)</option><option value="BLUE">🔵 BLUE (BANGUNAN)</option></select></div>
-                                    
-                                    <!-- Field untuk MESIN (RED/WHITE) -->
-                                    <div id="machine-field" class="hidden">
-                                        <label class="block text-sm font-bold uppercase mb-2">MESIN</label>
-                                        <select id="input-machine" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm">
-                                            <option value="">PILIH MESIN</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <!-- Field untuk NOMOR RUANGAN (BLUE) - CUSTOM TEXT -->
-                                    <div id="room-field" class="hidden">
-                                        <label class="block text-sm font-bold uppercase mb-2">NOMOR RUANGAN</label>
-                                        <input type="text" id="input-room" placeholder="CONTOH: O117" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm">
-                                    </div>
-                                    
-                                    <div><label class="block text-sm font-bold uppercase mb-2">KATEGORI</label><select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="QUALITY">🎯 QUALITY</option><option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option><option value="SAFETY">🛡️ SAFETY</option><option value="5R">🧹 5R</option><option value="INFRA">🏗️ INFRASTRUKTUR</option></select></div>
+                                    <div><label class="block text-sm font-bold uppercase mb-2">JENIS TAG</label><select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="RED">🔴 RED</option><option value="WHITE">⚪ WHITE</option></select></div>
+                                    <div><label class="block text-sm font-bold uppercase mb-2">MESIN</label><select id="input-machine" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option></select></div>
+                                    <div><label class="block text-sm font-bold uppercase mb-2">KATEGORI</label><select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="QUALITY">🎯 QUALITY</option><option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option><option value="SAFETY">🛡️ SAFETY</option><option value="5R">🧹 5R</option></select></div>
                                 </div>
                                 
                                 <div><label class="block text-sm font-bold uppercase mb-2">ABNORMALITAS</label><textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
                                 
-                                <!-- FOTO BEFORE SECTION - SHOW FOR RED AND BLUE TAG -->
+                                <!-- FOTO BEFORE SECTION - ONLY SHOW FOR RED TAG -->
                                 <div id="foto-before-section" class="foto-section-hidden bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-700">
                                     <label class="block text-sm font-bold uppercase mb-3 text-emerald-600 dark:text-emerald-400 flex items-center gap-2"><span>📸</span> FOTO BEFORE (ABNORMALITAS) - MAX 100KB</label>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -449,10 +378,9 @@
                     </div>
                 </div>
 
-                <!-- Management Page - DENGAN LIST UTILITY -->
+                <!-- Management Page -->
                 <div id="page-management" class="page hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <!-- OPERATOR -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
                             <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-blue-500 to-indigo-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">👷 OPERATOR</h3></div>
                             <div class="p-4">
@@ -463,8 +391,6 @@
                                 <div id="operator-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
                             </div>
                         </div>
-                        
-                        <!-- ENGINEERING -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
                             <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-purple-500 to-pink-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🔧 ENGINEERING</h3></div>
                             <div class="p-4">
@@ -475,8 +401,6 @@
                                 <div id="engineering-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
                             </div>
                         </div>
-                        
-                        <!-- MESIN -->
                         <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
                             <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-emerald-500 to-teal-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏭 MESIN</h3></div>
                             <div class="p-4">
@@ -487,30 +411,17 @@
                                 <div id="machine-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
                             </div>
                         </div>
-                        
-                        <!-- UTILITY -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-amber-500 to-orange-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">⚡ UTILITY</h3></div>
-                            <div class="p-4">
-                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-utility" placeholder="NAMA UTILITY" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addUtility')"> 
-                                    <button onclick="addUtility()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-bold uppercase text-sm hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/30 whitespace-nowrap">ADD</button>
-                                </div>
-                                <div id="utility-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">Untuk BLUE TAG (bangunan)</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </main>
         </div>
 
-        <!-- Update Modal WITH FOTO AFTER (FOR RED & BLUE TAG) -->
+        <!-- Update Modal WITH FOTO AFTER (ONLY FOR RED TAG) -->
         <div id="update-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeModal()">
             <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/20 dark:border-slate-700/50">
                 <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
                     <span class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">✏️</span>
-                    UPDATE TAG DENGAN FOTO
+                    UPDATE RED TAG DENGAN FOTO
                 </h3>
                 <div id="modal-content"></div>
             </div>
@@ -552,14 +463,13 @@
         let operators = [];
         let engineerings = [];
         let machines = [];
-        let utilities = [];
         
         // State untuk kamera
         let currentStream = null;
         let currentStreamAfter = null;
         
         let currentFilter = {
-            dateFrom: '', dateTo: '', machine: '', operator: '', location: ''
+            dateFrom: '', dateTo: '', machine: '', operator: '', engineering: ''
         };
 
         // ============ FUNGSI KOMPRES FOTO ============
@@ -737,12 +647,11 @@
         // ============ REFRESH DATA ============
         async function refreshData() {
             try {
-                const [tagsResult, opsResult, engsResult, machsResult, utilsResult] = await Promise.all([
+                const [tagsResult, opsResult, engsResult, machsResult] = await Promise.all([
                     supabaseClient.from('tags').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('operators').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('engineerings').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('machines').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('utilities').select('*').order('created_at', { ascending: false }).maybeSingle()
+                    supabaseClient.from('machines').select('*').order('created_at', { ascending: false })
                 ]);
 
                 if (tagsResult.error) throw tagsResult.error;
@@ -754,13 +663,6 @@
                 operators = (opsResult.data || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
                 engineerings = (engsResult.data || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
                 machines = (machsResult.data || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
-                
-                // Coba ambil data utilities
-                if (utilsResult.data) {
-                    utilities = (utilsResult.data || []).map(u => u.utility).sort((a, b) => a.localeCompare(b));
-                } else {
-                    utilities = [];
-                }
 
                 renderManagementLists();
                 updateMachineDropdown();
@@ -771,22 +673,14 @@
                 }
             } catch (error) {
                 console.error('Error refreshing data:', error);
-                showToast('GAGAL REFRESH DATA', 'error');
             }
         }
 
         // ============ CRUD OPERATIONS ============
         async function insertTag(tagData) {
             try {
-                // Tentukan location berdasarkan tag_type
-                if (tagData.tag_type === 'BLUE') {
-                    tagData.location = 'BUILDING';
-                } else {
-                    tagData.location = 'MACHINE';
-                }
-                
-                // Foto before hanya untuk RED dan BLUE TAG
-                if (tagData.tag_type === 'RED' || tagData.tag_type === 'BLUE') {
+                // Foto before hanya untuk RED TAG
+                if (tagData.tag_type === 'RED') {
                     const fotoBefore = document.getElementById('foto-before-data')?.value || '';
                     if (fotoBefore) {
                         tagData.foto_before = fotoBefore;
@@ -824,7 +718,7 @@
                     updateData.closed_at = new Date().toISOString();
                 }
                 
-                // Ambil foto after dari modal
+                // Ambil foto after dari modal (hanya untuk RED TAG)
                 const fotoAfter = document.getElementById('modal-foto-after-data')?.value;
                 if (fotoAfter) {
                     updateData.foto_after = fotoAfter;
@@ -932,44 +826,11 @@
             }
         }
 
-        // UTILITY functions
-        async function insertUtility(utility) {
-            try {
-                const { data, error } = await supabaseClient.from('utilities').insert([{ utility }]).select();
-                if (error) throw error;
-                showToast('UTILITY BERHASIL DITAMBAHKAN', 'success');
-                await refreshData();
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting utility:', error);
-                showToast('GAGAL MENAMBAHKAN UTILITY', 'error');
-                return null;
-            }
-        }
-
-        async function deleteUtility(utility) {
-            try {
-                const { error } = await supabaseClient.from('utilities').delete().eq('utility', utility);
-                if (error) throw error;
-                showToast('UTILITY DIHAPUS', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('Error deleting utility:', error);
-                showToast('GAGAL MENGHAPUS UTILITY', 'error');
-            }
-        }
-
         function setupRealtimeSubscriptions() {
             supabaseClient.channel('tags-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'tags' }, () => refreshData()).subscribe();
             supabaseClient.channel('operators-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'operators' }, () => refreshData()).subscribe();
             supabaseClient.channel('engineerings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'engineerings' }, () => refreshData()).subscribe();
             supabaseClient.channel('machines-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => refreshData()).subscribe();
-            
-            try {
-                supabaseClient.channel('utilities-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'utilities' }, () => refreshData()).subscribe();
-            } catch (e) {
-                console.warn('Tidak bisa subscribe ke utilities');
-            }
         }
 
         // ============ INIT ============
@@ -1028,7 +889,6 @@
                 else if (action === 'addOperator') addOperator();
                 else if (action === 'addEngineering') addEngineering();
                 else if (action === 'addMachine') addMachine();
-                else if (action === 'addUtility') addUtility();
             }
         };
 
@@ -1045,9 +905,8 @@
             const isAdmin = (initial === 'ERW');
             const isOperator = operators.includes(initial);
             const isEngineering = engineerings.includes(initial);
-            const isUtility = utilities.includes(initial);
             
-            if (!isAdmin && !isOperator && !isEngineering && !isUtility) {
+            if (!isAdmin && !isOperator && !isEngineering) {
                 showError(errorEl, 'INISIAL TIDAK TERDAFTAR');
                 return;
             }
@@ -1056,14 +915,12 @@
             if (isAdmin) userRole = 'admin';
             else if (isOperator) userRole = 'operator';
             else if (isEngineering) userRole = 'engineering';
-            else if (isUtility) userRole = 'utility';
             
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('current-user').textContent = `${initial} (${userRole.toUpperCase()})`;
             
-            // ADMIN (ERW) SEMUA NAVIGASI TAMPIL
-            document.getElementById('nav-input').classList.toggle('hidden', userRole !== 'operator' && userRole !== 'utility' && userRole !== 'admin');
+            document.getElementById('nav-input').classList.toggle('hidden', userRole !== 'operator');
             document.getElementById('nav-management').classList.toggle('hidden', userRole !== 'admin');
             
             showPage('dashboard');
@@ -1130,36 +987,33 @@
                 applyDashboardFilter();
             }
             if (page === 'input') {
-                resetInputForm();
+                updateMachineDropdown();
+                document.getElementById('tag-form').reset();
+                document.getElementById('preview-before').src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
+                document.getElementById('foto-before-data').value = '';
+                document.getElementById('white-tag-action').classList.add('hidden');
+                document.getElementById('foto-before-section').classList.add('foto-section-hidden');
             }
         };
 
-        function resetInputForm() {
-            document.getElementById('tag-form').reset();
-            document.getElementById('preview-before').src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
-            document.getElementById('foto-before-data').value = '';
-            document.getElementById('white-tag-action').classList.add('hidden');
-            document.getElementById('foto-before-section').classList.add('foto-section-hidden');
-            document.getElementById('machine-field').classList.add('hidden');
-            document.getElementById('room-field').classList.add('hidden');
-            document.getElementById('input-machine').required = false;
-            document.getElementById('input-room').required = false;
-        }
-
         // ============ FILTER ============
         function updateFilterDropdowns() {
+            const machineSelect = document.getElementById('filter-machine');
+            machineSelect.innerHTML = '<option value="">SEMUA MESIN</option>' + machines.map(m => `<option value="${m}">${m}</option>`).join('');
+            
             const operatorSelect = document.getElementById('filter-operator');
-            const allInitials = [...new Set([...operators, ...engineerings, ...utilities])];
-            operatorSelect.innerHTML = '<option value="">SEMUA</option>' + 
-                allInitials.map(i => `<option value="${i}">${i}</option>`).join('');
+            operatorSelect.innerHTML = '<option value="">SEMUA OPERATOR</option>' + operators.map(o => `<option value="${o}">${o}</option>`).join('');
+            
+            const engineeringSelect = document.getElementById('filter-engineering');
+            engineeringSelect.innerHTML = '<option value="">SEMUA ENGINEERING</option>' + engineerings.map(e => `<option value="${e}">${e}</option>`).join('');
         }
 
         window.applyDashboardFilter = function() {
             currentFilter.dateFrom = document.getElementById('filter-date-from').value;
             currentFilter.dateTo = document.getElementById('filter-date-to').value;
-            currentFilter.location = document.getElementById('filter-location').value;
-            currentFilter.machine = document.getElementById('filter-machine').value.toUpperCase();
+            currentFilter.machine = document.getElementById('filter-machine').value;
             currentFilter.operator = document.getElementById('filter-operator').value;
+            currentFilter.engineering = document.getElementById('filter-engineering').value;
             
             filteredData = allData.filter(tag => {
                 if (currentFilter.dateFrom && currentFilter.dateTo) {
@@ -1170,8 +1024,7 @@
                     if (tag.date > currentFilter.dateTo) return false;
                 }
                 
-                if (currentFilter.location && tag.location !== currentFilter.location) return false;
-                if (currentFilter.machine && !tag.machine?.includes(currentFilter.machine)) return false;
+                if (currentFilter.machine && tag.machine !== currentFilter.machine) return false;
                 if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
                 
                 return true;
@@ -1184,11 +1037,11 @@
         window.resetDashboardFilter = function() {
             document.getElementById('filter-date-from').value = '';
             document.getElementById('filter-date-to').value = '';
-            document.getElementById('filter-location').value = '';
             document.getElementById('filter-machine').value = '';
             document.getElementById('filter-operator').value = '';
+            document.getElementById('filter-engineering').value = '';
             
-            currentFilter = { dateFrom: '', dateTo: '', location: '', machine: '', operator: '' };
+            currentFilter = { dateFrom: '', dateTo: '', machine: '', operator: '', engineering: '' };
             filteredData = [...allData];
             updateActiveFiltersDisplay();
             updateDashboard();
@@ -1202,9 +1055,9 @@
             const filters = [];
             if (currentFilter.dateFrom) filters.push(`Dari: ${currentFilter.dateFrom}`);
             if (currentFilter.dateTo) filters.push(`Sampai: ${currentFilter.dateTo}`);
-            if (currentFilter.location) filters.push(`Lokasi: ${currentFilter.location === 'MACHINE' ? '🏭 MESIN' : '🏢 BANGUNAN'}`);
-            if (currentFilter.machine) filters.push(`Lokasi: ${currentFilter.machine}`);
-            if (currentFilter.operator) filters.push(`Operator/Utility: ${currentFilter.operator}`);
+            if (currentFilter.machine) filters.push(`Mesin: ${currentFilter.machine}`);
+            if (currentFilter.operator) filters.push(`Operator: ${currentFilter.operator}`);
+            if (currentFilter.engineering) filters.push(`Engineering: ${currentFilter.engineering}`);
             
             container.innerHTML = filters.length === 0 
                 ? '<span class="text-xs text-slate-400">Tidak ada filter aktif</span>'
@@ -1217,86 +1070,78 @@
             
             const redTags = tags.filter(t => t.tag_type === 'RED').length;
             const whiteTags = tags.filter(t => t.tag_type === 'WHITE').length;
-            const blueTags = tags.filter(t => t.tag_type === 'BLUE').length;
             
             document.getElementById('stat-open').textContent = tags.filter(t => t.status === 'OPEN').length;
             document.getElementById('stat-progress').textContent = tags.filter(t => t.status === 'ON PROGRESS').length;
-            document.getElementById('stat-closed').textContent = tags.filter(t => (t.tag_type === 'RED' || t.tag_type === 'BLUE') && t.status === 'CLOSED').length;
-            document.getElementById('stat-blue').textContent = blueTags;
+            document.getElementById('stat-closed').textContent = tags.filter(t => t.tag_type === 'RED' && t.status === 'CLOSED').length;
             
-            const redBlueTags = tags.filter(t => t.tag_type === 'RED' || t.tag_type === 'BLUE').length;
-            const redBlueClosed = tags.filter(t => (t.tag_type === 'RED' || t.tag_type === 'BLUE') && t.status === 'CLOSED').length;
-            document.getElementById('stat-closed-percent').textContent = redBlueTags > 0 ? Math.round((redBlueClosed / redBlueTags) * 100) + '%' : '0%';
+            const redTagsClosed = tags.filter(t => t.tag_type === 'RED' && t.status === 'CLOSED').length;
+            document.getElementById('stat-closed-percent').textContent = redTags > 0 ? Math.round((redTagsClosed / redTags) * 100) + '%' : '0%';
             
             document.getElementById('count-red').textContent = redTags;
             document.getElementById('count-white').textContent = whiteTags;
-            document.getElementById('count-blue').textContent = blueTags;
             
             const totalTags = tags.length;
             document.getElementById('red-bar-width').style.width = totalTags > 0 ? (redTags / totalTags) * 100 + '%' : '0%';
             document.getElementById('white-bar-width').style.width = totalTags > 0 ? (whiteTags / totalTags) * 100 + '%' : '0%';
-            document.getElementById('blue-bar-width').style.width = totalTags > 0 ? (blueTags / totalTags) * 100 + '%' : '0%';
             
             document.getElementById('red-tag-count').textContent = redTags + ' TAG';
             document.getElementById('white-tag-count').textContent = whiteTags + ' TAG';
-            document.getElementById('blue-tag-count').textContent = blueTags + ' TAG';
             
             renderOperatorStackedBars(tags);
             renderEngineeringBars(tags);
             renderMachineBars(tags);
             renderRedTagTable(tags.filter(t => t.tag_type === 'RED'));
             renderWhiteTagTable(tags.filter(t => t.tag_type === 'WHITE'));
-            renderBlueTagTable(tags.filter(t => t.tag_type === 'BLUE'));
         }
 
-        // ============ RENDER BAR CHARTS ============
+        // ============ RENDER BAR CHARTS - HANYA TAMPILKAN YANG PUNYA NILAI ============
         function renderOperatorStackedBars(tags) {
             const container = document.getElementById('operator-stacked-bars');
-            const stats = {};
+            const operatorStats = {};
             
-            const allInitials = [...new Set([...operators, ...engineerings, ...utilities])];
-            allInitials.forEach(i => stats[i] = { red: 0, white: 0, blue: 0, total: 0 });
+            // Inisialisasi semua operator dengan 0
+            operators.forEach(o => operatorStats[o] = { red: 0, white: 0, total: 0 });
             
+            // Hitung statistik
             tags.forEach(t => {
-                if (stats[t.initial]) {
-                    if (t.tag_type === 'RED') stats[t.initial].red++;
-                    else if (t.tag_type === 'WHITE') stats[t.initial].white++;
-                    else if (t.tag_type === 'BLUE') stats[t.initial].blue++;
-                    stats[t.initial].total++;
+                if (operatorStats[t.initial]) {
+                    if (t.tag_type === 'RED') operatorStats[t.initial].red++;
+                    else operatorStats[t.initial].white++;
+                    operatorStats[t.initial].total++;
                 }
             });
             
-            const filteredStats = Object.entries(stats)
-                .filter(([_, stat]) => stat.total > 0)
+            // Filter hanya yang punya total > 0
+            const filteredStats = Object.entries(operatorStats)
+                .filter(([_, stats]) => stats.total > 0)
                 .sort((a, b) => b[1].total - a[1].total);
             
+            // Jika tidak ada data, tampilkan pesan empty
             if (filteredStats.length === 0) {
-                container.innerHTML = '<div class="empty-state">Tidak ada data</div>';
+                container.innerHTML = '<div class="empty-state">Tidak ada data operator</div>';
                 return;
             }
             
-            const maxTotal = Math.max(...filteredStats.map(([_, stat]) => stat.total), 1);
+            const maxTotal = Math.max(...filteredStats.map(([_, stats]) => stats.total), 1);
             
-            container.innerHTML = filteredStats.map(([initial, stat]) => {
-                const redPercent = (stat.red / maxTotal) * 100;
-                const whitePercent = (stat.white / maxTotal) * 100;
-                const bluePercent = (stat.blue / maxTotal) * 100;
+            container.innerHTML = filteredStats.map(([operator, stats]) => {
+                const redPercent = (stats.red / maxTotal) * 100;
+                const whitePercent = (stats.white / maxTotal) * 100;
                 
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${initial}</span>
-                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${stat.total}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${operator}</span>
+                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${stats.total}</span>
                         </div>
                         <div class="stacked-bar bg-slate-200 dark:bg-slate-700">
-                            <div class="stacked-bar-red" style="width: ${redPercent}%" title="RED: ${stat.red}"></div>
-                            <div class="stacked-bar-white" style="width: ${whitePercent}%" title="WHITE: ${stat.white}"></div>
-                            <div class="stacked-bar-blue" style="width: ${bluePercent}%" title="BLUE: ${stat.blue}"></div>
+                            <div class="stacked-bar-red" style="width: ${redPercent}%" title="RED: ${stats.red}"></div>
+                            <div class="stacked-bar-white" style="width: ${whitePercent}%" title="WHITE: ${stats.white}"></div>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-red-600 font-semibold">🔴 ${stat.red}</span>
-                            <span class="text-slate-600 dark:text-slate-400 font-semibold">⚪ ${stat.white}</span>
-                            <span class="text-blue-600 font-semibold">🔵 ${stat.blue}</span>
+                            <span class="text-red-600 font-semibold">🔴 ${stats.red}</span>
+                            <span class="text-slate-600 dark:text-slate-400 font-semibold">⚪ ${stats.white}</span>
                         </div>
                     </div>
                 `;
@@ -1307,41 +1152,45 @@
             const container = document.getElementById('engineering-bars');
             if (!container) return;
             
-            const stats = {};
+            const engineeringStats = {};
             
-            const allInitials = [...new Set([...engineerings, ...utilities])];
-            allInitials.forEach(i => stats[i] = { closed: 0 });
+            // Inisialisasi semua engineering dengan 0
+            engineerings.forEach(e => engineeringStats[e] = { closed: 0 });
             
+            // Hitung statistik closed berdasarkan closed_by
             tags.forEach(t => {
                 if (t.status === 'CLOSED' && t.closed_by) {
-                    if (allInitials.includes(t.closed_by)) {
-                        stats[t.closed_by].closed++;
+                    // Cek apakah closed_by ada di daftar engineering
+                    if (engineerings.includes(t.closed_by)) {
+                        engineeringStats[t.closed_by].closed++;
                     }
                 }
             });
             
-            const filteredStats = Object.entries(stats)
-                .filter(([_, stat]) => stat.closed > 0)
+            // Filter hanya yang punya closed > 0
+            const filteredStats = Object.entries(engineeringStats)
+                .filter(([_, stats]) => stats.closed > 0)
                 .sort((a, b) => b[1].closed - a[1].closed);
             
+            // Jika tidak ada data, tampilkan pesan empty
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada closed tag</div>';
                 return;
             }
             
-            const maxClosed = Math.max(...filteredStats.map(([_, stat]) => stat.closed), 1);
+            const maxClosed = Math.max(...filteredStats.map(([_, stats]) => stats.closed), 1);
             
-            container.innerHTML = filteredStats.map(([initial, stat]) => {
-                const width = (stat.closed / maxClosed) * 100;
+            container.innerHTML = filteredStats.map(([eng, stats]) => {
+                const width = (stats.closed / maxClosed) * 100;
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${initial}</span>
-                            <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">${stat.closed}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${eng}</span>
+                            <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">${stats.closed}</span>
                         </div>
                         <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end px-3 text-xs font-bold text-white" style="width: ${width}%">
-                                ${stat.closed > 0 ? stat.closed : ''}
+                                ${stats.closed > 0 ? stats.closed : ''}
                             </div>
                         </div>
                     </div>
@@ -1353,69 +1202,67 @@
             const container = document.getElementById('machine-bars');
             if (!container) return;
             
-            const stats = {};
+            const machineStats = {};
             
-            // Kumpulkan semua lokasi unik (mesin dan nomor ruangan)
-            const allLocations = [...new Set(tags.map(t => t.machine).filter(Boolean))];
-            allLocations.forEach(l => stats[l] = { 
-                red: 0, white: 0, blue: 0, total: 0, 
-                open: 0, closed: 0 
+            // Inisialisasi semua mesin dengan 0
+            machines.forEach(m => machineStats[m] = { 
+                red: 0, white: 0, red_open: 0, red_closed: 0, total: 0 
             });
             
+            // Hitung statistik
             tags.forEach(t => {
-                if (stats[t.machine]) {
-                    if (t.tag_type === 'RED') stats[t.machine].red++;
-                    else if (t.tag_type === 'WHITE') stats[t.machine].white++;
-                    else if (t.tag_type === 'BLUE') stats[t.machine].blue++;
-                    
-                    if (t.status === 'OPEN' || t.status === 'ON PROGRESS') {
-                        stats[t.machine].open++;
-                    } else if (t.status === 'CLOSED') {
-                        stats[t.machine].closed++;
+                if (machineStats[t.machine]) {
+                    if (t.tag_type === 'RED') {
+                        machineStats[t.machine].red++;
+                        if (t.status === 'OPEN' || t.status === 'ON PROGRESS') {
+                            machineStats[t.machine].red_open++;
+                        } else if (t.status === 'CLOSED') {
+                            machineStats[t.machine].red_closed++;
+                        }
+                    } else {
+                        machineStats[t.machine].white++;
                     }
-                    
-                    stats[t.machine].total++;
+                    machineStats[t.machine].total++;
                 }
             });
             
-            const filteredStats = Object.entries(stats)
-                .filter(([_, stat]) => stat.total > 0)
+            // Filter hanya yang punya total > 0
+            const filteredStats = Object.entries(machineStats)
+                .filter(([_, stats]) => stats.total > 0)
                 .sort((a, b) => b[1].total - a[1].total);
             
+            // Jika tidak ada data, tampilkan pesan empty
             if (filteredStats.length === 0) {
-                container.innerHTML = '<div class="empty-state">Tidak ada data</div>';
+                container.innerHTML = '<div class="empty-state">Tidak ada data mesin</div>';
                 return;
             }
             
-            const maxRed = Math.max(...filteredStats.map(([_, stat]) => stat.red + stat.blue), 1);
+            const maxRed = Math.max(...filteredStats.map(([_, stats]) => stats.red), 1);
             
-            container.innerHTML = filteredStats.map(([location, stat]) => {
-                const redPercent = (stat.red / maxRed) * 100;
-                const bluePercent = (stat.blue / maxRed) * 100;
-                
-                const isMachine = machines.includes(location);
-                const icon = isMachine ? '🏭' : '🏢';
+            container.innerHTML = filteredStats.map(([machine, stats]) => {
+                const redOpenPercent = (stats.red_open / maxRed) * 100;
+                const redClosedPercent = (stats.red_closed / maxRed) * 100;
                 
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${icon} ${location}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${machine}</span>
                             <div class="text-sm space-x-3">
-                                <span class="text-slate-600 dark:text-slate-400">⚪ ${stat.white}</span>
-                                <span class="font-bold text-blue-600 dark:text-blue-400">📊 ${stat.total}</span>
+                                <span class="text-slate-600 dark:text-slate-400">⚪ ${stats.white}</span>
+                                <span class="font-bold text-blue-600 dark:text-blue-400">📊 ${stats.total}</span>
                             </div>
                         </div>
                         <div class="space-y-1">
                             <div class="flex justify-between text-xs">
-                                <span class="text-red-600 font-semibold">🔴 OPEN: ${stat.open}</span>
-                                <span class="text-emerald-600 font-semibold">✅ CLOSED: ${stat.closed}</span>
+                                <span class="text-red-600 font-semibold">🔴 OPEN: ${stats.red_open}</span>
+                                <span class="text-emerald-600 font-semibold">✅ CLOSED: ${stats.red_closed}</span>
                             </div>
                             <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex">
-                                <div class="h-full bg-gradient-to-r from-red-500 to-red-400" style="width: ${redPercent}%" title="RED: ${stat.red}"></div>
-                                <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400" style="width: ${bluePercent}%" title="BLUE: ${stat.blue}"></div>
+                                <div class="h-full bg-gradient-to-r from-red-500 to-red-400" style="width: ${redOpenPercent}%" title="RED OPEN: ${stats.red_open}"></div>
+                                <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width: ${redClosedPercent}%" title="RED CLOSED: ${stats.red_closed}"></div>
                             </div>
                             <div class="text-xs text-center text-slate-500 dark:text-slate-400 font-semibold">
-                                Total RED+BLUE: ${stat.red + stat.blue}
+                                Total RED: ${stats.red}
                             </div>
                         </div>
                     </div>
@@ -1448,13 +1295,14 @@
                         actionButton = `<span class="text-xs text-slate-500">-</span>`;
                     }
                 } else {
-                    if ((userRole === 'engineering' || userRole === 'admin') && tag.location === 'MACHINE') {
+                    if (userRole === 'engineering' || userRole === 'admin') {
                         actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
                     } else {
                         actionButton = `<span class="text-xs text-slate-500">-</span>`;
                     }
                 }
                 
+                // Foto before & after (hanya untuk RED TAG)
                 const fotoBeforeHtml = tag.foto_before ? 
                     `<img src="${tag.foto_before}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_before}')" title="Klik untuk perbesar">` : 
                     `<span class="text-xs text-slate-400">-</span>`;
@@ -1468,7 +1316,7 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td> <!-- KOLOM OPERATOR -->
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoBeforeHtml}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div></td>
@@ -1504,65 +1352,6 @@
             `).join('');
         }
 
-        function renderBlueTagTable(blueTags) {
-            const tbody = document.getElementById('blue-tag-table');
-            
-            if (blueTags.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA BLUE TAG</td></tr>';
-                return;
-            }
-            
-            blueTags.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            tbody.innerHTML = blueTags.map(tag => {
-                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                                   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-                
-                let actionButton = '';
-                if (tag.status === 'CLOSED') {
-                    actionButton = `<div class="blue-closed-by-badge"><span>✓</span><span>${tag.closed_by || 'Unknown'}</span></div>`;
-                } else if (!tag.wr_number) {
-                    if (userRole === 'utility' || userRole === 'admin') {
-                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
-                    } else {
-                        actionButton = `<span class="text-xs text-slate-500">-</span>`;
-                    }
-                } else {
-                    if ((userRole === 'utility' || userRole === 'admin') && tag.location === 'BUILDING') {
-                        actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
-                    } else {
-                        actionButton = `<span class="text-xs text-slate-500">-</span>`;
-                    }
-                }
-                
-                const fotoBeforeHtml = tag.foto_before ? 
-                    `<img src="${tag.foto_before}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_before}')" title="Klik untuk perbesar">` : 
-                    `<span class="text-xs text-slate-400">-</span>`;
-                
-                const fotoAfterHtml = tag.foto_after ? 
-                    `<img src="${tag.foto_after}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_after}')" title="Klik untuk perbesar">` : 
-                    `<span class="text-xs text-slate-400">-</span>`;
-                
-                return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoBeforeHtml}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoAfterHtml}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span></td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${actionButton}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600 dark:text-slate-400">${tag.updated_at ? formatDate(tag.updated_at.split('T')[0]) : '-'}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
         function formatDate(dateStr) {
             if (!dateStr) return '-';
             const date = new Date(dateStr);
@@ -1575,7 +1364,6 @@
                 case 'QUALITY': return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
                 case 'PRODUCTIVITY': return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
                 case '5R': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-                case 'INFRA': return 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300';
                 default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
             }
         }
@@ -1586,42 +1374,14 @@
             const actionField = document.getElementById('white-tag-action');
             const fotoSection = document.getElementById('foto-before-section');
             const actionInput = document.getElementById('input-action');
-            const machineField = document.getElementById('machine-field');
-            const roomField = document.getElementById('room-field');
-            const machineSelect = document.getElementById('input-machine');
-            const roomInput = document.getElementById('input-room');
-            
-            // Sembunyikan semua field terlebih dahulu
-            machineField.classList.add('hidden');
-            roomField.classList.add('hidden');
-            machineSelect.required = false;
-            roomInput.required = false;
-            
-            if (tagType === 'WHITE' || tagType === 'RED') {
-                // Untuk MESIN
-                machineField.classList.remove('hidden');
-                machineSelect.required = true;
-                
-                // Update dropdown mesin
-                machineSelect.innerHTML = '<option value="">PILIH MESIN</option>';
-                machines.forEach(m => {
-                    machineSelect.innerHTML += `<option value="${m}">🏭 ${m}</option>`;
-                });
-                
-            } else if (tagType === 'BLUE') {
-                // Untuk BANGUNAN - NOMOR RUANGAN (custom text)
-                roomField.classList.remove('hidden');
-                roomInput.required = true;
-                roomInput.placeholder = "CONTOH: O117, A101, B203";
-            }
             
             if (tagType === 'WHITE') {
                 // WHITE TAG: Tampilkan action field, sembunyikan foto
                 actionField.classList.remove('hidden');
                 fotoSection.classList.add('foto-section-hidden');
                 actionInput.required = true;
-            } else if (tagType === 'RED' || tagType === 'BLUE') {
-                // RED & BLUE TAG: Tampilkan foto, sembunyikan action field
+            } else if (tagType === 'RED') {
+                // RED TAG: Tampilkan foto, sembunyikan action field
                 actionField.classList.add('hidden');
                 fotoSection.classList.remove('foto-section-hidden');
                 actionInput.required = false;
@@ -1636,7 +1396,8 @@
         function updateMachineDropdown() {
             const select = document.getElementById('input-machine');
             if (!select) return;
-            select.innerHTML = '<option value="">PILIH JENIS TAG TERLEBIH DAHULU</option>';
+            select.innerHTML = '<option value="">PILIH</option>' + 
+                (machines.length > 0 ? machines.map(m => `<option value="${m}">${m}</option>`).join('') : '<option value="" disabled>BELUM ADA MESIN</option>');
         }
 
         document.getElementById('tag-form').addEventListener('submit', async (e) => {
@@ -1650,27 +1411,11 @@
             const tagType = document.getElementById('input-tag-type').value;
             const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN';
             
-            // Validasi berdasarkan tipe tag
-            let machineValue = '';
-            if (tagType === 'WHITE' || tagType === 'RED') {
-                machineValue = document.getElementById('input-machine').value;
-                if (!machineValue) {
-                    showToast('PILIH MESIN TERLEBIH DAHULU', 'error');
-                    return;
-                }
-            } else if (tagType === 'BLUE') {
-                machineValue = document.getElementById('input-room').value.trim().toUpperCase();
-                if (!machineValue) {
-                    showToast('MASUKKAN NOMOR RUANGAN', 'error');
-                    return;
-                }
-            }
-            
             const newTag = {
                 date: document.getElementById('input-date').value,
                 initial: currentUser,
                 tag_type: tagType,
-                machine: machineValue,
+                machine: document.getElementById('input-machine').value,
                 abnormality: document.getElementById('input-abnormality').value.toUpperCase(),
                 impact: document.getElementById('input-impact').value.toUpperCase(),
                 risk: document.getElementById('input-risk').value,
@@ -1687,8 +1432,8 @@
                 newTag.closed_at = new Date().toISOString();
             }
             
-            // Foto before hanya untuk RED dan BLUE TAG
-            if (tagType === 'RED' || tagType === 'BLUE') {
+            // Foto before hanya untuk RED TAG
+            if (tagType === 'RED') {
                 const fotoBefore = document.getElementById('foto-before-data')?.value;
                 if (fotoBefore) {
                     newTag.foto_before = fotoBefore;
@@ -1705,13 +1450,23 @@
             btn.innerHTML = '<span>SUBMIT TAG</span>';
             
             if (inserted) {
-                resetInputForm();
+                document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('input-tag-type').value = '';
+                document.getElementById('input-machine').value = '';
+                document.getElementById('input-abnormality').value = '';
+                document.getElementById('input-impact').value = '';
+                document.getElementById('input-risk').value = '';
+                document.getElementById('input-action').value = '';
+                document.getElementById('white-tag-action').classList.add('hidden');
+                document.getElementById('foto-before-section').classList.add('foto-section-hidden');
+                document.getElementById('preview-before').src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
+                document.getElementById('foto-before-data').value = '';
+                document.getElementById('file-size-before').textContent = '';
             }
         });
 
         // ============ MANAGEMENT ============
         function renderManagementLists() {
-            // Operator List
             const operatorList = document.getElementById('operator-list');
             operatorList.innerHTML = operators.length === 0 
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
@@ -1725,7 +1480,6 @@
                     </div>
                 `).join('');
             
-            // Engineering List
             const engineeringList = document.getElementById('engineering-list');
             engineeringList.innerHTML = engineerings.length === 0
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
@@ -1739,7 +1493,6 @@
                     </div>
                 `).join('');
             
-            // Machine List
             const machineList = document.getElementById('machine-list');
             machineList.innerHTML = machines.length === 0
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
@@ -1752,22 +1505,6 @@
                         </div>
                     </div>
                 `).join('');
-            
-            // Utility List
-            const utilityList = document.getElementById('utility-list');
-            if (utilityList) {
-                utilityList.innerHTML = utilities.length === 0
-                    ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA UTILITY</p>'
-                    : utilities.map(u => `
-                        <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                            <span class="font-semibold uppercase text-sm break-word">${u}</span>
-                            <div class="flex gap-1">
-                                <button onclick="openEditModal('utility', '${u}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                                <button onclick="deleteUtility('${u}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
-                            </div>
-                        </div>
-                    `).join('');
-            }
         }
 
         window.addOperator = async function() {
@@ -1827,25 +1564,6 @@
             }
         };
 
-        window.addUtility = async function() {
-            const input = document.getElementById('new-utility');
-            const value = input.value.trim().toUpperCase();
-            if (!value) return showToast('MASUKKAN NAMA UTILITY', 'error');
-            if (utilities.includes(value)) {
-                showToast('NAMA UTILITY SUDAH TERDAFTAR', 'error');
-                input.value = '';
-                return;
-            }
-            await insertUtility(value);
-            input.value = '';
-        };
-
-        window.deleteUtility = async function(name) {
-            if (confirm(`HAPUS UTILITY ${name}?`)) {
-                await deleteUtility(name);
-            }
-        };
-
         // ============ UPDATE MODAL ============
         window.openUpdateModal = function(tagId) {
             if (!tagId) {
@@ -1863,11 +1581,7 @@
             const content = document.getElementById('modal-content');
             
             if (!tag.wr_number) {
-                if (tag.tag_type === 'BLUE' && userRole !== 'utility' && userRole !== 'admin') {
-                    showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
-                    return;
-                }
-                if (tag.tag_type === 'RED' && userRole !== 'operator' && userRole !== 'admin') {
+                if (userRole !== 'operator' && userRole !== 'admin') {
                     showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
                     return;
                 }
@@ -1883,11 +1597,7 @@
                     </div>
                 `;
             } else {
-                if (tag.tag_type === 'BLUE' && userRole !== 'utility' && userRole !== 'admin') {
-                    showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
-                    return;
-                }
-                if (tag.tag_type === 'RED' && userRole !== 'engineering' && userRole !== 'admin') {
+                if (userRole !== 'engineering' && userRole !== 'admin') {
                     showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
                     return;
                 }
@@ -1909,7 +1619,7 @@
                             <textarea id="modal-note" rows="2" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word">${tag.progress_note || ''}</textarea>
                         </div>
                         
-                        <!-- FOTO AFTER SECTION -->
+                        <!-- FOTO AFTER SECTION - ONLY FOR RED TAG -->
                         <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-700">
                             <label class="block text-sm font-bold uppercase mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-2">
                                 <span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB
@@ -2048,13 +1758,6 @@
                 }
                 const { error } = await supabaseClient.from('machines').update({ machine: newValue }).eq('machine', oldValue);
                 if (!error) success = true;
-            } else if (type === 'utility') {
-                if (utilities.includes(newValue)) {
-                    showToast('NAMA UTILITY SUDAH TERDAFTAR', 'error');
-                    return;
-                }
-                const { error } = await supabaseClient.from('utilities').update({ utility: newValue }).eq('utility', oldValue);
-                if (!error) success = true;
             }
             
             if (success) {
@@ -2066,6 +1769,7 @@
 
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
+            const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
             document.getElementById('input-date').value = today;
         }
 
