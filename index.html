@@ -58,10 +58,6 @@
             background: #f8fafc;
             margin-bottom: 12px;
         }
-        .dark .camera-container {
-            background: #1e293b;
-            border-color: #475569;
-        }
         #video-before, #video-after {
             width: 100%;
             max-height: 240px;
@@ -76,8 +72,8 @@
             flex-wrap: wrap;
             margin-top: 8px;
         }
-        .glass-card { @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border border-white/20 dark:border-slate-700/50 shadow-xl; }
-        .filter-badge { @apply inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200; }
+        .glass-card { @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl; }
+        .filter-badge { @apply inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800; }
         .closed-by-badge {
             display: inline-flex;
             align-items: center;
@@ -138,12 +134,12 @@
         }
     </style>
 </head>
-<body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900 transition-colors duration-300">
     <div id="app" class="h-full w-full overflow-auto scrollbar-thin">
         <!-- Login Screen -->
         <div id="login-screen" class="min-h-full flex items-center justify-center p-4">
             <div class="w-full max-w-md">
-                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20 dark:border-slate-700/50">
+                <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
                     <div class="text-center mb-8">
                         <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg animate-pulse">
                             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -151,21 +147,17 @@
                             </svg>
                         </div>
                         <h1 class="text-3xl font-black uppercase tracking-wider bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">TAG MONITORING</h1>
-                        <p class="text-slate-500 dark:text-slate-400 mt-2 uppercase text-sm font-semibold">SISTEM FOTO ABNORMALITAS</p>
+                        <p class="text-slate-500 mt-2 uppercase text-sm font-semibold">SISTEM FOTO ABNORMALITAS</p>
                     </div>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-bold uppercase mb-2">INISIAL</label> 
-                            <input type="text" id="login-initial" placeholder="MASUKKAN INISIAL ANDA" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-center font-bold tracking-widest" autocomplete="off" onkeypress="handleKeyPress(event, 'login')">
+                            <input type="text" id="login-initial" placeholder="MASUKKAN INISIAL ANDA" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-center font-bold tracking-widest" autocomplete="off" onkeypress="handleKeyPress(event, 'login')">
                         </div>
                         <button onclick="handleLogin()" class="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-bold rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 transition shadow-lg shadow-emerald-500/30">MASUK</button>
                         <button onclick="handleGuestLogin()" class="w-full py-3 bg-gradient-to-r from-slate-500 to-slate-600 text-white font-bold rounded-xl uppercase tracking-wide hover:from-slate-600 hover:to-slate-700 transition shadow-lg shadow-slate-500/30">GUEST</button>
                         <p id="login-error" class="text-red-500 text-center text-sm uppercase hidden"></p>
                     </div>
-                    <button onclick="toggleDarkMode()" class="mt-6 w-full py-2 text-slate-500 dark:text-slate-400 text-sm uppercase flex items-center justify-center gap-2 hover:text-slate-700 dark:hover:text-slate-200 transition"> 
-                        <span id="theme-icon">🌙</span> 
-                        <span id="theme-text">MODE GELAP</span> 
-                    </button>
                 </div>
             </div>
         </div>
@@ -173,7 +165,7 @@
         <!-- Main App -->
         <div id="main-app" class="hidden min-h-full flex flex-col">
             <!-- Header -->
-            <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-white/20 dark:border-slate-700/50 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+            <header class="bg-white/80 backdrop-blur-lg border-b border-white/20 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
@@ -182,26 +174,23 @@
                     </div>
                     <div class="min-w-0 flex-1">
                         <h1 id="app-title" class="font-black uppercase text-base sm:text-lg truncate bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">DASHBOARD MESIN & BANGUNAN</h1>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase truncate">USER: <span id="current-user" class="font-bold text-emerald-600 dark:text-emerald-400"></span></p>
+                        <p class="text-xs text-slate-500 uppercase truncate">USER: <span id="current-user" class="font-bold text-emerald-600"></span></p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
-                    <div id="live-clock" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-mono bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm">
-                        <span id="clock-date" class="text-slate-600 dark:text-slate-400"></span>
-                        <span id="clock-time" class="font-bold text-emerald-600 dark:text-emerald-400 ml-1"></span>
+                    <div id="live-clock" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-mono bg-white/50 backdrop-blur-sm">
+                        <span id="clock-date" class="text-slate-600"></span>
+                        <span id="clock-time" class="font-bold text-emerald-600 ml-1"></span>
                     </div>
-                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700/50 transition backdrop-blur-sm"> 
-                        <span id="header-theme-icon">🌙</span> 
-                    </button> 
                     <button onclick="handleLogout()" class="px-3 sm:px-4 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white text-xs sm:text-sm font-bold rounded-lg uppercase transition shadow-lg shadow-red-500/30 whitespace-nowrap">KELUAR</button>
                 </div>
             </header>
 
             <!-- Navigation -->
-            <nav class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-white/20 dark:border-slate-700/50 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
+            <nav class="bg-white/80 backdrop-blur-lg border-b border-white/20 px-4 py-2 flex gap-2 overflow-x-auto scrollbar-thin">
                 <button onclick="showPage('dashboard')" data-nav="dashboard" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30">📊 DASHBOARD</button> 
-                <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">➕ INPUT TAG</button> 
-                <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 dark:bg-slate-700/50 hover:bg-white/80 dark:hover:bg-slate-600/80 backdrop-blur-sm">⚙️ MANAGEMENT</button> 
+                <button onclick="showPage('input')" data-nav="input" id="nav-input" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 hover:bg-white/80 backdrop-blur-sm">➕ INPUT TAG</button> 
+                <button onclick="showPage('management')" data-nav="management" id="nav-management" class="nav-btn px-3 sm:px-4 py-2 rounded-lg font-bold text-xs sm:text-sm uppercase whitespace-nowrap transition bg-white/50 hover:bg-white/80 backdrop-blur-sm">⚙️ MANAGEMENT</button> 
             </nav>
 
             <!-- Content -->
@@ -215,11 +204,11 @@
                             <div id="active-filters" class="flex flex-wrap gap-2"></div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                            <div><label class="block text-xs font-bold uppercase mb-1">DARI TANGGAL</label><input type="date" id="filter-date-from" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">SAMPAI TANGGAL</label><input type="date" id="filter-date-to" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">LOKASI</label><select id="filter-location" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA LOKASI</option><option value="MACHINE">🏭 MESIN</option><option value="BUILDING">🏢 BANGUNAN</option></select></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">MESIN/BANGUNAN</label><input type="text" id="filter-machine" placeholder="CARI..." class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"></div>
-                            <div><label class="block text-xs font-bold uppercase mb-1">OPERATOR/UTILITY</label><select id="filter-operator" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA</option></select></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">DARI TANGGAL</label><input type="date" id="filter-date-from" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">SAMPAI TANGGAL</label><input type="date" id="filter-date-to" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">LOKASI</label><select id="filter-location" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA LOKASI</option><option value="MACHINE">🏭 MESIN</option><option value="BUILDING">🏢 BANGUNAN</option></select></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">MESIN/BANGUNAN</label><input type="text" id="filter-machine" placeholder="CARI..." class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">OPERATOR/UTILITY</label><select id="filter-operator" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA</option></select></div>
                         </div>
                         <div class="flex flex-wrap gap-3 mt-5">
                             <button onclick="applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2"><span>🔍</span> TERAPKAN FILTER</button>
@@ -232,12 +221,12 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-bold uppercase text-lg flex items-center gap-2"><span class="text-2xl">🏷️</span> RED TAG VS WHITE TAG VS BLUE TAG</h3>
                             <div class="flex items-center gap-4 text-sm font-bold">
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-slate-700 dark:text-slate-300">RED:</span><span id="count-red" class="text-red-600">0</span></div>
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-400"></span><span class="text-slate-700 dark:text-slate-300">WHITE:</span><span id="count-white" class="text-slate-600">0</span></div>
-                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-slate-700 dark:text-slate-300">BLUE:</span><span id="count-blue" class="text-blue-600">0</span></div>
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-slate-700">RED:</span><span id="count-red" class="text-red-600">0</span></div>
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-400"></span><span class="text-slate-700">WHITE:</span><span id="count-white" class="text-slate-600">0</span></div>
+                                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-slate-700">BLUE:</span><span id="count-blue" class="text-blue-600">0</span></div>
                             </div>
                         </div>
-                        <div class="red-white-blue-bar bg-slate-200 dark:bg-slate-700">
+                        <div class="red-white-blue-bar bg-slate-200">
                             <div id="red-bar-width" class="red-bar" style="width: 0%"></div>
                             <div id="white-bar-width" class="white-bar" style="width: 0%"></div>
                             <div id="blue-bar-width" class="blue-bar" style="width: 0%"></div>
@@ -246,11 +235,11 @@
 
                     <!-- Score Cards -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-red-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-red-600 dark:text-red-400 mb-1">OPEN</p><p id="stat-open" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center text-2xl">📌</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Menunggu tindakan</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-amber-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-amber-600 dark:text-amber-400 mb-1">PROGRESS</p><p id="stat-progress" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center text-2xl">⏳</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Dalam pengerjaan</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-emerald-600 dark:text-emerald-400 mb-1">CLOSED</p><p id="stat-closed" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-2xl">✅</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Red/Blue tag selesai</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-purple-600 dark:text-purple-400 mb-1">% CLOSED</p><p id="stat-closed-percent" class="text-4xl font-black text-slate-900 dark:text-white">0%</p></div><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-2xl">📊</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">dari total RED+BLUE</p></div></div>
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white dark:bg-slate-800 p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-blue-600 dark:text-blue-400 mb-1">BLUE TAG</p><p id="stat-blue" class="text-4xl font-black text-slate-900 dark:text-white">0</p></div><div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-2xl">🔵</div></div><p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Total untuk bangunan</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-red-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-red-600 mb-1">OPEN</p><p id="stat-open" class="text-4xl font-black text-slate-900">0</p></div><div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-2xl">📌</div></div><p class="mt-2 text-xs text-slate-500">Menunggu tindakan</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-amber-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-amber-600 mb-1">PROGRESS</p><p id="stat-progress" class="text-4xl font-black text-slate-900">0</p></div><div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-2xl">⏳</div></div><p class="mt-2 text-xs text-slate-500">Dalam pengerjaan</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-emerald-600 mb-1">CLOSED</p><p id="stat-closed" class="text-4xl font-black text-slate-900">0</p></div><div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-2xl">✅</div></div><p class="mt-2 text-xs text-slate-500">Red/Blue tag selesai</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-purple-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-purple-600 mb-1">% CLOSED</p><p id="stat-closed-percent" class="text-4xl font-black text-slate-900">0%</p></div><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">📊</div></div><p class="mt-2 text-xs text-slate-500">dari total RED+BLUE</p></div></div>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-blue-600 mb-1">BLUE TAG</p><p id="stat-blue" class="text-4xl font-black text-slate-900">0</p></div><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">🔵</div></div><p class="mt-2 text-xs text-slate-500">Total untuk bangunan</p></div></div>
                     </div>
 
                     <!-- 4 KOLOM HORIZONTAL BARS -->
@@ -304,7 +293,7 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 dark:bg-slate-700/50">
+                                <thead class="bg-slate-50/50">
                                     <tr>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th>
@@ -320,7 +309,7 @@
                                         <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th>
                                     </tr>
                                 </thead>
-                                <tbody id="red-tag-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
+                                <tbody id="red-tag-table" class="divide-y divide-white/20"></tbody>
                             </table>
                         </div>
                     </div>
@@ -333,7 +322,7 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 dark:bg-slate-700/50">
+                                <thead class="bg-slate-50/50">
                                     <tr>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
@@ -343,7 +332,7 @@
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th>
                                     </tr>
                                 </thead>
-                                <tbody id="white-tag-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
+                                <tbody id="white-tag-table" class="divide-y divide-white/20"></tbody>
                             </table>
                         </div>
                     </div>
@@ -356,7 +345,7 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 dark:bg-slate-700/50">
+                                <thead class="bg-slate-50/50">
                                     <tr>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
                                         <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NOMOR RUANGAN</th>
@@ -372,7 +361,7 @@
                                         <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th>
                                     </tr>
                                 </thead>
-                                <tbody id="blue-tag-table" class="divide-y divide-white/20 dark:divide-slate-700/50"></tbody>
+                                <tbody id="blue-tag-table" class="divide-y divide-white/20"></tbody>
                             </table>
                         </div>
                     </div>
@@ -381,17 +370,17 @@
                 <!-- Input Tag Page -->
                 <div id="page-input" class="page hidden">
                     <div class="max-w-4xl mx-auto">
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 dark:border-slate-700/50 shadow-xl">
+                        <div class="bg-white/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 shadow-xl">
                             <h2 class="font-black uppercase text-lg sm:text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white shadow-lg">➕</span> INPUT TAG BARU</h2>
                             <form id="tag-form" class="space-y-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                                    <div><label class="block text-sm font-bold uppercase mb-2">TANGGAL</label><input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
-                                    <div><label class="block text-sm font-bold uppercase mb-2">JENIS TAG</label><select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="RED">🔴 RED (MESIN)</option><option value="WHITE">⚪ WHITE (MESIN)</option><option value="BLUE">🔵 BLUE (BANGUNAN)</option></select></div>
+                                    <div><label class="block text-sm font-bold uppercase mb-2">TANGGAL</label><input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
+                                    <div><label class="block text-sm font-bold uppercase mb-2">JENIS TAG</label><select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="RED">🔴 RED (MESIN)</option><option value="WHITE">⚪ WHITE (MESIN)</option><option value="BLUE">🔵 BLUE (BANGUNAN)</option></select></div>
                                     
                                     <!-- Field untuk MESIN (RED/WHITE) -->
                                     <div id="machine-field" class="hidden">
                                         <label class="block text-sm font-bold uppercase mb-2">MESIN</label>
-                                        <select id="input-machine" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm">
+                                        <select id="input-machine" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm">
                                             <option value="">PILIH MESIN</option>
                                         </select>
                                     </div>
@@ -399,19 +388,19 @@
                                     <!-- Field untuk BANGUNAN (BLUE) -->
                                     <div id="building-field" class="hidden">
                                         <label class="block text-sm font-bold uppercase mb-2">BANGUNAN</label>
-                                        <select id="input-building" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm">
+                                        <select id="input-building" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm">
                                             <option value="">PILIH BANGUNAN</option>
                                         </select>
                                     </div>
                                     
-                                    <div><label class="block text-sm font-bold uppercase mb-2">KATEGORI</label><select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="QUALITY">🎯 QUALITY</option><option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option><option value="SAFETY">🛡️ SAFETY</option><option value="5R">🧹 5R</option><option value="INFRA">🏗️ INFRASTRUKTUR</option></select></div>
+                                    <div><label class="block text-sm font-bold uppercase mb-2">KATEGORI</label><select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="QUALITY">🎯 QUALITY</option><option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option><option value="SAFETY">🛡️ SAFETY</option><option value="5R">🧹 5R</option><option value="INFRA">🏗️ INFRASTRUKTUR</option></select></div>
                                 </div>
                                 
-                                <div><label class="block text-sm font-bold uppercase mb-2">ABNORMALITAS</label><textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
+                                <div><label class="block text-sm font-bold uppercase mb-2">ABNORMALITAS</label><textarea id="input-abnormality" required rows="2" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
                                 
                                 <!-- FOTO BEFORE SECTION -->
-                                <div id="foto-before-section" class="foto-section-hidden bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-emerald-300 dark:border-emerald-700">
-                                    <label class="block text-sm font-bold uppercase mb-3 text-emerald-600 dark:text-emerald-400 flex items-center gap-2"><span>📸</span> FOTO BEFORE (ABNORMALITAS) - MAX 100KB</label>
+                                <div id="foto-before-section" class="foto-section-hidden bg-slate-50 p-4 rounded-xl border-2 border-dashed border-emerald-300">
+                                    <label class="block text-sm font-bold uppercase mb-3 text-emerald-600 flex items-center gap-2"><span>📸</span> FOTO BEFORE (ABNORMALITAS) - MAX 100KB</label>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <div class="flex gap-2 mb-3">
@@ -428,8 +417,8 @@
                                             <input type="file" id="file-input-before" accept="image/*" class="hidden" onchange="handleFileSelect('before', event)">
                                         </div>
                                         <div class="text-center">
-                                            <p class="text-xs font-semibold uppercase mb-2 text-slate-600 dark:text-slate-400">PREVIEW</p>
-                                            <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-2 min-h-[120px] flex items-center justify-center">
+                                            <p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW</p>
+                                            <div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center">
                                                 <img id="preview-before" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e2e8f0'/%3E%3Ctext x='10' y='55' font-family='Arial' font-size='12' fill='%2364748b'%3ENo Image%3C/text%3E%3C/svg%3E" class="max-w-full max-h-32 rounded-lg object-contain">
                                             </div>
                                             <input type="hidden" id="foto-before-data" value="">
@@ -438,9 +427,9 @@
                                     </div>
                                 </div>
                                 
-                                <div><label class="block text-sm font-bold uppercase mb-2">DAMPAK JIKA TIDAK DITANGGULANGI</label><textarea id="input-impact" required rows="2" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
+                                <div><label class="block text-sm font-bold uppercase mb-2">DAMPAK JIKA TIDAK DITANGGULANGI</label><textarea id="input-impact" required rows="2" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
                                 
-                                <div id="white-tag-action" class="hidden"><label class="block text-sm font-bold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label><textarea id="input-action" rows="2" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
+                                <div id="white-tag-action" class="hidden"><label class="block text-sm font-bold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label><textarea id="input-action" rows="2" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase break-word"></textarea></div>
                                 
                                 <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-black rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"><span>SUBMIT TAG</span></button>
                             </form>
@@ -452,11 +441,11 @@
                 <div id="page-management" class="page hidden">
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
                         <!-- OPERATOR -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-blue-500 to-indigo-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">👷 OPERATOR</h3></div>
+                        <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
+                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-blue-500 to-indigo-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">👷 OPERATOR</h3></div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addOperator')"> 
+                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addOperator')"> 
                                     <button onclick="addOperator()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-bold uppercase text-sm hover:from-blue-600 hover:to-indigo-600 transition shadow-lg shadow-blue-500/30 whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="operator-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
@@ -464,11 +453,11 @@
                         </div>
                         
                         <!-- ENGINEERING -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-purple-500 to-pink-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🔧 ENGINEERING</h3></div>
+                        <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
+                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-purple-500 to-pink-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🔧 ENGINEERING</h3></div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addEngineering')"> 
+                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addEngineering')"> 
                                     <button onclick="addEngineering()" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-bold uppercase text-sm hover:from-purple-600 hover:to-pink-600 transition shadow-lg shadow-purple-500/30 whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="engineering-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
@@ -476,11 +465,11 @@
                         </div>
                         
                         <!-- MESIN -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-emerald-500 to-teal-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏭 MESIN</h3></div>
+                        <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
+                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-emerald-500 to-teal-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏭 MESIN</h3></div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addMachine')"> 
+                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addMachine')"> 
                                     <button onclick="addMachine()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-bold uppercase text-sm hover:from-emerald-600 hover:to-teal-600 transition shadow-lg shadow-emerald-500/30 whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="machine-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
@@ -488,28 +477,28 @@
                         </div>
                         
                         <!-- UTILITY -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-amber-500 to-orange-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">⚡ UTILITY</h3></div>
+                        <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
+                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-amber-500 to-orange-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">⚡ UTILITY</h3></div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-utility" placeholder="NAMA UTILITY" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addUtility')"> 
+                                    <input type="text" id="new-utility" placeholder="NAMA UTILITY" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addUtility')"> 
                                     <button onclick="addUtility()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-bold uppercase text-sm hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/30 whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="utility-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">Untuk BLUE TAG (bangunan)</p>
+                                <p class="text-xs text-slate-500 mt-2 text-center">Untuk BLUE TAG (bangunan)</p>
                             </div>
                         </div>
 
                         <!-- BUILDINGS -->
-                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-xl border border-white/20 dark:border-slate-700/50 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 dark:border-slate-700/50 bg-gradient-to-r from-blue-500 to-cyan-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏢 BANGUNAN</h3></div>
+                        <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
+                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-blue-500 to-cyan-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏢 BANGUNAN</h3></div>
                             <div class="p-4">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-building" placeholder="NAMA BANGUNAN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-slate-700/50 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addBuilding')"> 
+                                    <input type="text" id="new-building" placeholder="NAMA BANGUNAN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addBuilding')"> 
                                     <button onclick="addBuilding()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-bold uppercase text-sm hover:from-blue-600 hover:to-cyan-600 transition shadow-lg shadow-blue-500/30 whitespace-nowrap">ADD</button>
                                 </div>
                                 <div id="building-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">Lokasi untuk BLUE TAG</p>
+                                <p class="text-xs text-slate-500 mt-2 text-center">Lokasi untuk BLUE TAG</p>
                             </div>
                         </div>
                     </div>
@@ -519,7 +508,7 @@
 
         <!-- Update Modal -->
         <div id="update-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeModal()">
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/20 dark:border-slate-700/50">
+            <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/20">
                 <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
                     <span class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">✏️</span>
                     UPDATE TAG DENGAN FOTO
@@ -530,7 +519,7 @@
 
         <!-- Edit Modal -->
         <div id="edit-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target === this) closeEditModal()">
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-white/20 dark:border-slate-700/50">
+            <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-white/20">
                 <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
                     <span class="w-8 h-8 bg-gradient-to-r from-yellow-500 to-amber-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">✏️</span>
                     <span id="edit-modal-title">EDIT</span>
@@ -560,7 +549,6 @@
         let filteredData = [];
         let currentUser = null;
         let userRole = null;
-        let darkMode = false;
         let operators = [];
         let engineerings = [];
         let machines = [];
@@ -1009,16 +997,6 @@
         // ============ INIT ============
         async function initApp() {
             try {
-                const savedDarkMode = localStorage.getItem('darkMode');
-                if (savedDarkMode === 'true') {
-                    darkMode = true;
-                    document.documentElement.classList.add('dark');
-                } else {
-                    darkMode = false;
-                    document.documentElement.classList.remove('dark');
-                }
-                updateThemeUI();
-
                 setDefaultDates();
                 await refreshData();
                 setupRealtimeSubscriptions();
@@ -1028,31 +1006,6 @@
                 console.error('Error initializing app:', error);
                 showToast('GAGAL INISIALISASI APLIKASI', 'error');
             }
-        }
-
-        // ============ THEME ============
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            if (darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-            localStorage.setItem('darkMode', darkMode);
-            updateThemeUI();
-        }
-
-        function updateThemeUI() {
-            const icon = darkMode ? '☀️' : '🌙';
-            const text = darkMode ? 'MODE TERANG' : 'MODE GELAP';
-            
-            const themeIcon = document.getElementById('theme-icon');
-            const themeText = document.getElementById('theme-text');
-            const headerIcon = document.getElementById('header-theme-icon');
-            
-            if (themeIcon) themeIcon.textContent = icon;
-            if (themeText) themeText.textContent = text;
-            if (headerIcon) headerIcon.textContent = icon;
         }
 
         window.handleKeyPress = function(event, action) {
@@ -1150,13 +1103,13 @@
             
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('bg-gradient-to-r', 'from-emerald-500', 'to-teal-500', 'text-white');
-                btn.classList.add('bg-white/50', 'dark:bg-slate-700/50');
+                btn.classList.add('bg-white/50');
             });
             
             const activeBtn = document.querySelector(`[data-nav="${page}"]`);
             if (activeBtn) {
                 activeBtn.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-teal-500', 'text-white');
-                activeBtn.classList.remove('bg-white/50', 'dark:bg-slate-700/50');
+                activeBtn.classList.remove('bg-white/50');
             }
             
             if (page === 'dashboard') {
@@ -1323,17 +1276,17 @@
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${initial}</span>
-                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">${stat.total}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">${initial}</span>
+                            <span class="text-sm font-bold text-slate-700">${stat.total}</span>
                         </div>
-                        <div class="stacked-bar bg-slate-200 dark:bg-slate-700">
+                        <div class="stacked-bar bg-slate-200">
                             <div class="stacked-bar-red" style="width: ${redPercent}%" title="RED: ${stat.red}"></div>
                             <div class="stacked-bar-white" style="width: ${whitePercent}%" title="WHITE: ${stat.white}"></div>
                             <div class="stacked-bar-blue" style="width: ${bluePercent}%" title="BLUE: ${stat.blue}"></div>
                         </div>
                         <div class="flex justify-between text-xs">
                             <span class="text-red-600 font-semibold">🔴 ${stat.red}</span>
-                            <span class="text-slate-600 dark:text-slate-400 font-semibold">⚪ ${stat.white}</span>
+                            <span class="text-slate-600 font-semibold">⚪ ${stat.white}</span>
                             <span class="text-blue-600 font-semibold">🔵 ${stat.blue}</span>
                         </div>
                     </div>
@@ -1374,10 +1327,10 @@
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">${initial}</span>
-                            <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400">${stat.closed}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">${initial}</span>
+                            <span class="text-sm font-bold text-emerald-600">${stat.closed}</span>
                         </div>
-                        <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div class="h-6 bg-slate-200 rounded-full overflow-hidden">
                             <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-end px-3 text-xs font-bold text-white" style="width: ${width}%">
                                 ${stat.closed > 0 ? stat.closed : ''}
                             </div>
@@ -1428,10 +1381,10 @@
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">🏭 ${machine}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">🏭 ${machine}</span>
                             <div class="text-sm space-x-3">
-                                <span class="text-slate-600 dark:text-slate-400">⚪ ${stat.white}</span>
-                                <span class="font-bold text-blue-600 dark:text-blue-400">📊 ${stat.total}</span>
+                                <span class="text-slate-600">⚪ ${stat.white}</span>
+                                <span class="font-bold text-blue-600">📊 ${stat.total}</span>
                             </div>
                         </div>
                         <div class="space-y-1">
@@ -1439,10 +1392,10 @@
                                 <span class="text-red-600 font-semibold">🔴 OPEN: ${stat.open}</span>
                                 <span class="text-emerald-600 font-semibold">✅ CLOSED: ${stat.closed}</span>
                             </div>
-                            <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-6 bg-slate-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-red-500 to-red-400" style="width: ${redPercent}%" title="RED: ${stat.red}"></div>
                             </div>
-                            <div class="text-xs text-center text-slate-500 dark:text-slate-400 font-semibold">
+                            <div class="text-xs text-center text-slate-500 font-semibold">
                                 Total RED: ${stat.red}
                             </div>
                         </div>
@@ -1491,18 +1444,18 @@
                 return `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm font-semibold uppercase bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">🏢 ${building}</span>
-                            <span class="font-bold text-blue-600 dark:text-blue-400">📊 ${stat.total}</span>
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">🏢 ${building}</span>
+                            <span class="font-bold text-blue-600">📊 ${stat.total}</span>
                         </div>
                         <div class="space-y-1">
                             <div class="flex justify-between text-xs">
                                 <span class="text-red-600 font-semibold">🔵 OPEN: ${stat.open}</span>
                                 <span class="text-emerald-600 font-semibold">✅ CLOSED: ${stat.closed}</span>
                             </div>
-                            <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-6 bg-slate-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400" style="width: ${bluePercent}%" title="BLUE: ${stat.blue}"></div>
                             </div>
-                            <div class="text-xs text-center text-slate-500 dark:text-slate-400 font-semibold">
+                            <div class="text-xs text-center text-slate-500 font-semibold">
                                 Total BLUE: ${stat.blue}
                             </div>
                         </div>
@@ -1522,9 +1475,9 @@
             redTags.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             tbody.innerHTML = redTags.map(tag => {
-                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                                   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700' :
+                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700' :
+                                   'bg-emerald-100 text-emerald-700';
                 
                 let actionButton = '';
                 if (tag.status === 'CLOSED') {
@@ -1554,7 +1507,7 @@
                     `<span class="text-xs text-slate-400">-</span>`;
                 
                 return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine_name || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
@@ -1566,7 +1519,7 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${actionButton}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600 dark:text-slate-400">${tag.updated_at ? formatDate(tag.updated_at.split('T')[0]) : '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600">${tag.updated_at ? formatDate(tag.updated_at.split('T')[0]) : '-'}</td>
                     </tr>
                 `;
             }).join('');
@@ -1583,7 +1536,7 @@
             whiteTags.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             tbody.innerHTML = whiteTags.map(tag => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${tag.machine_name || '-'}</td>
@@ -1605,9 +1558,9 @@
             blueTags.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             tbody.innerHTML = blueTags.map(tag => {
-                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300' :
-                                   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
+                const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700' :
+                                   tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700' :
+                                   'bg-emerald-100 text-emerald-700';
                 
                 let actionButton = '';
                 if (tag.status === 'CLOSED') {
@@ -1637,7 +1590,7 @@
                     `<span class="text-xs text-slate-400">-</span>`;
                 
                 return `
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.building_name || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
@@ -1649,7 +1602,7 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${actionButton}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600 dark:text-slate-400">${tag.updated_at ? formatDate(tag.updated_at.split('T')[0]) : '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600">${tag.updated_at ? formatDate(tag.updated_at.split('T')[0]) : '-'}</td>
                     </tr>
                 `;
             }).join('');
@@ -1663,12 +1616,12 @@
 
         function getRiskColor(risk) {
             switch (risk) {
-                case 'SAFETY': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-                case 'QUALITY': return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
-                case 'PRODUCTIVITY': return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
-                case '5R': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
-                case 'INFRA': return 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300';
-                default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+                case 'SAFETY': return 'bg-red-100 text-red-700';
+                case 'QUALITY': return 'bg-blue-100 text-blue-700';
+                case 'PRODUCTIVITY': return 'bg-amber-100 text-amber-700';
+                case '5R': return 'bg-emerald-100 text-emerald-700';
+                case 'INFRA': return 'bg-purple-100 text-purple-700';
+                default: return 'bg-slate-100 text-slate-700';
             }
         }
 
@@ -1811,7 +1764,7 @@
             operatorList.innerHTML = operators.length === 0 
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
                 : operators.map(o => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                         <span class="font-semibold uppercase text-sm break-word">${o}</span>
                         <div class="flex gap-1">
                             <button onclick="openEditModal('operator', '${o}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
@@ -1825,7 +1778,7 @@
             engineeringList.innerHTML = engineerings.length === 0
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
                 : engineerings.map(e => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                         <span class="font-semibold uppercase text-sm break-word">${e}</span>
                         <div class="flex gap-1">
                             <button onclick="openEditModal('engineering', '${e}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
@@ -1839,7 +1792,7 @@
             machineList.innerHTML = machines.length === 0
                 ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
                 : machines.map(m => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                         <span class="font-semibold uppercase text-sm break-word">${m}</span>
                         <div class="flex gap-1">
                             <button onclick="openEditModal('machine', '${m}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
@@ -1854,7 +1807,7 @@
                 utilityList.innerHTML = utilities.length === 0
                     ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA UTILITY</p>'
                     : utilities.map(u => `
-                        <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                             <span class="font-semibold uppercase text-sm break-word">${u}</span>
                             <div class="flex gap-1">
                                 <button onclick="openEditModal('utility', '${u}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
@@ -1870,7 +1823,7 @@
                 buildingList.innerHTML = buildings.length === 0
                     ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA BANGUNAN</p>'
                     : buildings.map(b => `
-                        <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                             <span class="font-semibold uppercase text-sm break-word">${b}</span>
                             <div class="flex gap-1">
                                 <button onclick="openEditModal('building', '${b}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
@@ -2006,9 +1959,9 @@
                 content.innerHTML = `
                     <div class="space-y-4">
                         <p class="text-sm uppercase text-slate-500 break-word">MASUKKAN NOMOR WR UNTUK TAG INI</p>
-                        <input type="text" id="modal-wr" placeholder="NOMOR WR" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase" autocomplete="off">
+                        <input type="text" id="modal-wr" placeholder="NOMOR WR" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase" autocomplete="off">
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                            <button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button>
                             <button onclick="submitWR('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button>
                         </div>
                     </div>
@@ -2026,11 +1979,11 @@
                 
                 content.innerHTML = `
                     <div class="space-y-4">
-                        <p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900 dark:text-white">${tag.wr_number}</span></p>
+                        <p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900">${tag.wr_number}</span></p>
                         
                         <div>
                             <label class="block text-sm font-semibold uppercase mb-2">STATUS</label>
-                            <select id="modal-status" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase">
+                            <select id="modal-status" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase">
                                 <option value="ON PROGRESS" ${tag.status === 'ON PROGRESS' ? 'selected' : ''}>ON PROGRESS</option>
                                 <option value="CLOSED" ${tag.status === 'CLOSED' ? 'selected' : ''}>CLOSED</option>
                             </select>
@@ -2038,11 +1991,11 @@
                         
                         <div>
                             <label class="block text-sm font-semibold uppercase mb-2">ACTION</label>
-                            <textarea id="modal-note" rows="2" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-emerald-500 focus:outline-none transition uppercase break-word">${tag.progress_note || ''}</textarea>
+                            <textarea id="modal-note" rows="2" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase break-word">${tag.progress_note || ''}</textarea>
                         </div>
                         
-                        <div class="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-700">
-                            <label class="block text-sm font-bold uppercase mb-3 text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                        <div class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-blue-300">
+                            <label class="block text-sm font-bold uppercase mb-3 text-blue-600 flex items-center gap-2">
                                 <span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB
                             </label>
                             
@@ -2065,8 +2018,8 @@
                                 </div>
                                 
                                 <div class="text-center">
-                                    <p class="text-xs font-semibold uppercase mb-2 text-slate-600 dark:text-slate-400">PREVIEW FOTO AFTER</p>
-                                    <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-2 min-h-[120px] flex items-center justify-center">
+                                    <p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW FOTO AFTER</p>
+                                    <div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center">
                                         <img id="preview-after" src="${tag.foto_after || 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'}" class="max-w-full max-h-32 rounded-lg object-contain">
                                     </div>
                                     <input type="hidden" id="modal-foto-after-data" value="">
@@ -2076,7 +2029,7 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row gap-2 mt-2">
-                            <button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                            <button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button>
                             <button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE DENGAN FOTO</button>
                         </div>
                     </div>
@@ -2132,9 +2085,9 @@
             document.getElementById('edit-modal-content').innerHTML = `
                 <div class="space-y-4">
                     <p class="text-sm uppercase text-slate-500 break-word">EDIT: ${oldValue}</p>
-                    <input type="text" id="edit-value" value="${oldValue}" placeholder="MASUKKAN NILAI BARU" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:border-yellow-500 focus:outline-none transition uppercase" autocomplete="off">
+                    <input type="text" id="edit-value" value="${oldValue}" placeholder="MASUKKAN NILAI BARU" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-yellow-500 focus:outline-none transition uppercase" autocomplete="off">
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <button onclick="closeEditModal()" class="w-full sm:flex-1 py-3 bg-slate-200 dark:bg-slate-600 rounded-xl font-semibold uppercase hover:bg-slate-300 dark:hover:bg-slate-500 transition">BATAL</button>
+                        <button onclick="closeEditModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button>
                         <button onclick="submitEdit('${type}', '${oldValue}')" class="w-full sm:flex-1 py-3 bg-yellow-500 text-white rounded-xl font-semibold uppercase hover:bg-yellow-600 transition">UPDATE</button>
                     </div>
                 </div>
