@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>TAG MONITORING SYSTEM WITH PHOTO</title>
+    <title>TAG MONITORING SYSTEM - OPTIMIZED</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -191,6 +191,49 @@
             outline: none;
             ring: 4px solid rgba(59, 130, 246, 0.2);
         }
+        
+        /* Optimasi tabel */
+        .table-container {
+            position: relative;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        
+        .table-container thead {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 5;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Cache indicator */
+        .cache-badge {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900 transition-colors duration-300">
@@ -256,6 +299,14 @@
             <main class="flex-1 p-4 overflow-auto">
                 <!-- Dashboard Page -->
                 <div id="page-dashboard" class="page space-y-6">
+                    <!-- Loading Indicator untuk Dashboard -->
+                    <div id="dashboard-loading" class="hidden fixed inset-0 bg-black/20 flex items-center justify-center z-40">
+                        <div class="bg-white p-4 rounded-xl shadow-xl flex items-center gap-3">
+                            <div class="loading-spinner"></div>
+                            <span class="font-semibold uppercase">MEMUAT DATA...</span>
+                        </div>
+                    </div>
+
                     <!-- Filter Section -->
                     <div class="glass-card rounded-xl p-5">
                         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -272,6 +323,7 @@
                         <div class="flex flex-wrap gap-3 mt-5">
                             <button onclick="applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2"><span>🔍</span> TERAPKAN FILTER</button>
                             <button onclick="resetDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg text-sm font-bold uppercase hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg shadow-slate-500/30 flex items-center gap-2"><span>⟲</span> RESET</button>
+                            <button onclick="clearDataCache()" class="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg text-sm font-bold uppercase hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg shadow-purple-500/30 flex items-center gap-2"><span>🔄</span> REFRESH</button>
                         </div>
                     </div>
 
@@ -301,7 +353,7 @@
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-[2px] shadow-2xl"><div class="relative h-full rounded-2xl bg-white p-6"><div class="absolute top-0 right-0 w-20 h-20 bg-blue-500 rounded-full filter blur-3xl opacity-20"></div><div class="flex items-start justify-between"><div><p class="text-sm font-bold uppercase text-blue-600 mb-1">BLUE TAG</p><p id="stat-blue" class="text-4xl font-black text-slate-900">0</p></div><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">🔵</div></div><p class="mt-2 text-xs text-slate-500">Total untuk bangunan</p></div></div>
                     </div>
 
-                    <!-- 4 KOLOM HORIZONTAL BARS -->
+                    <!-- 4 KOLOM HORIZONTAL BARS (CACHED) -->
                     <div class="grid lg:grid-cols-4 gap-5">
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3">
@@ -337,13 +389,13 @@
                         </div>
                     </div>
 
-                    <!-- Red Tag Table (MESIN) -->
+                    <!-- Red Tag Table (MESIN) - OPTIMIZED -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                             <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔴</span> DAFTAR RED TAG (MESIN)</h3>
                             <span id="red-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
-                        <div class="overflow-x-auto">
+                        <div class="table-container">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50/50">
                                     <tr>
@@ -366,13 +418,13 @@
                         </div>
                     </div>
 
-                    <!-- White Tag Table (MESIN - NO PHOTO) -->
+                    <!-- White Tag Table (MESIN - NO PHOTO) - OPTIMIZED -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                             <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚪</span> DAFTAR WHITE TAG (MESIN)</h3>
                             <span id="white-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
-                        <div class="overflow-x-auto">
+                        <div class="table-container">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50/50">
                                     <tr>
@@ -389,13 +441,13 @@
                         </div>
                     </div>
 
-                    <!-- Blue Tag Table (BANGUNAN) -->
+                    <!-- Blue Tag Table (BANGUNAN) - OPTIMIZED -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3">
                             <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔵</span> DAFTAR BLUE TAG (BANGUNAN)</h3>
                             <span id="blue-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span>
                         </div>
-                        <div class="overflow-x-auto">
+                        <div class="table-container">
                             <table class="w-full text-sm">
                                 <thead class="bg-slate-50/50">
                                     <tr>
@@ -599,6 +651,11 @@
         </div>
     </div>
 
+    <!-- Cache Badge -->
+    <div id="cache-badge" class="cache-badge hidden">
+        <span id="cache-info">Data cached</span>
+    </div>
+
     <script>
         // ============ SUPABASE CONFIG ============
         const SUPABASE_URL = 'https://hzvjoewuprlkgwetqpau.supabase.co';
@@ -606,23 +663,46 @@
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ============ STATE ============
+        // ============ STATE & CACHE ============
+        // Cache data dengan TTL (Time To Live) - 5 menit
+        const CACHE_TTL = 5 * 60 * 1000; // 5 menit dalam milidetik
+        
+        let cache = {
+            tags: { data: [], timestamp: 0, filtered: [] },
+            operators: { data: [], timestamp: 0 },
+            engineerings: { data: [], timestamp: 0 },
+            machines: { data: [], timestamp: 0 },
+            utilities: { data: [], timestamp: 0 },
+            buildings: { data: [], timestamp: 0 }
+        };
+        
         let allData = [];
         let filteredData = [];
         let currentUser = null;
         let userRole = null;
+        
+        // Data arrays
         let operators = [];
         let engineerings = [];
         let machines = [];
         let utilities = [];
         let buildings = [];
         
+        // Camera streams
         let currentStream = null;
         let currentStreamAfter = null;
         
+        // Filter state
         let currentFilter = {
             dateFrom: '', dateTo: '', machine: '', operator: '', location: ''
         };
+        
+        // Debounce timer untuk filter
+        let filterTimer = null;
+        
+        // Render queue untuk tabel
+        let renderQueue = [];
+        let isRendering = false;
 
         // ============ FUNGSI KOMPRES FOTO ============
         function compressImage(dataUrl, maxSizeKB = 100) {
@@ -634,6 +714,7 @@
                     let width = img.width;
                     let height = img.height;
                     
+                    // Resize jika terlalu besar
                     const maxDimension = 800;
                     if (width > height && width > maxDimension) {
                         height = Math.round((height * maxDimension) / width);
@@ -649,6 +730,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
+                    // Kompres dengan kualitas bertahap
                     let quality = 0.7;
                     let compressed = canvas.toDataURL('image/jpeg', quality);
                     
@@ -660,6 +742,126 @@
                     resolve(compressed);
                 };
             });
+        }
+
+        // ============ FUNGSI CACHE ============
+        function isCacheValid(cacheKey) {
+            if (!cache[cacheKey]) return false;
+            return (Date.now() - cache[cacheKey].timestamp) < CACHE_TTL;
+        }
+
+        function updateCache(cacheKey, data) {
+            if (cache[cacheKey]) {
+                cache[cacheKey].data = data;
+                cache[cacheKey].timestamp = Date.now();
+                
+                // Update filtered data jika tags
+                if (cacheKey === 'tags') {
+                    cache.tags.filtered = data;
+                }
+            }
+        }
+
+        function invalidateCache(cacheKey) {
+            if (cache[cacheKey]) {
+                cache[cacheKey].timestamp = 0;
+            }
+        }
+
+        function invalidateAllCache() {
+            Object.keys(cache).forEach(key => {
+                cache[key].timestamp = 0;
+            });
+            updateCacheBadge();
+        }
+
+        function updateCacheBadge() {
+            const badge = document.getElementById('cache-badge');
+            const info = document.getElementById('cache-info');
+            
+            if (isCacheValid('tags')) {
+                const age = Math.round((Date.now() - cache.tags.timestamp) / 1000);
+                info.textContent = `📦 Cache: ${age}s | Data: ${cache.tags.data.length} tags`;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // ============ OPTIMIZED DATA FETCHING ============
+        async function fetchWithCache(table, cacheKey, options = {}) {
+            try {
+                // Cek cache
+                if (isCacheValid(cacheKey) && !options.forceRefresh) {
+                    return cache[cacheKey].data;
+                }
+                
+                // Fetch dari Supabase dengan limit untuk optimasi
+                let query = supabaseClient.from(table).select('*');
+                
+                // Tambah limit jika tidak perlu semua data
+                if (options.limit) {
+                    query = query.limit(options.limit);
+                }
+                
+                // Order by untuk konsistensi
+                query = query.order('created_at', { ascending: false });
+                
+                const { data, error } = await query;
+                
+                if (error) throw error;
+                
+                // Update cache
+                updateCache(cacheKey, data || []);
+                updateCacheBadge();
+                
+                return data || [];
+            } catch (error) {
+                console.error(`Error fetching ${table}:`, error);
+                return cache[cacheKey]?.data || [];
+            }
+        }
+
+        // ============ REFRESH DATA DENGAN OPTIMASI ============
+        async function refreshData(forceRefresh = false) {
+            showDashboardLoading(true);
+            
+            try {
+                // Parallel fetching dengan cache
+                const [tagsData, opsData, engsData, machsData, utilsData, buildsData] = await Promise.all([
+                    fetchWithCache('tags', 'tags', { forceRefresh }),
+                    fetchWithCache('operators', 'operators', { forceRefresh }),
+                    fetchWithCache('engineerings', 'engineerings', { forceRefresh }),
+                    fetchWithCache('machines', 'machines', { forceRefresh }),
+                    fetchWithCache('utilities', 'utilities', { forceRefresh }),
+                    fetchWithCache('buildings', 'buildings', { forceRefresh })
+                ]);
+
+                // Update global arrays
+                allData = tagsData || [];
+                operators = (opsData || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
+                engineerings = (engsData || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
+                machines = (machsData || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
+                utilities = (utilsData || []).map(u => u.utility).sort((a, b) => a.localeCompare(b));
+                buildings = (buildsData || []).map(b => b.building).sort((a, b) => a.localeCompare(b));
+
+                // Render dengan requestAnimationFrame untuk menghindari blocking
+                requestAnimationFrame(() => {
+                    renderManagementLists();
+                    updateFilterDropdowns();
+                    
+                    if (!document.getElementById('page-dashboard').classList.contains('hidden')) {
+                        applyDashboardFilter();
+                    }
+                    
+                    showDashboardLoading(false);
+                });
+                
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                showToast('GAGAL REFRESH DATA', 'error');
+                showDashboardLoading(false);
+            }
         }
 
         // ============ FUNGSI FOTO ============
@@ -791,436 +993,22 @@
             }
         }
 
-        // ============ CEK DAN BUAT TABEL ============
-        async function ensureTableExists(tableName) {
-            try {
-                // Coba select untuk cek apakah tabel ada
-                const { error } = await supabaseClient
-                    .from(tableName)
-                    .select('*')
-                    .limit(1);
-                
-                if (error && error.code === '42P01') { // Table doesn't exist
-                    console.log(`Table ${tableName} doesn't exist, creating...`);
-                    
-                    // Buat tabel via SQL (hanya untuk development)
-                    let createSQL = '';
-                    if (tableName === 'buildings') {
-                        createSQL = 'CREATE TABLE buildings (id SERIAL PRIMARY KEY, building TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT NOW());';
-                    } else if (tableName === 'utilities') {
-                        createSQL = 'CREATE TABLE utilities (id SERIAL PRIMARY KEY, utility TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT NOW());';
-                    }
-                    
-                    if (createSQL) {
-                        const { error: createError } = await supabaseClient.rpc('exec_sql', { sql: createSQL });
-                        if (createError) {
-                            console.warn(`Cannot create table ${tableName} automatically. Please create it manually in Supabase.`);
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            } catch (error) {
-                console.warn(`Error checking table ${tableName}:`, error);
-                return false;
-            }
-        }
-
-        // ============ REFRESH DATA ============
-        async function refreshData() {
-            try {
-                // Ambil data dari semua tabel
-                const [tagsResult, opsResult, engsResult, machsResult, utilsResult, buildsResult] = await Promise.all([
-                    supabaseClient.from('tags').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('operators').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('engineerings').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('machines').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('utilities').select('*').order('created_at', { ascending: false }),
-                    supabaseClient.from('buildings').select('*').order('created_at', { ascending: false })
-                ]);
-
-                // Handle tags
-                if (tagsResult.error) {
-                    console.warn('Tags table error:', tagsResult.error);
-                    allData = [];
-                } else {
-                    allData = tagsResult.data || [];
-                }
-
-                // Handle operators
-                if (opsResult.error) {
-                    console.warn('Operators table error:', opsResult.error);
-                    operators = [];
-                } else {
-                    operators = (opsResult.data || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
-                }
-
-                // Handle engineerings
-                if (engsResult.error) {
-                    console.warn('Engineerings table error:', engsResult.error);
-                    engineerings = [];
-                } else {
-                    engineerings = (engsResult.data || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
-                }
-
-                // Handle machines
-                if (machsResult.error) {
-                    console.warn('Machines table error:', machsResult.error);
-                    machines = [];
-                } else {
-                    machines = (machsResult.data || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
-                }
-
-                // Handle utilities
-                if (utilsResult.error) {
-                    console.warn('Utilities table error:', utilsResult.error);
-                    utilities = [];
-                } else {
-                    utilities = (utilsResult.data || []).map(u => u.utility).sort((a, b) => a.localeCompare(b));
-                }
-
-                // Handle buildings
-                if (buildsResult.error) {
-                    console.warn('Buildings table error:', buildsResult.error);
-                    buildings = [];
-                    showToast('Tabel buildings belum ada. Silakan buat di Supabase SQL Editor dengan perintah: CREATE TABLE buildings (id SERIAL PRIMARY KEY, building TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT NOW());', 'error');
-                } else {
-                    buildings = (buildsResult.data || []).map(b => b.building).sort((a, b) => a.localeCompare(b));
-                }
-
-                renderManagementLists();
-                updateFilterDropdowns();
-                
-                if (!document.getElementById('page-dashboard').classList.contains('hidden')) {
-                    applyDashboardFilter();
-                }
-            } catch (error) {
-                console.error('Error refreshing data:', error);
-                showToast('GAGAL REFRESH DATA', 'error');
-            }
-        }
-
-        // ============ CRUD OPERATIONS ============
-        async function insertTag(tagData) {
-            try {
-                const dbData = {
-                    date: tagData.date,
-                    initial: tagData.initial,
-                    tag_type: tagData.tag_type,
-                    machine: tagData.machine,
-                    location: tagData.location,
-                    abnormality: tagData.abnormality,
-                    impact: tagData.impact,
-                    risk: tagData.risk,
-                    action: tagData.action || '',
-                    status: tagData.status,
-                    wr_number: tagData.wr_number || '',
-                    progress_note: tagData.progress_note || '',
-                    foto_before: tagData.foto_before || null,
-                    foto_after: tagData.foto_after || null,
-                    closed_by: tagData.closed_by || null,
-                    closed_at: tagData.closed_at || null,
-                    created_at: tagData.created_at,
-                    updated_at: tagData.updated_at
-                };
-
-                const { data, error } = await supabaseClient
-                    .from('tags')
-                    .insert([dbData])
-                    .select();
-
-                if (error) throw error;
-                
-                showToast('TAG BERHASIL DISIMPAN', 'success');
-                await refreshData();
-                
-                if (!document.getElementById('page-input').classList.contains('hidden')) {
-                    setTimeout(() => showPage('dashboard'), 500);
-                }
-                
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting tag:', error);
-                showToast('GAGAL MENYIMPAN TAG: ' + (error.message || 'Unknown error'), 'error');
-                return null;
-            }
-        }
-
-        async function updateTag(tagId, updateData) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('tags')
-                    .update(updateData)
-                    .eq('id', tagId)
-                    .select();
-
-                if (error) throw error;
-                
-                showToast('DATA BERHASIL DIUPDATE', 'success');
-                await refreshData();
-                
-                return data[0];
-            } catch (error) {
-                console.error('Error updating tag:', error);
-                showToast('GAGAL MENGUPDATE DATA', 'error');
-                return null;
-            }
-        }
-
-        // Operator functions
-        async function insertOperator(initial) {
-            try {
-                const { data, error } = await supabaseClient.from('operators').insert([{ initial }]).select();
-                if (error) throw error;
-                showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
-                await refreshData();
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting operator:', error);
-                showToast('GAGAL MENAMBAHKAN OPERATOR: ' + error.message, 'error');
-                return null;
-            }
-        }
-
-        async function deleteOperator(initial) {
-            try {
-                // Cek apakah operator ini masih digunakan di tabel tags
-                const { data: usedTags, error: checkError } = await supabaseClient
-                    .from('tags')
-                    .select('id')
-                    .eq('initial', initial);
-                
-                if (checkError) throw checkError;
-                
-                if (usedTags && usedTags.length > 0) {
-                    showToast('TIDAK BISA DIHAPUS: OPERATOR MASIH MEMILIKI ' + usedTags.length + ' TAG', 'error');
-                    return;
-                }
-                
-                const { error } = await supabaseClient.from('operators').delete().eq('initial', initial);
-                if (error) throw error;
-                
-                showToast('OPERATOR DIHAPUS', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('Error deleting operator:', error);
-                showToast('GAGAL MENGHAPUS OPERATOR: ' + error.message, 'error');
-            }
-        }
-
-        // Engineering functions
-        async function insertEngineering(initial) {
-            try {
-                const { data, error } = await supabaseClient.from('engineerings').insert([{ initial }]).select();
-                if (error) throw error;
-                showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
-                await refreshData();
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting engineering:', error);
-                showToast('GAGAL MENAMBAHKAN ENGINEERING: ' + error.message, 'error');
-                return null;
-            }
-        }
-
-        async function deleteEngineering(initial) {
-            try {
-                // Cek apakah engineering ini masih digunakan
-                const { data: usedTags, error: checkError } = await supabaseClient
-                    .from('tags')
-                    .select('id')
-                    .eq('closed_by', initial);
-                
-                if (checkError) throw checkError;
-                
-                if (usedTags && usedTags.length > 0) {
-                    showToast('TIDAK BISA DIHAPUS: ENGINEERING MASIH MEMILIKI ' + usedTags.length + ' CLOSED TAG', 'error');
-                    return;
-                }
-                
-                const { error } = await supabaseClient.from('engineerings').delete().eq('initial', initial);
-                if (error) throw error;
-                
-                showToast('ENGINEERING DIHAPUS', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('Error deleting engineering:', error);
-                showToast('GAGAL MENGHAPUS ENGINEERING: ' + error.message, 'error');
-            }
-        }
-
-        // Machine functions
-        async function insertMachine(machine) {
-            try {
-                const { data, error } = await supabaseClient.from('machines').insert([{ machine }]).select();
-                if (error) throw error;
-                showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
-                await refreshData();
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting machine:', error);
-                showToast('GAGAL MENAMBAHKAN MESIN: ' + error.message, 'error');
-                return null;
-            }
-        }
-
-        async function deleteMachine(machine) {
-            try {
-                // Cek apakah mesin ini masih digunakan
-                const { data: usedTags, error: checkError } = await supabaseClient
-                    .from('tags')
-                    .select('id')
-                    .eq('machine', machine)
-                    .eq('location', 'MACHINE');
-                
-                if (checkError) throw checkError;
-                
-                if (usedTags && usedTags.length > 0) {
-                    showToast('TIDAK BISA DIHAPUS: MESIN MASIH DIGUNAKAN DI ' + usedTags.length + ' TAG', 'error');
-                    return;
-                }
-                
-                const { error } = await supabaseClient.from('machines').delete().eq('machine', machine);
-                if (error) throw error;
-                
-                showToast('MESIN DIHAPUS', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('Error deleting machine:', error);
-                showToast('GAGAL MENGHAPUS MESIN: ' + error.message, 'error');
-            }
-        }
-
-        // UTILITY functions
-        async function insertUtility(utility) {
-            try {
-                const { data, error } = await supabaseClient.from('utilities').insert([{ utility }]).select();
-                if (error) throw error;
-                showToast('UTILITY BERHASIL DITAMBAHKAN', 'success');
-                await refreshData();
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting utility:', error);
-                showToast('GAGAL MENAMBAHKAN UTILITY: ' + error.message, 'error');
-                return null;
-            }
-        }
-
-        async function deleteUtility(utility) {
-            try {
-                // Cek apakah utility ini masih digunakan
-                const { data: usedTags, error: checkError } = await supabaseClient
-                    .from('tags')
-                    .select('id')
-                    .eq('closed_by', utility);
-                
-                if (checkError) throw checkError;
-                
-                if (usedTags && usedTags.length > 0) {
-                    showToast('TIDAK BISA DIHAPUS: UTILITY MASIH MEMILIKI ' + usedTags.length + ' CLOSED TAG', 'error');
-                    return;
-                }
-                
-                const { error } = await supabaseClient.from('utilities').delete().eq('utility', utility);
-                if (error) throw error;
-                
-                showToast('UTILITY DIHAPUS', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('Error deleting utility:', error);
-                showToast('GAGAL MENGHAPUS UTILITY: ' + error.message, 'error');
-            }
-        }
-
-        // BUILDING functions
-        async function insertBuilding(building) {
-            try {
-                if (!building || building.trim() === '') {
-                    showToast('NAMA BANGUNAN TIDAK BOLEH KOSONG', 'error');
-                    return null;
-                }
-                
-                // Cek apakah tabel buildings ada
-                const { error: checkError } = await supabaseClient
-                    .from('buildings')
-                    .select('id')
-                    .limit(1);
-                
-                if (checkError && checkError.code === '42P01') {
-                    showToast('TABEL BUILDINGS BELUM ADA. SILAKAN BIKIN DI SUPABASE SQL EDITOR', 'error');
-                    return null;
-                }
-                
-                const { data, error } = await supabaseClient
-                    .from('buildings')
-                    .insert([{ building: building }])
-                    .select();
-                
-                if (error) throw error;
-                
-                showToast('BANGUNAN BERHASIL DITAMBAHKAN', 'success');
-                await refreshData();
-                return data[0];
-            } catch (error) {
-                console.error('Error inserting building:', error);
-                if (error.code === '23505') {
-                    showToast('NAMA BANGUNAN SUDAH ADA', 'error');
-                } else {
-                    showToast('GAGAL MENAMBAHKAN BANGUNAN: ' + (error.message || 'Unknown error'), 'error');
-                }
-                return null;
-            }
-        }
-
-        async function deleteBuilding(building) {
-            try {
-                // Cek apakah bangunan ini masih digunakan
-                const { data: usedTags, error: checkError } = await supabaseClient
-                    .from('tags')
-                    .select('id')
-                    .eq('machine', building)
-                    .eq('location', 'BUILDING');
-                
-                if (checkError) throw checkError;
-                
-                if (usedTags && usedTags.length > 0) {
-                    showToast('TIDAK BISA DIHAPUS: BANGUNAN MASIH DIGUNAKAN DI ' + usedTags.length + ' TAG', 'error');
-                    return;
-                }
-                
-                const { error } = await supabaseClient.from('buildings').delete().eq('building', building);
-                if (error) throw error;
-                
-                showToast('BANGUNAN DIHAPUS', 'success');
-                await refreshData();
-            } catch (error) {
-                console.error('Error deleting building:', error);
-                showToast('GAGAL MENGHAPUS BANGUNAN: ' + error.message, 'error');
-            }
-        }
-
-        // Setup realtime subscriptions
-        function setupRealtimeSubscriptions() {
-            try {
-                supabaseClient.channel('tags-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'tags' }, () => refreshData()).subscribe();
-                supabaseClient.channel('operators-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'operators' }, () => refreshData()).subscribe();
-                supabaseClient.channel('engineerings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'engineerings' }, () => refreshData()).subscribe();
-                supabaseClient.channel('machines-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => refreshData()).subscribe();
-                supabaseClient.channel('utilities-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'utilities' }, () => refreshData()).subscribe();
-                supabaseClient.channel('buildings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'buildings' }, () => refreshData()).subscribe();
-            } catch (error) {
-                console.warn('Realtime subscriptions not available:', error);
-            }
-        }
-
         // ============ INIT ============
         async function initApp() {
             try {
                 setDefaultDates();
-                await refreshData();
+                await refreshData(false); // Gunakan cache
                 setupRealtimeSubscriptions();
                 updateLiveClock();
                 setInterval(updateLiveClock, 1000);
+                
+                // Auto refresh cache setiap 5 menit
+                setInterval(() => {
+                    if (isCacheValid('tags')) {
+                        refreshData(true); // Force refresh di background
+                    }
+                }, CACHE_TTL);
+                
             } catch (error) {
                 console.error('Error initializing app:', error);
                 showToast('GAGAL INISIALISASI APLIKASI', 'error');
@@ -1315,6 +1103,13 @@
             }
         };
 
+        // ============ CLEAR CACHE ============
+        window.clearDataCache = function() {
+            invalidateAllCache();
+            refreshData(true);
+            showToast('CACHE DIBERSIHKAN & DATA DIREFERSH', 'success');
+        };
+
         // ============ NAVIGATION ============
         window.showPage = function(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
@@ -1355,6 +1150,18 @@
             document.getElementById('input-date').value = today;
         }
 
+        // ============ DASHBOARD LOADING ============
+        function showDashboardLoading(show) {
+            const loader = document.getElementById('dashboard-loading');
+            if (loader) {
+                if (show) {
+                    loader.classList.remove('hidden');
+                } else {
+                    loader.classList.add('hidden');
+                }
+            }
+        }
+
         // ============ FILTER ============
         function updateFilterDropdowns() {
             const operatorSelect = document.getElementById('filter-operator');
@@ -1364,32 +1171,45 @@
         }
 
         window.applyDashboardFilter = function() {
-            currentFilter.dateFrom = document.getElementById('filter-date-from').value;
-            currentFilter.dateTo = document.getElementById('filter-date-to').value;
-            currentFilter.location = document.getElementById('filter-location').value;
-            currentFilter.machine = document.getElementById('filter-machine').value.toUpperCase();
-            currentFilter.operator = document.getElementById('filter-operator').value;
+            // Clear previous timer
+            if (filterTimer) clearTimeout(filterTimer);
             
-            filteredData = allData.filter(tag => {
-                if (currentFilter.dateFrom && currentFilter.dateTo) {
-                    if (tag.date < currentFilter.dateFrom || tag.date > currentFilter.dateTo) return false;
-                } else if (currentFilter.dateFrom) {
-                    if (tag.date < currentFilter.dateFrom) return false;
-                } else if (currentFilter.dateTo) {
-                    if (tag.date > currentFilter.dateTo) return false;
-                }
+            // Debounce filter untuk performa
+            filterTimer = setTimeout(() => {
+                currentFilter.dateFrom = document.getElementById('filter-date-from').value;
+                currentFilter.dateTo = document.getElementById('filter-date-to').value;
+                currentFilter.location = document.getElementById('filter-location').value;
+                currentFilter.machine = document.getElementById('filter-machine').value.toUpperCase();
+                currentFilter.operator = document.getElementById('filter-operator').value;
                 
-                if (currentFilter.location && tag.location !== currentFilter.location) return false;
+                // Filter data dengan cepat
+                filteredData = allData.filter(tag => {
+                    if (currentFilter.dateFrom && currentFilter.dateTo) {
+                        if (tag.date < currentFilter.dateFrom || tag.date > currentFilter.dateTo) return false;
+                    } else if (currentFilter.dateFrom) {
+                        if (tag.date < currentFilter.dateFrom) return false;
+                    } else if (currentFilter.dateTo) {
+                        if (tag.date > currentFilter.dateTo) return false;
+                    }
+                    
+                    if (currentFilter.location && tag.location !== currentFilter.location) return false;
+                    
+                    if (currentFilter.machine && !tag.machine?.includes(currentFilter.machine)) return false;
+                    
+                    if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
+                    
+                    return true;
+                });
                 
-                if (currentFilter.machine && !tag.machine?.includes(currentFilter.machine)) return false;
+                updateActiveFiltersDisplay();
                 
-                if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
+                // Render dengan requestAnimationFrame
+                requestAnimationFrame(() => {
+                    updateDashboard();
+                });
                 
-                return true;
-            });
-            
-            updateActiveFiltersDisplay();
-            updateDashboard();
+                showToast('Filter diterapkan', 'success');
+            }, 300); // Debounce 300ms
         };
 
         window.resetDashboardFilter = function() {
@@ -1402,7 +1222,11 @@
             currentFilter = { dateFrom: '', dateTo: '', location: '', machine: '', operator: '' };
             filteredData = [...allData];
             updateActiveFiltersDisplay();
-            updateDashboard();
+            
+            requestAnimationFrame(() => {
+                updateDashboard();
+            });
+            
             showToast('Filter direset ke semua data', 'success');
         };
 
@@ -1422,14 +1246,16 @@
                 : filters.map(f => `<span class="filter-badge">${f}</span>`).join('');
         }
 
-        // ============ DASHBOARD RENDER ============
+        // ============ DASHBOARD RENDER (OPTIMIZED) ============
         function updateDashboard() {
             const tags = filteredData.length > 0 ? filteredData : allData;
             
+            // Hitung statistik dasar (cepat)
             const redTags = tags.filter(t => t.tag_type === 'RED').length;
             const whiteTags = tags.filter(t => t.tag_type === 'WHITE').length;
             const blueTags = tags.filter(t => t.tag_type === 'BLUE').length;
             
+            // Update card stats
             document.getElementById('stat-open').textContent = tags.filter(t => t.status === 'OPEN').length;
             document.getElementById('stat-progress').textContent = tags.filter(t => t.status === 'ON PROGRESS').length;
             document.getElementById('stat-closed').textContent = tags.filter(t => (t.tag_type === 'RED' || t.tag_type === 'BLUE') && t.status === 'CLOSED').length;
@@ -1439,23 +1265,29 @@
             const redBlueClosed = tags.filter(t => (t.tag_type === 'RED' || t.tag_type === 'BLUE') && t.status === 'CLOSED').length;
             document.getElementById('stat-closed-percent').textContent = redBlueTags > 0 ? Math.round((redBlueClosed / redBlueTags) * 100) + '%' : '0%';
             
+            // Update counts
             document.getElementById('count-red').textContent = redTags;
             document.getElementById('count-white').textContent = whiteTags;
             document.getElementById('count-blue').textContent = blueTags;
             
+            // Update bar chart
             const totalTags = tags.length || 1;
             document.getElementById('red-bar-width').style.width = (redTags / totalTags) * 100 + '%';
             document.getElementById('white-bar-width').style.width = (whiteTags / totalTags) * 100 + '%';
             document.getElementById('blue-bar-width').style.width = (blueTags / totalTags) * 100 + '%';
             
+            // Update counts per table
             document.getElementById('red-tag-count').textContent = redTags + ' TAG';
             document.getElementById('white-tag-count').textContent = whiteTags + ' TAG';
             document.getElementById('blue-tag-count').textContent = blueTags + ' TAG';
             
+            // Render semua komponen dengan batch
             renderOperatorStackedBars(tags);
             renderEngineeringBars(tags);
             renderMachineBars(tags);
             renderBuildingBars(tags);
+            
+            // Render tabel dengan lazy loading
             renderRedTagTable(tags.filter(t => t.tag_type === 'RED'));
             renderWhiteTagTable(tags.filter(t => t.tag_type === 'WHITE'));
             renderBlueTagTable(tags.filter(t => t.tag_type === 'BLUE'));
@@ -1468,6 +1300,7 @@
             const allInitials = [...new Set([...operators, ...engineerings, ...utilities])];
             allInitials.forEach(i => stats[i] = { red: 0, white: 0, blue: 0, total: 0 });
             
+            // Batch process
             tags.forEach(t => {
                 if (stats[t.initial]) {
                     if (t.tag_type === 'RED') stats[t.initial].red++;
@@ -1479,7 +1312,8 @@
             
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.total > 0)
-                .sort((a, b) => b[1].total - a[1].total);
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 10); // Batasi 10 teratas untuk performa
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada data</div>';
@@ -1533,7 +1367,8 @@
             
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.closed > 0)
-                .sort((a, b) => b[1].closed - a[1].closed);
+                .sort((a, b) => b[1].closed - a[1].closed)
+                .slice(0, 10); // Batasi 10 teratas
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada closed tag</div>';
@@ -1586,7 +1421,8 @@
             
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.total > 0)
-                .sort((a, b) => b[1].total - a[1].total);
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 10); // Batasi 10 teratas
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada data mesin</div>';
@@ -1649,7 +1485,8 @@
             
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.total > 0)
-                .sort((a, b) => b[1].total - a[1].total);
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 10); // Batasi 10 teratas
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada data bangunan</div>';
@@ -1692,9 +1529,12 @@
                 return;
             }
             
-            redTags.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort dan batasi untuk performa
+            const limitedTags = redTags
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 100); // Hanya tampilkan 100 terbaru
             
-            tbody.innerHTML = redTags.map(tag => {
+            tbody.innerHTML = limitedTags.map(tag => {
                 const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700' :
                                    tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700' :
                                    'bg-emerald-100 text-emerald-700';
@@ -1730,9 +1570,9 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</div></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoBeforeHtml}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div></td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${truncateText(tag.progress_note, 30) || '-'}</div></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoAfterHtml}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span></td>
@@ -1751,15 +1591,18 @@
                 return;
             }
             
-            whiteTags.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort dan batasi untuk performa
+            const limitedTags = whiteTags
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 100);
             
-            tbody.innerHTML = whiteTags.map(tag => `
+            tbody.innerHTML = limitedTags.map(tag => `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${tag.machine || '-'}</td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.action || ''}">${tag.action || '-'}</div></td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</div></td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.action || ''}">${truncateText(tag.action, 30) || '-'}</div></td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
                 </tr>
             `).join('');
@@ -1773,9 +1616,12 @@
                 return;
             }
             
-            blueTags.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // Sort dan batasi untuk performa
+            const limitedTags = blueTags
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 100);
             
-            tbody.innerHTML = blueTags.map(tag => {
+            tbody.innerHTML = limitedTags.map(tag => {
                 const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700' :
                                    tag.status === 'ON PROGRESS' ? 'bg-amber-100 text-amber-700' :
                                    'bg-emerald-100 text-emerald-700';
@@ -1811,9 +1657,9 @@
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${truncateText(tag.abnormality, 50) || '-'}</div></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoBeforeHtml}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${tag.progress_note || '-'}</div></td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.progress_note || ''}">${truncateText(tag.progress_note, 30) || '-'}</div></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fotoAfterHtml}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status || '-'}</span></td>
@@ -1822,6 +1668,12 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        function truncateText(text, maxLength) {
+            if (!text) return text;
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
         }
 
         function formatDate(dateStr) {
@@ -1861,14 +1713,12 @@
                 machineField.classList.remove('hidden');
                 machineSelect.required = true;
                 
-                const { data: machines, error } = await supabaseClient
-                    .from('machines')
-                    .select('machine')
-                    .order('machine');
-                    
-                if (machines && machines.length > 0) {
+                // Gunakan cache
+                const machinesData = await fetchWithCache('machines', 'machines');
+                
+                if (machinesData && machinesData.length > 0) {
                     machineSelect.innerHTML = '<option value="">PILIH MESIN</option>';
-                    machines.forEach(m => {
+                    machinesData.forEach(m => {
                         machineSelect.innerHTML += `<option value="${m.machine}">🏭 ${m.machine}</option>`;
                     });
                 } else {
@@ -1879,14 +1729,12 @@
                 buildingField.classList.remove('hidden');
                 buildingSelect.required = true;
                 
-                const { data: buildings, error } = await supabaseClient
-                    .from('buildings')
-                    .select('building')
-                    .order('building');
-                    
-                if (buildings && buildings.length > 0) {
+                // Gunakan cache
+                const buildingsData = await fetchWithCache('buildings', 'buildings');
+                
+                if (buildingsData && buildingsData.length > 0) {
                     buildingSelect.innerHTML = '<option value="">PILIH BANGUNAN</option>';
-                    buildings.forEach(b => {
+                    buildingsData.forEach(b => {
                         buildingSelect.innerHTML += `<option value="${b.building}">🏢 ${b.building}</option>`;
                     });
                 } else {
@@ -1908,6 +1756,359 @@
                 actionInput.required = false;
             }
         };
+
+        // ============ CRUD OPERATIONS ============
+        async function insertTag(tagData) {
+            try {
+                const dbData = {
+                    date: tagData.date,
+                    initial: tagData.initial,
+                    tag_type: tagData.tag_type,
+                    machine: tagData.machine,
+                    location: tagData.location,
+                    abnormality: tagData.abnormality,
+                    impact: tagData.impact,
+                    risk: tagData.risk,
+                    action: tagData.action || '',
+                    status: tagData.status,
+                    wr_number: tagData.wr_number || '',
+                    progress_note: tagData.progress_note || '',
+                    foto_before: tagData.foto_before || null,
+                    foto_after: tagData.foto_after || null,
+                    closed_by: tagData.closed_by || null,
+                    closed_at: tagData.closed_at || null,
+                    created_at: tagData.created_at,
+                    updated_at: tagData.updated_at
+                };
+
+                const { data, error } = await supabaseClient
+                    .from('tags')
+                    .insert([dbData])
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('TAG BERHASIL DISIMPAN', 'success');
+                
+                // Invalidate cache
+                invalidateCache('tags');
+                await refreshData(true);
+                
+                if (!document.getElementById('page-input').classList.contains('hidden')) {
+                    setTimeout(() => showPage('dashboard'), 500);
+                }
+                
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting tag:', error);
+                showToast('GAGAL MENYIMPAN TAG: ' + (error.message || 'Unknown error'), 'error');
+                return null;
+            }
+        }
+
+        async function updateTag(tagId, updateData) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('tags')
+                    .update(updateData)
+                    .eq('id', tagId)
+                    .select();
+
+                if (error) throw error;
+                
+                showToast('DATA BERHASIL DIUPDATE', 'success');
+                
+                // Invalidate cache
+                invalidateCache('tags');
+                await refreshData(true);
+                
+                return data[0];
+            } catch (error) {
+                console.error('Error updating tag:', error);
+                showToast('GAGAL MENGUPDATE DATA', 'error');
+                return null;
+            }
+        }
+
+        // Operator functions
+        async function insertOperator(initial) {
+            try {
+                const { data, error } = await supabaseClient.from('operators').insert([{ initial }]).select();
+                if (error) throw error;
+                showToast('OPERATOR BERHASIL DITAMBAHKAN', 'success');
+                invalidateCache('operators');
+                await refreshData(true);
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting operator:', error);
+                showToast('GAGAL MENAMBAHKAN OPERATOR: ' + error.message, 'error');
+                return null;
+            }
+        }
+
+        async function deleteOperator(initial) {
+            try {
+                // Cek apakah operator ini masih digunakan di tabel tags
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('initial', initial);
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: OPERATOR MASIH MEMILIKI ' + usedTags.length + ' TAG', 'error');
+                    return;
+                }
+                
+                const { error } = await supabaseClient.from('operators').delete().eq('initial', initial);
+                if (error) throw error;
+                
+                showToast('OPERATOR DIHAPUS', 'success');
+                invalidateCache('operators');
+                await refreshData(true);
+            } catch (error) {
+                console.error('Error deleting operator:', error);
+                showToast('GAGAL MENGHAPUS OPERATOR: ' + error.message, 'error');
+            }
+        }
+
+        // Engineering functions
+        async function insertEngineering(initial) {
+            try {
+                const { data, error } = await supabaseClient.from('engineerings').insert([{ initial }]).select();
+                if (error) throw error;
+                showToast('ENGINEERING BERHASIL DITAMBAHKAN', 'success');
+                invalidateCache('engineerings');
+                await refreshData(true);
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting engineering:', error);
+                showToast('GAGAL MENAMBAHKAN ENGINEERING: ' + error.message, 'error');
+                return null;
+            }
+        }
+
+        async function deleteEngineering(initial) {
+            try {
+                // Cek apakah engineering ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('closed_by', initial);
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: ENGINEERING MASIH MEMILIKI ' + usedTags.length + ' CLOSED TAG', 'error');
+                    return;
+                }
+                
+                const { error } = await supabaseClient.from('engineerings').delete().eq('initial', initial);
+                if (error) throw error;
+                
+                showToast('ENGINEERING DIHAPUS', 'success');
+                invalidateCache('engineerings');
+                await refreshData(true);
+            } catch (error) {
+                console.error('Error deleting engineering:', error);
+                showToast('GAGAL MENGHAPUS ENGINEERING: ' + error.message, 'error');
+            }
+        }
+
+        // Machine functions
+        async function insertMachine(machine) {
+            try {
+                const { data, error } = await supabaseClient.from('machines').insert([{ machine }]).select();
+                if (error) throw error;
+                showToast('MESIN BERHASIL DITAMBAHKAN', 'success');
+                invalidateCache('machines');
+                await refreshData(true);
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting machine:', error);
+                showToast('GAGAL MENAMBAHKAN MESIN: ' + error.message, 'error');
+                return null;
+            }
+        }
+
+        async function deleteMachine(machine) {
+            try {
+                // Cek apakah mesin ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('machine', machine)
+                    .eq('location', 'MACHINE');
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: MESIN MASIH DIGUNAKAN DI ' + usedTags.length + ' TAG', 'error');
+                    return;
+                }
+                
+                const { error } = await supabaseClient.from('machines').delete().eq('machine', machine);
+                if (error) throw error;
+                
+                showToast('MESIN DIHAPUS', 'success');
+                invalidateCache('machines');
+                await refreshData(true);
+            } catch (error) {
+                console.error('Error deleting machine:', error);
+                showToast('GAGAL MENGHAPUS MESIN: ' + error.message, 'error');
+            }
+        }
+
+        // UTILITY functions
+        async function insertUtility(utility) {
+            try {
+                const { data, error } = await supabaseClient.from('utilities').insert([{ utility }]).select();
+                if (error) throw error;
+                showToast('UTILITY BERHASIL DITAMBAHKAN', 'success');
+                invalidateCache('utilities');
+                await refreshData(true);
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting utility:', error);
+                showToast('GAGAL MENAMBAHKAN UTILITY: ' + error.message, 'error');
+                return null;
+            }
+        }
+
+        async function deleteUtility(utility) {
+            try {
+                // Cek apakah utility ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('closed_by', utility);
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: UTILITY MASIH MEMILIKI ' + usedTags.length + ' CLOSED TAG', 'error');
+                    return;
+                }
+                
+                const { error } = await supabaseClient.from('utilities').delete().eq('utility', utility);
+                if (error) throw error;
+                
+                showToast('UTILITY DIHAPUS', 'success');
+                invalidateCache('utilities');
+                await refreshData(true);
+            } catch (error) {
+                console.error('Error deleting utility:', error);
+                showToast('GAGAL MENGHAPUS UTILITY: ' + error.message, 'error');
+            }
+        }
+
+        // BUILDING functions
+        async function insertBuilding(building) {
+            try {
+                if (!building || building.trim() === '') {
+                    showToast('NAMA BANGUNAN TIDAK BOLEH KOSONG', 'error');
+                    return null;
+                }
+                
+                // Cek apakah tabel buildings ada
+                const { error: checkError } = await supabaseClient
+                    .from('buildings')
+                    .select('id')
+                    .limit(1);
+                
+                if (checkError && checkError.code === '42P01') {
+                    showToast('TABEL BUILDINGS BELUM ADA. SILAKAN BIKIN DI SUPABASE SQL EDITOR', 'error');
+                    return null;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('buildings')
+                    .insert([{ building: building }])
+                    .select();
+                
+                if (error) throw error;
+                
+                showToast('BANGUNAN BERHASIL DITAMBAHKAN', 'success');
+                invalidateCache('buildings');
+                await refreshData(true);
+                return data[0];
+            } catch (error) {
+                console.error('Error inserting building:', error);
+                if (error.code === '23505') {
+                    showToast('NAMA BANGUNAN SUDAH ADA', 'error');
+                } else {
+                    showToast('GAGAL MENAMBAHKAN BANGUNAN: ' + (error.message || 'Unknown error'), 'error');
+                }
+                return null;
+            }
+        }
+
+        async function deleteBuilding(building) {
+            try {
+                // Cek apakah bangunan ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('machine', building)
+                    .eq('location', 'BUILDING');
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: BANGUNAN MASIH DIGUNAKAN DI ' + usedTags.length + ' TAG', 'error');
+                    return;
+                }
+                
+                const { error } = await supabaseClient.from('buildings').delete().eq('building', building);
+                if (error) throw error;
+                
+                showToast('BANGUNAN DIHAPUS', 'success');
+                invalidateCache('buildings');
+                await refreshData(true);
+            } catch (error) {
+                console.error('Error deleting building:', error);
+                showToast('GAGAL MENGHAPUS BANGUNAN: ' + error.message, 'error');
+            }
+        }
+
+        // Setup realtime subscriptions (optimized)
+        function setupRealtimeSubscriptions() {
+            try {
+                // Hanya subscribe ke perubahan, tidak perlu refresh langsung karena cache
+                supabaseClient.channel('tags-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'tags' }, () => {
+                        invalidateCache('tags');
+                        if (!document.getElementById('page-dashboard').classList.contains('hidden')) {
+                            // Refresh dengan delay untuk debounce
+                            setTimeout(() => refreshData(true), 500);
+                        }
+                    })
+                    .subscribe();
+                
+                supabaseClient.channel('operators-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'operators' }, () => invalidateCache('operators'))
+                    .subscribe();
+                    
+                supabaseClient.channel('engineerings-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'engineerings' }, () => invalidateCache('engineerings'))
+                    .subscribe();
+                    
+                supabaseClient.channel('machines-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => invalidateCache('machines'))
+                    .subscribe();
+                    
+                supabaseClient.channel('utilities-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'utilities' }, () => invalidateCache('utilities'))
+                    .subscribe();
+                    
+                supabaseClient.channel('buildings-channel')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'buildings' }, () => invalidateCache('buildings'))
+                    .subscribe();
+            } catch (error) {
+                console.warn('Realtime subscriptions not available:', error);
+            }
+        }
 
         document.getElementById('tag-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1988,7 +2189,7 @@
             }
         });
 
-        // ============ MANAGEMENT ============
+        // ============ MANAGEMENT RENDER ============
         function renderManagementLists() {
             // Operator List
             const operatorList = document.getElementById('operator-list');
@@ -2412,7 +2613,15 @@
             if (success) {
                 closeEditModal();
                 showToast('DATA BERHASIL DIUPDATE', 'success');
-                await refreshData();
+                
+                // Invalidate cache dan refresh
+                if (type === 'operator') invalidateCache('operators');
+                else if (type === 'engineering') invalidateCache('engineerings');
+                else if (type === 'machine') invalidateCache('machines');
+                else if (type === 'utility') invalidateCache('utilities');
+                else if (type === 'building') invalidateCache('buildings');
+                
+                await refreshData(true);
             }
         };
 
