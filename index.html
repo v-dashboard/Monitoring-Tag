@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>TAG MONITORING SYSTEM - OPTIMIZED</title>
+    <title>TAG MONITORING SYSTEM - FINAL</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -221,19 +221,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        /* Cache indicator */
-        .cache-badge {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 10px;
-            z-index: 9999;
-        }
     </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900 transition-colors duration-300">
@@ -323,7 +310,6 @@
                         <div class="flex flex-wrap gap-3 mt-5">
                             <button onclick="applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2"><span>🔍</span> TERAPKAN FILTER</button>
                             <button onclick="resetDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg text-sm font-bold uppercase hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg shadow-slate-500/30 flex items-center gap-2"><span>⟲</span> RESET</button>
-                            <button onclick="clearDataCache()" class="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg text-sm font-bold uppercase hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg shadow-purple-500/30 flex items-center gap-2"><span>🔄</span> REFRESH</button>
                         </div>
                     </div>
 
@@ -651,11 +637,6 @@
         </div>
     </div>
 
-    <!-- Cache Badge -->
-    <div id="cache-badge" class="cache-badge hidden">
-        <span id="cache-info">Data cached</span>
-    </div>
-
     <script>
         // ============ SUPABASE CONFIG ============
         const SUPABASE_URL = 'https://hzvjoewuprlkgwetqpau.supabase.co';
@@ -664,8 +645,9 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ============ STATE & CACHE ============
-        // Cache data dengan TTL (Time To Live) - 5 menit
-        const CACHE_TTL = 5 * 60 * 1000; // 5 menit dalam milidetik
+        // Cache data dengan TTL - 1 jam (auto refresh di background)
+        const CACHE_TTL = 60 * 60 * 1000; // 1 jam
+        const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; // 1 jam (background)
         
         let cache = {
             tags: { data: [], timestamp: 0, filtered: [] },
@@ -700,9 +682,8 @@
         // Debounce timer untuk filter
         let filterTimer = null;
         
-        // Render queue untuk tabel
-        let renderQueue = [];
-        let isRendering = false;
+        // Auto refresh timer (background)
+        let autoRefreshTimer = null;
 
         // ============ FUNGSI KOMPRES FOTO ============
         function compressImage(dataUrl, maxSizeKB = 100) {
@@ -772,19 +753,24 @@
             Object.keys(cache).forEach(key => {
                 cache[key].timestamp = 0;
             });
-            updateCacheBadge();
         }
 
-        function updateCacheBadge() {
-            const badge = document.getElementById('cache-badge');
-            const info = document.getElementById('cache-info');
+        // ============ AUTO REFRESH BACKGROUND ============
+        function startAutoRefresh() {
+            // Clear timer yang sudah ada
+            if (autoRefreshTimer) clearInterval(autoRefreshTimer);
             
-            if (isCacheValid('tags')) {
-                const age = Math.round((Date.now() - cache.tags.timestamp) / 1000);
-                info.textContent = `📦 Cache: ${age}s | Data: ${cache.tags.data.length} tags`;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
+            // Timer untuk refresh data setiap 1 jam di background (tanpa badge)
+            autoRefreshTimer = setInterval(() => {
+                console.log('🔄 Auto refresh background...');
+                refreshData(true);
+            }, AUTO_REFRESH_INTERVAL);
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshTimer) {
+                clearInterval(autoRefreshTimer);
+                autoRefreshTimer = null;
             }
         }
 
@@ -796,13 +782,8 @@
                     return cache[cacheKey].data;
                 }
                 
-                // Fetch dari Supabase dengan limit untuk optimasi
+                // Fetch dari Supabase
                 let query = supabaseClient.from(table).select('*');
-                
-                // Tambah limit jika tidak perlu semua data
-                if (options.limit) {
-                    query = query.limit(options.limit);
-                }
                 
                 // Order by untuk konsistensi
                 query = query.order('created_at', { ascending: false });
@@ -813,7 +794,6 @@
                 
                 // Update cache
                 updateCache(cacheKey, data || []);
-                updateCacheBadge();
                 
                 return data || [];
             } catch (error) {
@@ -845,7 +825,7 @@
                 utilities = (utilsData || []).map(u => u.utility).sort((a, b) => a.localeCompare(b));
                 buildings = (buildsData || []).map(b => b.building).sort((a, b) => a.localeCompare(b));
 
-                // Render dengan requestAnimationFrame untuk menghindari blocking
+                // Render dengan requestAnimationFrame
                 requestAnimationFrame(() => {
                     renderManagementLists();
                     updateFilterDropdowns();
@@ -996,18 +976,14 @@
         // ============ INIT ============
         async function initApp() {
             try {
-                setDefaultDates();
-                await refreshData(false); // Gunakan cache
+                // Filter tanggal default dikosongkan (user yang set)
+                await refreshData(false);
                 setupRealtimeSubscriptions();
                 updateLiveClock();
                 setInterval(updateLiveClock, 1000);
                 
-                // Auto refresh cache setiap 5 menit
-                setInterval(() => {
-                    if (isCacheValid('tags')) {
-                        refreshData(true); // Force refresh di background
-                    }
-                }, CACHE_TTL);
+                // Auto refresh setiap 1 jam di background (setelah login)
+                // startAutoRefresh() akan dipanggil setelah login
                 
             } catch (error) {
                 console.error('Error initializing app:', error);
@@ -1060,6 +1036,9 @@
             document.getElementById('nav-input').classList.toggle('hidden', userRole !== 'operator' && userRole !== 'utility' && userRole !== 'admin');
             document.getElementById('nav-management').classList.toggle('hidden', userRole !== 'admin');
             
+            // Mulai auto refresh di background setelah login (tanpa badge)
+            startAutoRefresh();
+            
             showPage('dashboard');
             applyDashboardFilter();
         };
@@ -1075,6 +1054,9 @@
             document.getElementById('nav-input').classList.add('hidden');
             document.getElementById('nav-management').classList.add('hidden');
             
+            // Mulai auto refresh di background setelah login guest
+            startAutoRefresh();
+            
             showPage('dashboard');
             applyDashboardFilter();
         };
@@ -1088,6 +1070,10 @@
         window.handleLogout = async function() {
             currentUser = null;
             userRole = null;
+            
+            // Stop auto refresh saat logout
+            stopAutoRefresh();
+            
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('login-initial').value = '';
@@ -1101,13 +1087,6 @@
                 currentStreamAfter.getTracks().forEach(track => track.stop());
                 currentStreamAfter = null;
             }
-        };
-
-        // ============ CLEAR CACHE ============
-        window.clearDataCache = function() {
-            invalidateAllCache();
-            refreshData(true);
-            showToast('CACHE DIBERSIHKAN & DATA DIREFERSH', 'success');
         };
 
         // ============ NAVIGATION ============
@@ -1128,7 +1107,6 @@
             
             if (page === 'dashboard') {
                 updateFilterDropdowns();
-                applyDashboardFilter();
             }
             if (page === 'input') {
                 resetInputForm();
@@ -1209,7 +1187,7 @@
                 });
                 
                 showToast('Filter diterapkan', 'success');
-            }, 300); // Debounce 300ms
+            }, 300);
         };
 
         window.resetDashboardFilter = function() {
@@ -1368,7 +1346,7 @@
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.closed > 0)
                 .sort((a, b) => b[1].closed - a[1].closed)
-                .slice(0, 10); // Batasi 10 teratas
+                .slice(0, 10);
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada closed tag</div>';
@@ -1422,7 +1400,7 @@
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.total > 0)
                 .sort((a, b) => b[1].total - a[1].total)
-                .slice(0, 10); // Batasi 10 teratas
+                .slice(0, 10);
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada data mesin</div>';
@@ -1486,7 +1464,7 @@
             const filteredStats = Object.entries(stats)
                 .filter(([_, stat]) => stat.total > 0)
                 .sort((a, b) => b[1].total - a[1].total)
-                .slice(0, 10); // Batasi 10 teratas
+                .slice(0, 10);
             
             if (filteredStats.length === 0) {
                 container.innerHTML = '<div class="empty-state">Tidak ada data bangunan</div>';
@@ -1532,7 +1510,7 @@
             // Sort dan batasi untuk performa
             const limitedTags = redTags
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 100); // Hanya tampilkan 100 terbaru
+                .slice(0, 100);
             
             tbody.innerHTML = limitedTags.map(tag => {
                 const statusColor = tag.status === 'OPEN' ? 'bg-red-100 text-red-700' :
@@ -1848,7 +1826,7 @@
 
         async function deleteOperator(initial) {
             try {
-                // Cek apakah operator ini masih digunakan di tabel tags
+                // Cek apakah operator ini masih digunakan
                 const { data: usedTags, error: checkError } = await supabaseClient
                     .from('tags')
                     .select('id')
@@ -2075,12 +2053,10 @@
         // Setup realtime subscriptions (optimized)
         function setupRealtimeSubscriptions() {
             try {
-                // Hanya subscribe ke perubahan, tidak perlu refresh langsung karena cache
                 supabaseClient.channel('tags-channel')
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'tags' }, () => {
                         invalidateCache('tags');
                         if (!document.getElementById('page-dashboard').classList.contains('hidden')) {
-                            // Refresh dengan delay untuk debounce
                             setTimeout(() => refreshData(true), 500);
                         }
                     })
@@ -2624,16 +2600,6 @@
                 await refreshData(true);
             }
         };
-
-        function setDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('input-date').value = today;
-            
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            document.getElementById('filter-date-from').value = thirtyDaysAgo.toISOString().split('T')[0];
-            document.getElementById('filter-date-to').value = today;
-        }
 
         function showToast(message, type = 'success') {
             const existingToasts = document.querySelectorAll('.toast-message');
