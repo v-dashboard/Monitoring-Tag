@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -25,7 +25,6 @@
         table { table-layout: auto; width: 100%; }
         td, th { vertical-align: middle; padding: 10px 8px; }
         
-        /* Style untuk foto */
         .photo-thumbnail {
             width: 60px;
             height: 60px;
@@ -41,14 +40,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             z-index: 10;
             position: relative;
-        }
-        .photo-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #10b981;
-            margin: 0 auto;
         }
         .camera-container {
             border: 2px dashed #cbd5e1;
@@ -118,12 +109,10 @@
         .stacked-bar-white { background: linear-gradient(90deg, #94a3b8, #cbd5e1); height: 100%; }
         .stacked-bar-blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; }
         
-        /* Hide foto section for white tag */
         .foto-section-hidden {
             display: none !important;
         }
         
-        /* Empty state styling */
         .empty-state {
             text-align: center;
             padding: 2rem;
@@ -131,6 +120,76 @@
             font-size: 0.875rem;
             text-transform: uppercase;
             font-weight: 500;
+        }
+        
+        .management-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .management-item span {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        .management-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .management-actions button {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-edit:hover {
+            background: #d97706;
+        }
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+        .btn-add:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+        .input-management {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            background: white;
+        }
+        .input-management:focus {
+            border-color: #3b82f6;
+            outline: none;
+            ring: 4px solid rgba(59, 130, 246, 0.2);
         }
     </style>
 </head>
@@ -244,7 +303,6 @@
 
                     <!-- 4 KOLOM HORIZONTAL BARS -->
                     <div class="grid lg:grid-cols-4 gap-5">
-                        <!-- Tag by Operator/Utility -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3">
                                 <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> TAG PER INITIAL</h3>
@@ -253,8 +311,6 @@
                                 <div id="operator-stacked-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
-
-                        <!-- Closed by Engineering/Utility -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3">
                                 <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏆</span> CLOSED PER INITIAL</h3>
@@ -263,8 +319,6 @@
                                 <div id="engineering-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
-
-                        <!-- Tag per MESIN -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3">
                                 <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> TAG PER MESIN</h3>
@@ -273,8 +327,6 @@
                                 <div id="machine-bars" class="space-y-4 max-h-80 overflow-auto scrollbar-thin pr-2"></div>
                             </div>
                         </div>
-
-                        <!-- Tag per BANGUNAN -->
                         <div class="glass-card rounded-xl overflow-hidden">
                             <div class="bg-gradient-to-r from-blue-500 to-cyan-500 px-5 py-3">
                                 <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏢</span> TAG PER BANGUNAN</h3>
@@ -439,65 +491,75 @@
 
                 <!-- Management Page -->
                 <div id="page-management" class="page hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- OPERATOR -->
                         <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-blue-500 to-indigo-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">👷 OPERATOR</h3></div>
+                            <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> OPERATOR</h3>
+                            </div>
                             <div class="p-4">
-                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addOperator')"> 
-                                    <button onclick="addOperator()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-bold uppercase text-sm hover:from-blue-600 hover:to-indigo-600 transition shadow-lg shadow-blue-500/30 whitespace-nowrap">ADD</button>
+                                <div class="flex gap-2 mb-4">
+                                    <input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="input-management" maxlength="10" onkeypress="handleKeyPress(event, 'addOperator')"> 
+                                    <button onclick="addOperator()" class="btn-add">ADD</button>
                                 </div>
-                                <div id="operator-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                                <div id="operator-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div>
                             </div>
                         </div>
                         
                         <!-- ENGINEERING -->
                         <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-purple-500 to-pink-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🔧 ENGINEERING</h3></div>
+                            <div class="p-4 bg-gradient-to-r from-purple-600 to-pink-600">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔧</span> ENGINEERING</h3>
+                            </div>
                             <div class="p-4">
-                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition uppercase text-sm" maxlength="10" onkeypress="handleKeyPress(event, 'addEngineering')"> 
-                                    <button onclick="addEngineering()" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-bold uppercase text-sm hover:from-purple-600 hover:to-pink-600 transition shadow-lg shadow-purple-500/30 whitespace-nowrap">ADD</button>
+                                <div class="flex gap-2 mb-4">
+                                    <input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="input-management" maxlength="10" onkeypress="handleKeyPress(event, 'addEngineering')"> 
+                                    <button onclick="addEngineering()" class="btn-add">ADD</button>
                                 </div>
-                                <div id="engineering-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                                <div id="engineering-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div>
                             </div>
                         </div>
                         
                         <!-- MESIN -->
                         <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-emerald-500 to-teal-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏭 MESIN</h3></div>
+                            <div class="p-4 bg-gradient-to-r from-emerald-600 to-teal-600">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> MESIN</h3>
+                            </div>
                             <div class="p-4">
-                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addMachine')"> 
-                                    <button onclick="addMachine()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg font-bold uppercase text-sm hover:from-emerald-600 hover:to-teal-600 transition shadow-lg shadow-emerald-500/30 whitespace-nowrap">ADD</button>
+                                <div class="flex gap-2 mb-4">
+                                    <input type="text" id="new-machine" placeholder="NAMA MESIN" class="input-management" maxlength="20" onkeypress="handleKeyPress(event, 'addMachine')"> 
+                                    <button onclick="addMachine()" class="btn-add">ADD</button>
                                 </div>
-                                <div id="machine-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                                <div id="machine-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div>
                             </div>
                         </div>
                         
                         <!-- UTILITY -->
                         <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-amber-500 to-orange-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">⚡ UTILITY</h3></div>
+                            <div class="p-4 bg-gradient-to-r from-amber-600 to-orange-600">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚡</span> UTILITY</h3>
+                            </div>
                             <div class="p-4">
-                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-utility" placeholder="NAMA UTILITY" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addUtility')"> 
-                                    <button onclick="addUtility()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-bold uppercase text-sm hover:from-amber-600 hover:to-orange-600 transition shadow-lg shadow-amber-500/30 whitespace-nowrap">ADD</button>
+                                <div class="flex gap-2 mb-4">
+                                    <input type="text" id="new-utility" placeholder="NAMA UTILITY" class="input-management" maxlength="20" onkeypress="handleKeyPress(event, 'addUtility')"> 
+                                    <button onclick="addUtility()" class="btn-add">ADD</button>
                                 </div>
-                                <div id="utility-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                                <div id="utility-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div>
                                 <p class="text-xs text-slate-500 mt-2 text-center">Untuk BLUE TAG (bangunan)</p>
                             </div>
                         </div>
 
                         <!-- BUILDINGS -->
                         <div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden">
-                            <div class="p-4 border-b border-white/20 bg-gradient-to-r from-blue-500 to-cyan-500"><h3 class="font-bold uppercase text-white flex items-center gap-2 break-word">🏢 BANGUNAN</h3></div>
+                            <div class="p-4 bg-gradient-to-r from-blue-600 to-cyan-600">
+                                <h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏢</span> BANGUNAN</h3>
+                            </div>
                             <div class="p-4">
-                                <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                                    <input type="text" id="new-building" placeholder="NAMA BANGUNAN" class="flex-1 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition uppercase text-sm" maxlength="20" onkeypress="handleKeyPress(event, 'addBuilding')"> 
-                                    <button onclick="addBuilding()" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-bold uppercase text-sm hover:from-blue-600 hover:to-cyan-600 transition shadow-lg shadow-blue-500/30 whitespace-nowrap">ADD</button>
+                                <div class="flex gap-2 mb-4">
+                                    <input type="text" id="new-building" placeholder="NAMA BANGUNAN" class="input-management" maxlength="20" onkeypress="handleKeyPress(event, 'addBuilding')"> 
+                                    <button onclick="addBuilding()" class="btn-add">ADD</button>
                                 </div>
-                                <div id="building-list" class="space-y-2 max-h-64 overflow-auto scrollbar-thin"></div>
+                                <div id="building-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div>
                                 <p class="text-xs text-slate-500 mt-2 text-center">Lokasi untuk BLUE TAG</p>
                             </div>
                         </div>
@@ -511,7 +573,7 @@
             <div class="bg-white/80 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/20">
                 <h3 class="font-bold uppercase text-lg mb-4 flex items-center gap-2 break-word">
                     <span class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white flex-shrink-0">✏️</span>
-                    UPDATE TAG DENGAN FOTO
+                    UPDATE TAG
                 </h3>
                 <div id="modal-content"></div>
             </div>
@@ -555,7 +617,6 @@
         let utilities = [];
         let buildings = [];
         
-        // State untuk kamera
         let currentStream = null;
         let currentStreamAfter = null;
         
@@ -650,7 +711,7 @@
             
             const rawData = canvas.toDataURL('image/jpeg', 0.9);
             
-            showToast('MENGKOMPRES FOTO...', 'success');
+            showToast('MENGKOMPRES FOTO...', 'info');
             const compressedData = await compressImage(rawData, 100);
             
             const preview = document.getElementById(`preview-${type}`);
@@ -679,7 +740,7 @@
             const file = event.target.files[0];
             if (!file) return;
             
-            showToast('MEMPROSES FOTO...', 'success');
+            showToast('MEMPROSES FOTO...', 'info');
             
             const reader = new FileReader();
             reader.onload = async function(e) {
@@ -730,9 +791,45 @@
             }
         }
 
+        // ============ CEK DAN BUAT TABEL ============
+        async function ensureTableExists(tableName) {
+            try {
+                // Coba select untuk cek apakah tabel ada
+                const { error } = await supabaseClient
+                    .from(tableName)
+                    .select('*')
+                    .limit(1);
+                
+                if (error && error.code === '42P01') { // Table doesn't exist
+                    console.log(`Table ${tableName} doesn't exist, creating...`);
+                    
+                    // Buat tabel via SQL (hanya untuk development)
+                    let createSQL = '';
+                    if (tableName === 'buildings') {
+                        createSQL = 'CREATE TABLE buildings (id SERIAL PRIMARY KEY, building TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT NOW());';
+                    } else if (tableName === 'utilities') {
+                        createSQL = 'CREATE TABLE utilities (id SERIAL PRIMARY KEY, utility TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT NOW());';
+                    }
+                    
+                    if (createSQL) {
+                        const { error: createError } = await supabaseClient.rpc('exec_sql', { sql: createSQL });
+                        if (createError) {
+                            console.warn(`Cannot create table ${tableName} automatically. Please create it manually in Supabase.`);
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            } catch (error) {
+                console.warn(`Error checking table ${tableName}:`, error);
+                return false;
+            }
+        }
+
         // ============ REFRESH DATA ============
         async function refreshData() {
             try {
+                // Ambil data dari semua tabel
                 const [tagsResult, opsResult, engsResult, machsResult, utilsResult, buildsResult] = await Promise.all([
                     supabaseClient.from('tags').select('*').order('created_at', { ascending: false }),
                     supabaseClient.from('operators').select('*').order('created_at', { ascending: false }),
@@ -742,26 +839,53 @@
                     supabaseClient.from('buildings').select('*').order('created_at', { ascending: false })
                 ]);
 
-                if (tagsResult.error) throw tagsResult.error;
-                if (opsResult.error) throw opsResult.error;
-                if (engsResult.error) throw engsResult.error;
-                if (machsResult.error) throw machsResult.error;
-
-                allData = tagsResult.data || [];
-                operators = (opsResult.data || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
-                engineerings = (engsResult.data || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
-                machines = (machsResult.data || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
-                
-                if (utilsResult.data) {
-                    utilities = utilsResult.data.map(u => u.utility).sort((a, b) => a.localeCompare(b));
+                // Handle tags
+                if (tagsResult.error) {
+                    console.warn('Tags table error:', tagsResult.error);
+                    allData = [];
                 } else {
-                    utilities = [];
+                    allData = tagsResult.data || [];
                 }
 
-                if (buildsResult.data) {
-                    buildings = buildsResult.data.map(b => b.building).sort((a, b) => a.localeCompare(b));
+                // Handle operators
+                if (opsResult.error) {
+                    console.warn('Operators table error:', opsResult.error);
+                    operators = [];
                 } else {
+                    operators = (opsResult.data || []).map(o => o.initial).sort((a, b) => a.localeCompare(b));
+                }
+
+                // Handle engineerings
+                if (engsResult.error) {
+                    console.warn('Engineerings table error:', engsResult.error);
+                    engineerings = [];
+                } else {
+                    engineerings = (engsResult.data || []).map(e => e.initial).sort((a, b) => a.localeCompare(b));
+                }
+
+                // Handle machines
+                if (machsResult.error) {
+                    console.warn('Machines table error:', machsResult.error);
+                    machines = [];
+                } else {
+                    machines = (machsResult.data || []).map(m => m.machine).sort((a, b) => a.localeCompare(b));
+                }
+
+                // Handle utilities
+                if (utilsResult.error) {
+                    console.warn('Utilities table error:', utilsResult.error);
+                    utilities = [];
+                } else {
+                    utilities = (utilsResult.data || []).map(u => u.utility).sort((a, b) => a.localeCompare(b));
+                }
+
+                // Handle buildings
+                if (buildsResult.error) {
+                    console.warn('Buildings table error:', buildsResult.error);
                     buildings = [];
+                    showToast('Tabel buildings belum ada. Silakan buat di Supabase SQL Editor dengan perintah: CREATE TABLE buildings (id SERIAL PRIMARY KEY, building TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT NOW());', 'error');
+                } else {
+                    buildings = (buildsResult.data || []).map(b => b.building).sort((a, b) => a.localeCompare(b));
                 }
 
                 renderManagementLists();
@@ -779,23 +903,30 @@
         // ============ CRUD OPERATIONS ============
         async function insertTag(tagData) {
             try {
-                // Tentukan location dan pisahkan machine vs building
-                if (tagData.tag_type === 'BLUE') {
-                    tagData.location = 'BUILDING';
-                    tagData.building_name = tagData.machine;
-                    tagData.machine_name = null;
-                } else {
-                    tagData.location = 'MACHINE';
-                    tagData.machine_name = tagData.machine;
-                    tagData.building_name = null;
-                }
-                
-                // Hapus field machine karena sudah dipisah
-                delete tagData.machine;
-                
+                const dbData = {
+                    date: tagData.date,
+                    initial: tagData.initial,
+                    tag_type: tagData.tag_type,
+                    machine: tagData.machine,
+                    location: tagData.location,
+                    abnormality: tagData.abnormality,
+                    impact: tagData.impact,
+                    risk: tagData.risk,
+                    action: tagData.action || '',
+                    status: tagData.status,
+                    wr_number: tagData.wr_number || '',
+                    progress_note: tagData.progress_note || '',
+                    foto_before: tagData.foto_before || null,
+                    foto_after: tagData.foto_after || null,
+                    closed_by: tagData.closed_by || null,
+                    closed_at: tagData.closed_at || null,
+                    created_at: tagData.created_at,
+                    updated_at: tagData.updated_at
+                };
+
                 const { data, error } = await supabaseClient
                     .from('tags')
-                    .insert([tagData])
+                    .insert([dbData])
                     .select();
 
                 if (error) throw error;
@@ -810,27 +941,13 @@
                 return data[0];
             } catch (error) {
                 console.error('Error inserting tag:', error);
-                showToast('GAGAL MENYIMPAN TAG', 'error');
+                showToast('GAGAL MENYIMPAN TAG: ' + (error.message || 'Unknown error'), 'error');
                 return null;
             }
         }
 
         async function updateTag(tagId, updateData) {
             try {
-                const oldTag = allData.find(t => t.id === tagId);
-                
-                if (updateData.status === 'CLOSED' && oldTag?.status !== 'CLOSED') {
-                    updateData.closed_by = currentUser;
-                    updateData.closed_at = new Date().toISOString();
-                }
-                
-                const fotoAfter = document.getElementById('modal-foto-after-data')?.value;
-                if (fotoAfter) {
-                    updateData.foto_after = fotoAfter;
-                }
-                
-                updateData.updated_at = new Date().toISOString();
-                
                 const { data, error } = await supabaseClient
                     .from('tags')
                     .update(updateData)
@@ -860,20 +977,34 @@
                 return data[0];
             } catch (error) {
                 console.error('Error inserting operator:', error);
-                showToast('GAGAL MENAMBAHKAN OPERATOR', 'error');
+                showToast('GAGAL MENAMBAHKAN OPERATOR: ' + error.message, 'error');
                 return null;
             }
         }
 
         async function deleteOperator(initial) {
             try {
+                // Cek apakah operator ini masih digunakan di tabel tags
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('initial', initial);
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: OPERATOR MASIH MEMILIKI ' + usedTags.length + ' TAG', 'error');
+                    return;
+                }
+                
                 const { error } = await supabaseClient.from('operators').delete().eq('initial', initial);
                 if (error) throw error;
+                
                 showToast('OPERATOR DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting operator:', error);
-                showToast('GAGAL MENGHAPUS OPERATOR', 'error');
+                showToast('GAGAL MENGHAPUS OPERATOR: ' + error.message, 'error');
             }
         }
 
@@ -887,20 +1018,34 @@
                 return data[0];
             } catch (error) {
                 console.error('Error inserting engineering:', error);
-                showToast('GAGAL MENAMBAHKAN ENGINEERING', 'error');
+                showToast('GAGAL MENAMBAHKAN ENGINEERING: ' + error.message, 'error');
                 return null;
             }
         }
 
         async function deleteEngineering(initial) {
             try {
+                // Cek apakah engineering ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('closed_by', initial);
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: ENGINEERING MASIH MEMILIKI ' + usedTags.length + ' CLOSED TAG', 'error');
+                    return;
+                }
+                
                 const { error } = await supabaseClient.from('engineerings').delete().eq('initial', initial);
                 if (error) throw error;
+                
                 showToast('ENGINEERING DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting engineering:', error);
-                showToast('GAGAL MENGHAPUS ENGINEERING', 'error');
+                showToast('GAGAL MENGHAPUS ENGINEERING: ' + error.message, 'error');
             }
         }
 
@@ -914,20 +1059,35 @@
                 return data[0];
             } catch (error) {
                 console.error('Error inserting machine:', error);
-                showToast('GAGAL MENAMBAHKAN MESIN', 'error');
+                showToast('GAGAL MENAMBAHKAN MESIN: ' + error.message, 'error');
                 return null;
             }
         }
 
         async function deleteMachine(machine) {
             try {
+                // Cek apakah mesin ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('machine', machine)
+                    .eq('location', 'MACHINE');
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: MESIN MASIH DIGUNAKAN DI ' + usedTags.length + ' TAG', 'error');
+                    return;
+                }
+                
                 const { error } = await supabaseClient.from('machines').delete().eq('machine', machine);
                 if (error) throw error;
+                
                 showToast('MESIN DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting machine:', error);
-                showToast('GAGAL MENGHAPUS MESIN', 'error');
+                showToast('GAGAL MENGHAPUS MESIN: ' + error.message, 'error');
             }
         }
 
@@ -941,57 +1101,116 @@
                 return data[0];
             } catch (error) {
                 console.error('Error inserting utility:', error);
-                showToast('GAGAL MENAMBAHKAN UTILITY', 'error');
+                showToast('GAGAL MENAMBAHKAN UTILITY: ' + error.message, 'error');
                 return null;
             }
         }
 
         async function deleteUtility(utility) {
             try {
+                // Cek apakah utility ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('closed_by', utility);
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: UTILITY MASIH MEMILIKI ' + usedTags.length + ' CLOSED TAG', 'error');
+                    return;
+                }
+                
                 const { error } = await supabaseClient.from('utilities').delete().eq('utility', utility);
                 if (error) throw error;
+                
                 showToast('UTILITY DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting utility:', error);
-                showToast('GAGAL MENGHAPUS UTILITY', 'error');
+                showToast('GAGAL MENGHAPUS UTILITY: ' + error.message, 'error');
             }
         }
 
         // BUILDING functions
         async function insertBuilding(building) {
             try {
-                const { data, error } = await supabaseClient.from('buildings').insert([{ building }]).select();
+                if (!building || building.trim() === '') {
+                    showToast('NAMA BANGUNAN TIDAK BOLEH KOSONG', 'error');
+                    return null;
+                }
+                
+                // Cek apakah tabel buildings ada
+                const { error: checkError } = await supabaseClient
+                    .from('buildings')
+                    .select('id')
+                    .limit(1);
+                
+                if (checkError && checkError.code === '42P01') {
+                    showToast('TABEL BUILDINGS BELUM ADA. SILAKAN BIKIN DI SUPABASE SQL EDITOR', 'error');
+                    return null;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('buildings')
+                    .insert([{ building: building }])
+                    .select();
+                
                 if (error) throw error;
+                
                 showToast('BANGUNAN BERHASIL DITAMBAHKAN', 'success');
                 await refreshData();
                 return data[0];
             } catch (error) {
                 console.error('Error inserting building:', error);
-                showToast('GAGAL MENAMBAHKAN BANGUNAN', 'error');
+                if (error.code === '23505') {
+                    showToast('NAMA BANGUNAN SUDAH ADA', 'error');
+                } else {
+                    showToast('GAGAL MENAMBAHKAN BANGUNAN: ' + (error.message || 'Unknown error'), 'error');
+                }
                 return null;
             }
         }
 
         async function deleteBuilding(building) {
             try {
+                // Cek apakah bangunan ini masih digunakan
+                const { data: usedTags, error: checkError } = await supabaseClient
+                    .from('tags')
+                    .select('id')
+                    .eq('machine', building)
+                    .eq('location', 'BUILDING');
+                
+                if (checkError) throw checkError;
+                
+                if (usedTags && usedTags.length > 0) {
+                    showToast('TIDAK BISA DIHAPUS: BANGUNAN MASIH DIGUNAKAN DI ' + usedTags.length + ' TAG', 'error');
+                    return;
+                }
+                
                 const { error } = await supabaseClient.from('buildings').delete().eq('building', building);
                 if (error) throw error;
+                
                 showToast('BANGUNAN DIHAPUS', 'success');
                 await refreshData();
             } catch (error) {
                 console.error('Error deleting building:', error);
-                showToast('GAGAL MENGHAPUS BANGUNAN', 'error');
+                showToast('GAGAL MENGHAPUS BANGUNAN: ' + error.message, 'error');
             }
         }
 
+        // Setup realtime subscriptions
         function setupRealtimeSubscriptions() {
-            supabaseClient.channel('tags-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'tags' }, () => refreshData()).subscribe();
-            supabaseClient.channel('operators-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'operators' }, () => refreshData()).subscribe();
-            supabaseClient.channel('engineerings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'engineerings' }, () => refreshData()).subscribe();
-            supabaseClient.channel('machines-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => refreshData()).subscribe();
-            supabaseClient.channel('utilities-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'utilities' }, () => refreshData()).subscribe();
-            supabaseClient.channel('buildings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'buildings' }, () => refreshData()).subscribe();
+            try {
+                supabaseClient.channel('tags-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'tags' }, () => refreshData()).subscribe();
+                supabaseClient.channel('operators-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'operators' }, () => refreshData()).subscribe();
+                supabaseClient.channel('engineerings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'engineerings' }, () => refreshData()).subscribe();
+                supabaseClient.channel('machines-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, () => refreshData()).subscribe();
+                supabaseClient.channel('utilities-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'utilities' }, () => refreshData()).subscribe();
+                supabaseClient.channel('buildings-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'buildings' }, () => refreshData()).subscribe();
+            } catch (error) {
+                console.warn('Realtime subscriptions not available:', error);
+            }
         }
 
         // ============ INIT ============
@@ -1131,6 +1350,9 @@
             document.getElementById('building-field').classList.add('hidden');
             document.getElementById('input-machine').required = false;
             document.getElementById('input-building').required = false;
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('input-date').value = today;
         }
 
         // ============ FILTER ============
@@ -1159,8 +1381,7 @@
                 
                 if (currentFilter.location && tag.location !== currentFilter.location) return false;
                 
-                const locationName = tag.location === 'MACHINE' ? tag.machine_name : tag.building_name;
-                if (currentFilter.machine && !locationName?.includes(currentFilter.machine)) return false;
+                if (currentFilter.machine && !tag.machine?.includes(currentFilter.machine)) return false;
                 
                 if (currentFilter.operator && tag.initial !== currentFilter.operator) return false;
                 
@@ -1222,10 +1443,10 @@
             document.getElementById('count-white').textContent = whiteTags;
             document.getElementById('count-blue').textContent = blueTags;
             
-            const totalTags = tags.length;
-            document.getElementById('red-bar-width').style.width = totalTags > 0 ? (redTags / totalTags) * 100 + '%' : '0%';
-            document.getElementById('white-bar-width').style.width = totalTags > 0 ? (whiteTags / totalTags) * 100 + '%' : '0%';
-            document.getElementById('blue-bar-width').style.width = totalTags > 0 ? (blueTags / totalTags) * 100 + '%' : '0%';
+            const totalTags = tags.length || 1;
+            document.getElementById('red-bar-width').style.width = (redTags / totalTags) * 100 + '%';
+            document.getElementById('white-bar-width').style.width = (whiteTags / totalTags) * 100 + '%';
+            document.getElementById('blue-bar-width').style.width = (blueTags / totalTags) * 100 + '%';
             
             document.getElementById('red-tag-count').textContent = redTags + ' TAG';
             document.getElementById('white-tag-count').textContent = whiteTags + ' TAG';
@@ -1240,7 +1461,6 @@
             renderBlueTagTable(tags.filter(t => t.tag_type === 'BLUE'));
         }
 
-        // ============ RENDER BAR CHARTS ============
         function renderOperatorStackedBars(tags) {
             const container = document.getElementById('operator-stacked-bars');
             const stats = {};
@@ -1348,7 +1568,7 @@
             const stats = {};
             
             machineTags.forEach(t => {
-                const machine = t.machine_name || 'UNKNOWN';
+                const machine = t.machine || 'UNKNOWN';
                 if (!stats[machine]) {
                     stats[machine] = { red: 0, white: 0, open: 0, closed: 0, total: 0 };
                 }
@@ -1412,7 +1632,7 @@
             const stats = {};
             
             buildingTags.forEach(t => {
-                const building = t.building_name || 'UNKNOWN';
+                const building = t.machine || 'UNKNOWN';
                 if (!stats[building]) {
                     stats[building] = { blue: 0, open: 0, closed: 0, total: 0 };
                 }
@@ -1483,14 +1703,12 @@
                 if (tag.status === 'CLOSED') {
                     actionButton = `<div class="closed-by-badge"><span>✓</span><span>${tag.closed_by || 'Unknown'}</span></div>`;
                 } else if (!tag.wr_number) {
-                    // INPUT WR - hanya OPERATOR dan ADMIN
                     if (userRole === 'operator' || userRole === 'admin') {
                         actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
                     } else {
                         actionButton = `<span class="text-xs text-slate-500">-</span>`;
                     }
                 } else {
-                    // UPDATE - hanya ENGINEERING dan ADMIN
                     if ((userRole === 'engineering' || userRole === 'admin') && tag.location === 'MACHINE') {
                         actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
                     } else {
@@ -1509,7 +1727,7 @@
                 return `
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine_name || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
@@ -1539,7 +1757,7 @@
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
-                    <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${tag.machine_name || '-'}</td>
+                    <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${tag.machine || '-'}</td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.action || ''}">${tag.action || '-'}</div></td>
                     <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
@@ -1566,14 +1784,12 @@
                 if (tag.status === 'CLOSED') {
                     actionButton = `<div class="blue-closed-by-badge"><span>✓</span><span>${tag.closed_by || 'Unknown'}</span></div>`;
                 } else if (!tag.wr_number) {
-                    // INPUT WR - hanya OPERATOR dan ADMIN
                     if (userRole === 'operator' || userRole === 'admin') {
                         actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
                     } else {
                         actionButton = `<span class="text-xs text-slate-500">-</span>`;
                     }
                 } else {
-                    // UPDATE - hanya UTILITY dan ADMIN
                     if ((userRole === 'utility' || userRole === 'admin') && tag.location === 'BUILDING') {
                         actionButton = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
                     } else {
@@ -1592,7 +1808,7 @@
                 return `
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${formatDate(tag.date) || '-'}</td>
-                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.building_name || '-'}</td>
+                        <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${getRiskColor(tag.risk)}">${tag.risk || '-'}</span></td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial || '-'}</td>
                         <td class="px-2 sm:px-4 py-2 sm:py-3"><div class="max-w-xs break-word text-xs" title="${tag.abnormality || ''}">${tag.abnormality || '-'}</div></td>
@@ -1650,11 +1866,13 @@
                     .select('machine')
                     .order('machine');
                     
-                if (machines) {
+                if (machines && machines.length > 0) {
                     machineSelect.innerHTML = '<option value="">PILIH MESIN</option>';
                     machines.forEach(m => {
                         machineSelect.innerHTML += `<option value="${m.machine}">🏭 ${m.machine}</option>`;
                     });
+                } else {
+                    machineSelect.innerHTML = '<option value="">TIDAK ADA MESIN</option>';
                 }
                 
             } else if (tagType === 'BLUE') {
@@ -1666,11 +1884,13 @@
                     .select('building')
                     .order('building');
                     
-                if (buildings) {
+                if (buildings && buildings.length > 0) {
                     buildingSelect.innerHTML = '<option value="">PILIH BANGUNAN</option>';
                     buildings.forEach(b => {
                         buildingSelect.innerHTML += `<option value="${b.building}">🏢 ${b.building}</option>`;
                     });
+                } else {
+                    buildingSelect.innerHTML = '<option value="">TIDAK ADA BANGUNAN</option>';
                 }
             }
             
@@ -1701,24 +1921,32 @@
             const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN';
             
             let machineValue = '';
+            let location = '';
+            
             if (tagType === 'WHITE' || tagType === 'RED') {
                 machineValue = document.getElementById('input-machine').value;
                 if (!machineValue) {
                     showToast('PILIH MESIN TERLEBIH DAHULU', 'error');
                     return;
                 }
+                location = 'MACHINE';
             } else if (tagType === 'BLUE') {
                 machineValue = document.getElementById('input-building').value;
                 if (!machineValue) {
                     showToast('PILIH BANGUNAN TERLEBIH DAHULU', 'error');
                     return;
                 }
+                location = 'BUILDING';
+            } else {
+                showToast('PILIH JENIS TAG TERLEBIH DAHULU', 'error');
+                return;
             }
             
             const newTag = {
                 date: document.getElementById('input-date').value,
                 initial: currentUser,
                 tag_type: tagType,
+                location: location,
                 machine: machineValue,
                 abnormality: document.getElementById('input-abnormality').value.toUpperCase(),
                 impact: document.getElementById('input-impact').value.toUpperCase(),
@@ -1740,6 +1968,9 @@
                 const fotoBefore = document.getElementById('foto-before-data')?.value;
                 if (fotoBefore) {
                     newTag.foto_before = fotoBefore;
+                } else {
+                    showToast('FOTO BEFORE WAJIB DIISI UNTUK RED/BLUE TAG', 'error');
+                    return;
                 }
             }
             
@@ -1761,45 +1992,51 @@
         function renderManagementLists() {
             // Operator List
             const operatorList = document.getElementById('operator-list');
-            operatorList.innerHTML = operators.length === 0 
-                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
-                : operators.map(o => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                        <span class="font-semibold uppercase text-sm break-word">${o}</span>
-                        <div class="flex gap-1">
-                            <button onclick="openEditModal('operator', '${o}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                            <button onclick="deleteOperator('${o}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+            if (operatorList) {
+                operatorList.innerHTML = operators.length === 0 
+                    ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>'
+                    : operators.map(o => `
+                        <div class="management-item">
+                            <span>${o}</span>
+                            <div class="management-actions">
+                                <button onclick="openEditModal('operator', '${o}')" class="btn-edit" title="Edit">✏️</button>
+                                <button onclick="deleteOperator('${o}')" class="btn-delete" title="Hapus">×</button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
+            }
             
             // Engineering List
             const engineeringList = document.getElementById('engineering-list');
-            engineeringList.innerHTML = engineerings.length === 0
-                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
-                : engineerings.map(e => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                        <span class="font-semibold uppercase text-sm break-word">${e}</span>
-                        <div class="flex gap-1">
-                            <button onclick="openEditModal('engineering', '${e}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                            <button onclick="deleteEngineering('${e}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+            if (engineeringList) {
+                engineeringList.innerHTML = engineerings.length === 0
+                    ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>'
+                    : engineerings.map(e => `
+                        <div class="management-item">
+                            <span>${e}</span>
+                            <div class="management-actions">
+                                <button onclick="openEditModal('engineering', '${e}')" class="btn-edit" title="Edit">✏️</button>
+                                <button onclick="deleteEngineering('${e}')" class="btn-delete" title="Hapus">×</button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
+            }
             
             // Machine List
             const machineList = document.getElementById('machine-list');
-            machineList.innerHTML = machines.length === 0
-                ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
-                : machines.map(m => `
-                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                        <span class="font-semibold uppercase text-sm break-word">${m}</span>
-                        <div class="flex gap-1">
-                            <button onclick="openEditModal('machine', '${m}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                            <button onclick="deleteMachine('${m}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+            if (machineList) {
+                machineList.innerHTML = machines.length === 0
+                    ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>'
+                    : machines.map(m => `
+                        <div class="management-item">
+                            <span>${m}</span>
+                            <div class="management-actions">
+                                <button onclick="openEditModal('machine', '${m}')" class="btn-edit" title="Edit">✏️</button>
+                                <button onclick="deleteMachine('${m}')" class="btn-delete" title="Hapus">×</button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
+            }
             
             // Utility List
             const utilityList = document.getElementById('utility-list');
@@ -1807,11 +2044,11 @@
                 utilityList.innerHTML = utilities.length === 0
                     ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA UTILITY</p>'
                     : utilities.map(u => `
-                        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                            <span class="font-semibold uppercase text-sm break-word">${u}</span>
-                            <div class="flex gap-1">
-                                <button onclick="openEditModal('utility', '${u}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                                <button onclick="deleteUtility('${u}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        <div class="management-item">
+                            <span>${u}</span>
+                            <div class="management-actions">
+                                <button onclick="openEditModal('utility', '${u}')" class="btn-edit" title="Edit">✏️</button>
+                                <button onclick="deleteUtility('${u}')" class="btn-delete" title="Hapus">×</button>
                             </div>
                         </div>
                     `).join('');
@@ -1823,11 +2060,11 @@
                 buildingList.innerHTML = buildings.length === 0
                     ? '<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA BANGUNAN</p>'
                     : buildings.map(b => `
-                        <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
-                            <span class="font-semibold uppercase text-sm break-word">${b}</span>
-                            <div class="flex gap-1">
-                                <button onclick="openEditModal('building', '${b}')" class="w-6 h-6 bg-yellow-500 text-white rounded flex items-center justify-center hover:bg-yellow-600 transition">✏️</button>
-                                <button onclick="deleteBuilding('${b}')" class="w-6 h-6 bg-red-500 text-white rounded flex items-center justify-center hover:bg-red-600 transition">×</button>
+                        <div class="management-item">
+                            <span>${b}</span>
+                            <div class="management-actions">
+                                <button onclick="openEditModal('building', '${b}')" class="btn-edit" title="Edit">✏️</button>
+                                <button onclick="deleteBuilding('${b}')" class="btn-delete" title="Hapus">×</button>
                             </div>
                         </div>
                     `).join('');
@@ -1913,14 +2150,21 @@
         window.addBuilding = async function() {
             const input = document.getElementById('new-building');
             const value = input.value.trim().toUpperCase();
-            if (!value) return showToast('MASUKKAN NAMA BANGUNAN', 'error');
+            if (!value) {
+                showToast('MASUKKAN NAMA BANGUNAN', 'error');
+                return;
+            }
+            
             if (buildings.includes(value)) {
                 showToast('NAMA BANGUNAN SUDAH TERDAFTAR', 'error');
                 input.value = '';
                 return;
             }
-            await insertBuilding(value);
-            input.value = '';
+            
+            const result = await insertBuilding(value);
+            if (result) {
+                input.value = '';
+            }
         };
 
         window.deleteBuilding = async function(name) {
@@ -1946,7 +2190,6 @@
             const content = document.getElementById('modal-content');
             
             if (!tag.wr_number) {
-                // INPUT WR - OPERATOR untuk RED & BLUE
                 if (tag.tag_type === 'BLUE' && userRole !== 'operator' && userRole !== 'admin') {
                     showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
                     return;
@@ -1967,7 +2210,6 @@
                     </div>
                 `;
             } else {
-                // UPDATE - ENGINEERING untuk RED, UTILITY untuk BLUE
                 if (tag.tag_type === 'BLUE' && userRole !== 'utility' && userRole !== 'admin') {
                     showToast('ANDA TIDAK MEMILIKI AKSES', 'error');
                     return;
@@ -2054,7 +2296,11 @@
                 return;
             }
             
-            const updated = await updateTag(tagId, { wr_number: wr, updated_at: new Date().toISOString() });
+            const updated = await updateTag(tagId, { 
+                wr_number: wr, 
+                updated_at: new Date().toISOString() 
+            });
+            
             if (updated) {
                 closeModal();
                 showToast('NOMOR WR BERHASIL DISIMPAN', 'success');
@@ -2064,12 +2310,22 @@
         window.submitStatus = async function(tagId) {
             const status = document.getElementById('modal-status').value;
             const note = document.getElementById('modal-note').value.trim().toUpperCase();
+            const fotoAfter = document.getElementById('modal-foto-after-data')?.value;
             
             const updateData = { 
                 status: status, 
                 progress_note: note, 
                 updated_at: new Date().toISOString() 
             };
+            
+            if (fotoAfter) {
+                updateData.foto_after = fotoAfter;
+            }
+            
+            if (status === 'CLOSED') {
+                updateData.closed_by = currentUser;
+                updateData.closed_at = new Date().toISOString();
+            }
             
             const updated = await updateTag(tagId, updateData);
             if (updated) {
@@ -2111,41 +2367,46 @@
             }
             
             let success = false;
-            if (type === 'operator') {
-                if (operators.includes(newValue)) {
-                    showToast('INISIAL SUDAH TERDAFTAR', 'error');
-                    return;
+            try {
+                if (type === 'operator') {
+                    if (operators.includes(newValue)) {
+                        showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                        return;
+                    }
+                    const { error } = await supabaseClient.from('operators').update({ initial: newValue }).eq('initial', oldValue);
+                    if (!error) success = true;
+                } else if (type === 'engineering') {
+                    if (engineerings.includes(newValue)) {
+                        showToast('INISIAL SUDAH TERDAFTAR', 'error');
+                        return;
+                    }
+                    const { error } = await supabaseClient.from('engineerings').update({ initial: newValue }).eq('initial', oldValue);
+                    if (!error) success = true;
+                } else if (type === 'machine') {
+                    if (machines.includes(newValue)) {
+                        showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
+                        return;
+                    }
+                    const { error } = await supabaseClient.from('machines').update({ machine: newValue }).eq('machine', oldValue);
+                    if (!error) success = true;
+                } else if (type === 'utility') {
+                    if (utilities.includes(newValue)) {
+                        showToast('NAMA UTILITY SUDAH TERDAFTAR', 'error');
+                        return;
+                    }
+                    const { error } = await supabaseClient.from('utilities').update({ utility: newValue }).eq('utility', oldValue);
+                    if (!error) success = true;
+                } else if (type === 'building') {
+                    if (buildings.includes(newValue)) {
+                        showToast('NAMA BANGUNAN SUDAH TERDAFTAR', 'error');
+                        return;
+                    }
+                    const { error } = await supabaseClient.from('buildings').update({ building: newValue }).eq('building', oldValue);
+                    if (!error) success = true;
                 }
-                const { error } = await supabaseClient.from('operators').update({ initial: newValue }).eq('initial', oldValue);
-                if (!error) success = true;
-            } else if (type === 'engineering') {
-                if (engineerings.includes(newValue)) {
-                    showToast('INISIAL SUDAH TERDAFTAR', 'error');
-                    return;
-                }
-                const { error } = await supabaseClient.from('engineerings').update({ initial: newValue }).eq('initial', oldValue);
-                if (!error) success = true;
-            } else if (type === 'machine') {
-                if (machines.includes(newValue)) {
-                    showToast('NAMA MESIN SUDAH TERDAFTAR', 'error');
-                    return;
-                }
-                const { error } = await supabaseClient.from('machines').update({ machine: newValue }).eq('machine', oldValue);
-                if (!error) success = true;
-            } else if (type === 'utility') {
-                if (utilities.includes(newValue)) {
-                    showToast('NAMA UTILITY SUDAH TERDAFTAR', 'error');
-                    return;
-                }
-                const { error } = await supabaseClient.from('utilities').update({ utility: newValue }).eq('utility', oldValue);
-                if (!error) success = true;
-            } else if (type === 'building') {
-                if (buildings.includes(newValue)) {
-                    showToast('NAMA BANGUNAN SUDAH TERDAFTAR', 'error');
-                    return;
-                }
-                const { error } = await supabaseClient.from('buildings').update({ building: newValue }).eq('building', oldValue);
-                if (!error) success = true;
+            } catch (error) {
+                console.error('Error updating:', error);
+                showToast('GAGAL UPDATE DATA: ' + error.message, 'error');
             }
             
             if (success) {
@@ -2158,16 +2419,22 @@
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('input-date').value = today;
+            
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            document.getElementById('filter-date-from').value = thirtyDaysAgo.toISOString().split('T')[0];
+            document.getElementById('filter-date-to').value = today;
         }
 
-        // ============ TOAST ============
         function showToast(message, type = 'success') {
             const existingToasts = document.querySelectorAll('.toast-message');
             existingToasts.forEach(t => t.remove());
             
             const toast = document.createElement('div');
             toast.className = `toast-message fixed bottom-4 right-4 px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-xs sm:text-sm transition-all duration-300 transform translate-y-0 ${
-                type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+                type === 'success' ? 'bg-emerald-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                'bg-blue-500 text-white'
             }`;
             toast.textContent = message;
             document.body.appendChild(toast);
