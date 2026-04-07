@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>TAG MONITORING SYSTEM - FINAL</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,8 +23,6 @@
         }
         table { table-layout: auto; width: 100%; }
         td, th { vertical-align: middle; padding: 10px 8px; }
-        
-        /* Fix untuk teks yang terpotong */
         .break-word {
             word-break: break-word;
             white-space: normal;
@@ -33,15 +30,6 @@
             word-wrap: break-word;
             hyphens: auto;
         }
-        
-        .text-cell {
-            max-width: 250px;
-            min-width: 150px;
-            white-space: normal;
-            word-break: break-word;
-            line-height: 1.4;
-        }
-        
         .photo-thumbnail {
             width: 60px;
             height: 60px;
@@ -80,8 +68,8 @@
             flex-wrap: wrap;
             margin-top: 8px;
         }
-        .glass-card { @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl; }
-        .filter-badge { @apply inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800; }
+        .glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .filter-badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; background: #d1fae5; color: #065f46; }
         .closed-by-badge {
             display: inline-flex;
             align-items: center;
@@ -125,154 +113,38 @@
         .stacked-bar-red { background: linear-gradient(90deg, #ef4444, #f87171); height: 100%; }
         .stacked-bar-white { background: linear-gradient(90deg, #94a3b8, #cbd5e1); height: 100%; }
         .stacked-bar-blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; }
-        
-        .foto-section-hidden {
-            display: none !important;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: #94a3b8;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-        
-        .management-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .management-item span {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-        }
-        .management-actions {
-            display: flex;
-            gap: 4px;
-        }
-        .management-actions button {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .btn-edit {
-            background: #f59e0b;
-            color: white;
-        }
-        .btn-edit:hover {
-            background: #d97706;
-        }
-        .btn-delete {
-            background: #ef4444;
-            color: white;
-        }
-        .btn-delete:hover {
-            background: #dc2626;
-        }
-        .btn-add {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            white-space: nowrap;
-        }
-        .btn-add:hover {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        }
-        .input-management {
-            flex: 1;
-            padding: 8px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            text-transform: uppercase;
-            font-size: 0.875rem;
-            background: white;
-        }
-        .input-management:focus {
-            border-color: #3b82f6;
-            outline: none;
-            ring: 4px solid rgba(59, 130, 246, 0.2);
-        }
-        
-        /* Optimasi tabel */
-        .table-container {
-            position: relative;
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 600px;
-        }
-        
-        .table-container thead {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 5;
-        }
-        
-        .loading-spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #10b981;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Styling untuk kolom teks panjang */
-        .text-cell-content {
-            max-width: 300px;
-            white-space: normal;
-            word-break: break-word;
-            line-height: 1.4;
-            font-size: 0.75rem;
-        }
-        
-        td .break-word {
-            max-width: 280px;
-            white-space: normal;
-            word-break: break-word;
-        }
-        
-        /* Responsif untuk teks */
-        @media (max-width: 768px) {
-            .text-cell-content {
-                max-width: 180px;
-            }
-            td .break-word {
-                max-width: 160px;
-            }
-        }
+        .foto-section-hidden { display: none !important; }
+        .empty-state { text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.875rem; text-transform: uppercase; font-weight: 500; }
+        .management-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
+        .management-item span { font-weight: 600; text-transform: uppercase; font-size: 0.875rem; }
+        .management-actions { display: flex; gap: 4px; }
+        .management-actions button { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; }
+        .btn-edit { background: #f59e0b; color: white; }
+        .btn-edit:hover { background: #d97706; }
+        .btn-delete { background: #ef4444; color: white; }
+        .btn-delete:hover { background: #dc2626; }
+        .btn-add { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; white-space: nowrap; }
+        .btn-add:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+        .input-management { flex: 1; padding: 8px 12px; border: 2px solid #e2e8f0; border-radius: 8px; text-transform: uppercase; font-size: 0.875rem; background: white; }
+        .input-management:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+        .table-container { position: relative; overflow-x: auto; overflow-y: auto; max-height: 600px; }
+        .table-container thead { position: sticky; top: 0; background: white; z-index: 5; }
+        .loading-spinner { border: 3px solid #f3f3f3; border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .text-cell-content { max-width: 300px; white-space: normal; word-break: break-word; line-height: 1.4; font-size: 0.75rem; }
+        td .break-word { max-width: 280px; white-space: normal; word-break: break-word; }
+        @media (max-width: 768px) { .text-cell-content { max-width: 180px; } td .break-word { max-width: 160px; } }
+        .hidden-page { display: none !important; }
     </style>
 </head>
-<body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900 transition-colors duration-300">
+<body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900">
     <div id="app" class="h-full w-full overflow-auto scrollbar-thin">
         <!-- Login Screen -->
         <div id="login-screen" class="min-h-full flex items-center justify-center p-4">
             <div class="w-full max-w-md">
                 <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
                     <div class="text-center mb-8">
-                        <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg animate-pulse">
+                        <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
                             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                             </svg>
@@ -304,7 +176,7 @@
                         </svg>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h1 id="app-title" class="font-black uppercase text-base sm:text-lg truncate bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">DASHBOARD MESIN & BANGUNAN</h1>
+                        <h1 class="font-black uppercase text-base sm:text-lg truncate bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">DASHBOARD MESIN & BANGUNAN</h1>
                         <p class="text-xs text-slate-500 uppercase truncate">USER: <span id="current-user" class="font-bold text-emerald-600"></span></p>
                     </div>
                 </div>
@@ -340,16 +212,17 @@
                             <h3 class="font-bold uppercase text-sm flex items-center gap-2"><span class="text-xl">🔍</span> FILTER DASHBOARD</h3>
                             <div id="active-filters" class="flex flex-wrap gap-2"></div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                             <div><label class="block text-xs font-bold uppercase mb-1">DARI TANGGAL</label><input type="date" id="filter-date-from" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
                             <div><label class="block text-xs font-bold uppercase mb-1">SAMPAI TANGGAL</label><input type="date" id="filter-date-to" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div>
                             <div><label class="block text-xs font-bold uppercase mb-1">LOKASI</label><select id="filter-location" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA LOKASI</option><option value="MACHINE">🏭 MESIN</option><option value="BUILDING">🏢 BANGUNAN</option></select></div>
+                            <div><label class="block text-xs font-bold uppercase mb-1">STATUS</label><select id="filter-status" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA STATUS</option><option value="OPEN">🔴 OPEN</option><option value="ON PROGRESS">🟡 ON PROGRESS</option><option value="CLOSED">✅ CLOSED</option></select></div>
                             <div><label class="block text-xs font-bold uppercase mb-1">MESIN/BANGUNAN</label><input type="text" id="filter-machine" placeholder="CARI..." class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"></div>
                             <div><label class="block text-xs font-bold uppercase mb-1">OPERATOR/UTILITY</label><select id="filter-operator" class="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm uppercase"><option value="">SEMUA</option></select></div>
                         </div>
                         <div class="flex flex-wrap gap-3 mt-5">
-                            <button onclick="applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2"><span>🔍</span> TERAPKAN FILTER</button>
-                            <button onclick="resetDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg text-sm font-bold uppercase hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg shadow-slate-500/30 flex items-center gap-2"><span>⟲</span> RESET</button>
+                            <button onclick="window.applyDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg text-sm font-bold uppercase hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2"><span>🔍</span> TERAPKAN FILTER</button>
+                            <button onclick="window.resetDashboardFilter()" class="px-5 py-2.5 bg-gradient-to-r from-slate-500 to-slate-600 text-white rounded-lg text-sm font-bold uppercase hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg shadow-slate-500/30 flex items-center gap-2"><span>⟲</span> RESET</button>
                         </div>
                     </div>
 
@@ -396,17 +269,22 @@
                         </div>
                     </div>
 
+                    <!-- RED TAG SECTION -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-red-600 to-red-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔴</span> DAFTAR RED TAG (MESIN)</h3><span id="red-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span></div>
                         <div class="table-container"><table class="w-full text-sm"><thead class="bg-slate-50/50"><tr><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO AFTER</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th></tr></thead><tbody id="red-tag-table"></tbody></table></div>
                     </div>
+
+                    <!-- BLUE TAG SECTION -->
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔵</span> DAFTAR BLUE TAG (BANGUNAN)</h3><span id="blue-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span></div>
+                        <div class="table-container"><table class="w-full text-sm"><thead class="bg-slate-50/50"><tr><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NOMOR RUANGAN</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">UTILITY</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO AFTER</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th> </td> </thead><tbody id="blue-tag-table"></tbody> </table> </div>
+                    </div>
+
+                    <!-- WHITE TAG SECTION -->
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="bg-gradient-to-r from-slate-600 to-slate-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚪</span> DAFTAR WHITE TAG (MESIN)</h3><span id="white-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span></div>
                         <div class="table-container"><table class="w-full text-sm"><thead class="bg-slate-50/50"><tr><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th></tr></thead><tbody id="white-tag-table"></tbody></table></div>
-                    </div>
-                    <div class="glass-card rounded-xl overflow-hidden">
-                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-3 flex flex-wrap justify-between items-center gap-3"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔵</span> DAFTAR BLUE TAG (BANGUNAN)</h3><span id="blue-tag-count" class="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-bold">0 TAG</span></div>
-                        <div class="table-container"><table class="w-full text-sm"><thead class="bg-slate-50/50"><tr><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NOMOR RUANGAN</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">UTILITY</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO AFTER</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th> </tr> </thead><tbody id="blue-tag-table"></tbody> </table> </div>
                     </div>
                 </div>
 
@@ -465,7 +343,10 @@
             let cache = { tags: { data: [], timestamp: 0 }, operators: { data: [], timestamp: 0 }, engineerings: { data: [], timestamp: 0 }, machines: { data: [], timestamp: 0 }, utilities: { data: [], timestamp: 0 }, buildings: { data: [], timestamp: 0 } };
             let allData = [], filteredData = [], operators=[], engineerings=[], machines=[], utilities=[], buildings=[];
             let currentUser=null, userRole=null, currentStream=null, currentStreamAfter=null, filterTimer=null, autoRefreshTimer=null;
-            let currentFilter = { dateFrom: '', dateTo: '', machine: '', operator: '', location: '' };
+            let currentFilter = { dateFrom: '', dateTo: '', location: '', status: '', machine: '', operator: '' };
+
+            window.applyDashboardFilter = applyDashboardFilter;
+            window.resetDashboardFilter = resetDashboardFilter;
 
             function isCacheValid(key){ return cache[key] && (Date.now() - cache[key].timestamp) < CACHE_TTL; }
             function updateCache(key,data){ cache[key]={data,timestamp:Date.now()}; if(key==='tags') cache.tags.filtered=data; }
@@ -487,10 +368,10 @@
                     ]);
                     allData=tags; operators=(ops||[]).map(o=>o.initial).sort(); engineerings=(engs||[]).map(e=>e.initial).sort();
                     machines=(machs||[]).map(m=>m.machine).sort(); utilities=(utils||[]).map(u=>u.utility).sort(); buildings=(builds||[]).map(b=>b.building).sort();
-                    requestAnimationFrame(()=>{
-                        renderManagementLists(); updateFilterDropdowns();
-                        if(!document.getElementById('page-dashboard').classList.contains('hidden')) applyDashboardFilter();
-                    });
+                    filteredData = [...allData];
+                    renderManagementLists(); 
+                    updateFilterDropdowns();
+                    updateDashboard();
                 }catch(e){ console.error(e); showToast('GAGAL REFRESH DATA','error'); }
                 finally{ if(loader) loader.classList.add('hidden'); }
             }
@@ -508,75 +389,99 @@
             function applyDashboardFilter(){
                 if(filterTimer) clearTimeout(filterTimer);
                 filterTimer=setTimeout(()=>{
-                    currentFilter.dateFrom=document.getElementById('filter-date-from')?.value||'';
-                    currentFilter.dateTo=document.getElementById('filter-date-to')?.value||'';
-                    currentFilter.location=document.getElementById('filter-location')?.value||'';
-                    currentFilter.machine=document.getElementById('filter-machine')?.value.toUpperCase()||'';
-                    currentFilter.operator=document.getElementById('filter-operator')?.value||'';
-                    filteredData=allData.filter(t=>{
-                        if(currentFilter.dateFrom&&currentFilter.dateTo&&(t.date<currentFilter.dateFrom||t.date>currentFilter.dateTo)) return false;
-                        if(currentFilter.dateFrom&&t.date<currentFilter.dateFrom) return false;
-                        if(currentFilter.dateTo&&t.date>currentFilter.dateTo) return false;
-                        if(currentFilter.location&&t.location!==currentFilter.location) return false;
-                        if(currentFilter.machine&&!t.machine?.includes(currentFilter.machine)) return false;
-                        if(currentFilter.operator&&t.initial!==currentFilter.operator) return false;
+                    const dateFrom = document.getElementById('filter-date-from')?.value || '';
+                    const dateTo = document.getElementById('filter-date-to')?.value || '';
+                    const location = document.getElementById('filter-location')?.value || '';
+                    const status = document.getElementById('filter-status')?.value || '';
+                    const machineSearch = document.getElementById('filter-machine')?.value.toUpperCase() || '';
+                    const operator = document.getElementById('filter-operator')?.value || '';
+                    
+                    currentFilter = { dateFrom, dateTo, location, status, machine: machineSearch, operator };
+                    
+                    filteredData = allData.filter(t => {
+                        if(dateFrom && dateTo) {
+                            if(t.date < dateFrom || t.date > dateTo) return false;
+                        } else {
+                            if(dateFrom && t.date < dateFrom) return false;
+                            if(dateTo && t.date > dateTo) return false;
+                        }
+                        if(location && t.location !== location) return false;
+                        if(status && t.status !== status) return false;
+                        if(machineSearch && !(t.machine || '').toUpperCase().includes(machineSearch)) return false;
+                        if(operator && t.initial !== operator) return false;
                         return true;
                     });
-                    const container=document.getElementById('active-filters');
+                    
+                    const container = document.getElementById('active-filters');
                     if(container){
-                        const filters=[];
-                        if(currentFilter.dateFrom) filters.push(`Dari: ${currentFilter.dateFrom}`);
-                        if(currentFilter.dateTo) filters.push(`Sampai: ${currentFilter.dateTo}`);
-                        if(currentFilter.location) filters.push(`Lokasi: ${currentFilter.location==='MACHINE'?'🏭 MESIN':'🏢 BANGUNAN'}`);
-                        if(currentFilter.machine) filters.push(`Lokasi: ${currentFilter.machine}`);
-                        if(currentFilter.operator) filters.push(`Operator/Utility: ${currentFilter.operator}`);
-                        container.innerHTML=filters.length?filters.map(f=>`<span class="filter-badge">${f}</span>`).join(''):'<span class="text-xs text-slate-400">Tidak ada filter aktif</span>';
+                        const filters = [];
+                        if(dateFrom) filters.push(`📅 Dari: ${dateFrom}`);
+                        if(dateTo) filters.push(`📅 Sampai: ${dateTo}`);
+                        if(location) filters.push(`📍 ${location==='MACHINE'?'🏭 MESIN':'🏢 BANGUNAN'}`);
+                        if(status) filters.push(`📌 ${status==='OPEN'?'🔴 OPEN':status==='ON PROGRESS'?'🟡 ON PROGRESS':'✅ CLOSED'}`);
+                        if(machineSearch) filters.push(`🔧 ${machineSearch}`);
+                        if(operator) filters.push(`👤 ${operator}`);
+                        container.innerHTML = filters.length ? filters.map(f=>`<span class="filter-badge">${f}</span>`).join('') : '<span class="text-xs text-slate-400">Tidak ada filter aktif</span>';
                     }
-                    requestAnimationFrame(()=>updateDashboard());
-                    showToast('Filter diterapkan','success');
-                },300);
+                    
+                    updateDashboard();
+                    showToast(`Menampilkan ${filteredData.length} dari ${allData.length} data`, 'success');
+                }, 300);
             }
             function resetDashboardFilter(){
-                const from=document.getElementById('filter-date-from'); if(from) from.value='';
-                const to=document.getElementById('filter-date-to'); if(to) to.value='';
-                const loc=document.getElementById('filter-location'); if(loc) loc.value='';
-                const mach=document.getElementById('filter-machine'); if(mach) mach.value='';
-                const op=document.getElementById('filter-operator'); if(op) op.value='';
-                currentFilter={dateFrom:'',dateTo:'',location:'',machine:'',operator:''};
-                filteredData=[...allData];
-                const container=document.getElementById('active-filters'); if(container) container.innerHTML='<span class="text-xs text-slate-400">Tidak ada filter aktif</span>';
-                requestAnimationFrame(()=>updateDashboard());
-                showToast('Filter direset','success');
+                document.getElementById('filter-date-from').value = '';
+                document.getElementById('filter-date-to').value = '';
+                document.getElementById('filter-location').value = '';
+                document.getElementById('filter-status').value = '';
+                document.getElementById('filter-machine').value = '';
+                document.getElementById('filter-operator').value = '';
+                
+                currentFilter = { dateFrom: '', dateTo: '', location: '', status: '', machine: '', operator: '' };
+                filteredData = [...allData];
+                
+                document.getElementById('active-filters').innerHTML = '<span class="text-xs text-slate-400">Tidak ada filter aktif</span>';
+                updateDashboard();
+                showToast('Filter direset - menampilkan semua data', 'success');
             }
             function updateDashboard(){
-                const tags=filteredData.length?filteredData:allData;
-                const red=tags.filter(t=>t.tag_type==='RED').length;
-                const white=tags.filter(t=>t.tag_type==='WHITE').length;
-                const blue=tags.filter(t=>t.tag_type==='BLUE').length;
-                document.getElementById('stat-open').textContent=tags.filter(t=>t.status==='OPEN').length;
-                document.getElementById('stat-progress').textContent=tags.filter(t=>t.status==='ON PROGRESS').length;
-                document.getElementById('stat-closed').textContent=tags.filter(t=>(t.tag_type==='RED'||t.tag_type==='BLUE')&&t.status==='CLOSED').length;
-                document.getElementById('stat-blue').textContent=blue;
-                const redBlueTotal=tags.filter(t=>t.tag_type==='RED'||t.tag_type==='BLUE').length;
-                const redBlueClosed=tags.filter(t=>(t.tag_type==='RED'||t.tag_type==='BLUE')&&t.status==='CLOSED').length;
-                document.getElementById('stat-closed-percent').textContent=redBlueTotal?Math.round((redBlueClosed/redBlueTotal)*100)+'%':'0%';
-                document.getElementById('count-red').textContent=red;
-                document.getElementById('count-white').textContent=white;
-                document.getElementById('count-blue').textContent=blue;
-                const total=tags.length||1;
-                document.getElementById('red-bar-width').style.width=(red/total)*100+'%';
-                document.getElementById('white-bar-width').style.width=(white/total)*100+'%';
-                document.getElementById('blue-bar-width').style.width=(blue/total)*100+'%';
-                document.getElementById('red-tag-count').textContent=red+' TAG';
-                document.getElementById('white-tag-count').textContent=white+' TAG';
-                document.getElementById('blue-tag-count').textContent=blue+' TAG';
-                renderOperatorStackedBars(tags);
-                renderEngineeringBars(tags);
-                renderMachineBars(tags);
-                renderBuildingBars(tags);
-                renderRedTagTable(tags.filter(t=>t.tag_type==='RED'));
-                renderWhiteTagTable(tags.filter(t=>t.tag_type==='WHITE'));
-                renderBlueTagTable(tags.filter(t=>t.tag_type==='BLUE'));
+                const dataToUse = (filteredData && filteredData.length) ? filteredData : allData;
+                
+                const red = dataToUse.filter(t=>t.tag_type==='RED').length;
+                const white = dataToUse.filter(t=>t.tag_type==='WHITE').length;
+                const blue = dataToUse.filter(t=>t.tag_type==='BLUE').length;
+                const open = dataToUse.filter(t=>t.status==='OPEN').length;
+                const progress = dataToUse.filter(t=>t.status==='ON PROGRESS').length;
+                const closed = dataToUse.filter(t=>(t.tag_type==='RED'||t.tag_type==='BLUE')&&t.status==='CLOSED').length;
+                
+                document.getElementById('stat-open').textContent = open;
+                document.getElementById('stat-progress').textContent = progress;
+                document.getElementById('stat-closed').textContent = closed;
+                document.getElementById('stat-blue').textContent = blue;
+                
+                const redBlueTotal = dataToUse.filter(t=>t.tag_type==='RED'||t.tag_type==='BLUE').length;
+                const redBlueClosed = dataToUse.filter(t=>(t.tag_type==='RED'||t.tag_type==='BLUE')&&t.status==='CLOSED').length;
+                document.getElementById('stat-closed-percent').textContent = redBlueTotal ? Math.round((redBlueClosed/redBlueTotal)*100)+'%' : '0%';
+                
+                document.getElementById('count-red').textContent = red;
+                document.getElementById('count-white').textContent = white;
+                document.getElementById('count-blue').textContent = blue;
+                
+                const total = dataToUse.length || 1;
+                document.getElementById('red-bar-width').style.width = (red/total)*100 + '%';
+                document.getElementById('white-bar-width').style.width = (white/total)*100 + '%';
+                document.getElementById('blue-bar-width').style.width = (blue/total)*100 + '%';
+                
+                document.getElementById('red-tag-count').textContent = red + ' TAG';
+                document.getElementById('white-tag-count').textContent = white + ' TAG';
+                document.getElementById('blue-tag-count').textContent = blue + ' TAG';
+                
+                renderOperatorStackedBars(dataToUse);
+                renderEngineeringBars(dataToUse);
+                renderMachineBars(dataToUse);
+                renderBuildingBars(dataToUse);
+                renderRedTagTable(dataToUse.filter(t=>t.tag_type==='RED'));
+                renderBlueTagTable(dataToUse.filter(t=>t.tag_type==='BLUE'));
+                renderWhiteTagTable(dataToUse.filter(t=>t.tag_type==='WHITE'));
             }
             function renderOperatorStackedBars(tags){
                 const container=document.getElementById('operator-stacked-bars'); if(!container) return;
@@ -634,14 +539,6 @@
                 return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${tag.date?tag.date.split('T')[0]:'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${riskClass}">${tag.risk||'-'}</span></td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:280px; white-space:normal; word-break:break-word;" title="${tag.abnormality||''}">${tag.abnormality||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fb}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:200px; white-space:normal; word-break:break-word;" title="${tag.progress_note||''}">${tag.progress_note||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fa}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status||'-'}</span></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${action}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600">${tag.updated_at?tag.updated_at.split('T')[0]:'-'}</td></tr>`;
                 }).join('');
             }
-            function renderWhiteTagTable(whites){
-                const tbody=document.getElementById('white-tag-table'); if(!tbody) return;
-                if(whites.length===0){ tbody.innerHTML='<tr><td colspan="6" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA WHITE TAG</td></tr>'; return; }
-                const limited=whites.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,100);
-                tbody.innerHTML=limited.map(t=>{ const riskClass=t.risk==='SAFETY'?'bg-red-100 text-red-700':t.risk==='QUALITY'?'bg-blue-100 text-blue-700':t.risk==='PRODUCTIVITY'?'bg-amber-100 text-amber-700':t.risk==='5R'?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-700';
-                return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${t.date?t.date.split('T')[0]:'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${t.initial||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${t.machine||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:280px; white-space:normal; word-break:break-word;" title="${t.abnormality||''}">${t.abnormality||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:200px; white-space:normal; word-break:break-word;" title="${t.action||''}">${t.action||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${riskClass}">${t.risk||'-'}</span></td></tr>`;
-                }).join('');
-            }
             function renderBlueTagTable(blues){
                 const tbody=document.getElementById('blue-tag-table'); if(!tbody) return;
                 if(blues.length===0){ tbody.innerHTML='<tr><td colspan="12" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA BLUE TAG</td></tr>'; return; }
@@ -657,6 +554,40 @@
                 return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${tag.date?tag.date.split('T')[0]:'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${riskClass}">${tag.risk||'-'}</span></td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:280px; white-space:normal; word-break:break-word;" title="${tag.abnormality||''}">${tag.abnormality||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fb}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:200px; white-space:normal; word-break:break-word;" title="${tag.progress_note||''}">${tag.progress_note||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fa}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status||'-'}</span></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${action}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600">${tag.updated_at?tag.updated_at.split('T')[0]:'-'}</td></tr>`;
                 }).join('');
             }
+            function renderWhiteTagTable(whites){
+                const tbody=document.getElementById('white-tag-table'); if(!tbody) return;
+                if(whites.length===0){ tbody.innerHTML='<tr><td colspan="6" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA WHITE TAG</td></tr>'; return; }
+                const limited=whites.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,100);
+                tbody.innerHTML=limited.map(t=>{ const riskClass=t.risk==='SAFETY'?'bg-red-100 text-red-700':t.risk==='QUALITY'?'bg-blue-100 text-blue-700':t.risk==='PRODUCTIVITY'?'bg-amber-100 text-amber-700':t.risk==='5R'?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-700';
+                return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${t.date?t.date.split('T')[0]:'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${t.initial||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${t.machine||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:280px; white-space:normal; word-break:break-word;" title="${t.abnormality||''}">${t.abnormality||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:200px; white-space:normal; word-break:break-word;" title="${t.action||''}">${t.action||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${riskClass}">${t.risk||'-'}</span></td></tr>`;
+                }).join('');
+            }
+            
+            // UPDATE MODAL FUNCTION - FOTO ONLY SHOWN WHEN STATUS CLOSED
+            window.openUpdateModal=function(tagId){ 
+                const tag=allData.find(t=>t.id===tagId); 
+                if(!tag){ showToast('TAG TIDAK DITEMUKAN','error'); return; } 
+                const modal=document.getElementById('update-modal'),content=document.getElementById('modal-content'); 
+                if(!tag.wr_number){ 
+                    content.innerHTML=`<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">MASUKKAN NOMOR WR UNTUK TAG INI</p><input type="text" id="modal-wr" placeholder="NOMOR WR" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase" autocomplete="off"><div class="flex flex-col sm:flex-row gap-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitWR('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button></div></div>`; 
+                }else{ 
+                    content.innerHTML=`<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900">${tag.wr_number}</span></p><div><label class="block text-sm font-semibold uppercase mb-2">STATUS</label><select id="modal-status" onchange="toggleFotoAfterSection()" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase"><option value="ON PROGRESS" ${tag.status==='ON PROGRESS'?'selected':''}>ON PROGRESS</option><option value="CLOSED" ${tag.status==='CLOSED'?'selected':''}>CLOSED</option></select></div><div><label class="block text-sm font-semibold uppercase mb-2">ACTION</label><textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition break-word" style="white-space:normal; word-break:break-word;">${tag.progress_note||''}</textarea></div><div id="foto-after-section" class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-blue-300 ${tag.status==='CLOSED'?'':'hidden'}"><label class="block text-sm font-bold uppercase mb-3 text-blue-600 flex items-center gap-2"><span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB</label><div class="grid grid-cols-1 gap-4"><div><div class="flex gap-2 mb-3"><button type="button" onclick="openCamera('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-bold uppercase hover:from-blue-600 hover:to-indigo-600 transition">📷 BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-bold uppercase hover:from-purple-600 hover:to-pink-600 transition">🖼️ PILIH FILE</button></div><div id="camera-container-after" class="camera-container hidden"><video id="video-after" autoplay playsinline class="w-full rounded-lg mb-2"></video><div class="photo-actions"><button type="button" onclick="capturePhoto('after')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-600 transition">📸 AMBIL FOTO</button><button type="button" onclick="closeCamera('after')" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-600 transition">❌ TUTUP</button></div></div><input type="file" id="file-input-after" accept="image/*" class="hidden" onchange="handleFileSelect('after', event)"></div><div class="text-center"><p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW FOTO AFTER</p><div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center"><img id="preview-after" src="${tag.foto_after||'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'}" class="max-w-full max-h-32 rounded-lg object-contain"></div><input type="hidden" id="modal-foto-after-data" value=""><p id="file-size-after" class="text-xs mt-1 text-slate-500"></p></div></div></div><div class="flex flex-col sm:flex-row gap-2 mt-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button></div></div>`; 
+                } 
+                modal.classList.remove('hidden'); 
+            };
+            
+            window.toggleFotoAfterSection = function(){
+                const statusSelect = document.getElementById('modal-status');
+                const fotoSection = document.getElementById('foto-after-section');
+                if(statusSelect && fotoSection){
+                    if(statusSelect.value === 'CLOSED'){
+                        fotoSection.classList.remove('hidden');
+                    } else {
+                        fotoSection.classList.add('hidden');
+                    }
+                }
+            };
+            
             window.openPhotoModal=(src)=>{ const modal=document.getElementById('photo-modal'),img=document.getElementById('photo-modal-img'); if(img) img.src=src; if(modal) modal.classList.remove('hidden'); };
             window.closePhotoModal=()=>{ const modal=document.getElementById('photo-modal'); if(modal) modal.classList.add('hidden'); };
             window.openCamera=function(type){ const container=document.getElementById(`camera-container-${type}`),video=document.getElementById(`video-${type}`); if(container) container.classList.remove('hidden'); navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(stream=>{ if(type==='before') currentStream=stream; else currentStreamAfter=stream; if(video) video.srcObject=stream; video.play(); }).catch(()=>{ showToast('TIDAK DAPAT MENGAKSES KAMERA','error'); if(container) container.classList.add('hidden'); }); };
@@ -683,10 +614,9 @@
             window.addBuilding=async function(){ const inp=document.getElementById('new-building'); const val=inp.value.trim().toUpperCase(); if(!val) return showToast('MASUKKAN NAMA BANGUNAN','error'); if(buildings.includes(val)){ showToast('NAMA BANGUNAN SUDAH TERDAFTAR','error'); inp.value=''; return; } await insertBuilding(val); inp.value=''; };
             async function insertBuilding(building){ try{ const {error}=await supabase.from('buildings').insert([{building}]); if(error) throw error; showToast('BANGUNAN BERHASIL DITAMBAHKAN','success'); invalidateCache('buildings'); await refreshData(true); }catch(e){ if(e.code==='23505') showToast('NAMA BANGUNAN SUDAH ADA','error'); else showToast('GAGAL MENAMBAHKAN BANGUNAN','error'); } }
             window.deleteBuilding=async function(name){ if(confirm(`HAPUS BANGUNAN ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('machine',name).eq('location','BUILDING'); if(used&&used.length){ showToast(`TIDAK BISA DIHAPUS: DIGUNAKAN DI ${used.length} TAG`,'error'); return; } await supabase.from('buildings').delete().eq('building',name); showToast('BANGUNAN DIHAPUS','success'); invalidateCache('buildings'); await refreshData(true); } };
-            window.openUpdateModal=function(tagId){ const tag=allData.find(t=>t.id===tagId); if(!tag){ showToast('TAG TIDAK DITEMUKAN','error'); return; } const modal=document.getElementById('update-modal'),content=document.getElementById('modal-content'); if(!tag.wr_number){ content.innerHTML=`<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">MASUKKAN NOMOR WR UNTUK TAG INI</p><input type="text" id="modal-wr" placeholder="NOMOR WR" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase" autocomplete="off"><div class="flex flex-col sm:flex-row gap-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitWR('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button></div></div>`; }else{ content.innerHTML=`<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900">${tag.wr_number}</span></p><div><label class="block text-sm font-semibold uppercase mb-2">STATUS</label><select id="modal-status" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase"><option value="ON PROGRESS" ${tag.status==='ON PROGRESS'?'selected':''}>ON PROGRESS</option><option value="CLOSED" ${tag.status==='CLOSED'?'selected':''}>CLOSED</option></select></div><div><label class="block text-sm font-semibold uppercase mb-2">ACTION</label><textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition break-word" style="white-space:normal; word-break:break-word;">${tag.progress_note||''}</textarea></div><div class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-blue-300"><label class="block text-sm font-bold uppercase mb-3 text-blue-600 flex items-center gap-2"><span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB</label><div class="grid grid-cols-1 gap-4"><div><div class="flex gap-2 mb-3"><button type="button" onclick="openCamera('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-bold uppercase hover:from-blue-600 hover:to-indigo-600 transition">📷 BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-bold uppercase hover:from-purple-600 hover:to-pink-600 transition">🖼️ PILIH FILE</button></div><div id="camera-container-after" class="camera-container hidden"><video id="video-after" autoplay playsinline class="w-full rounded-lg mb-2"></video><div class="photo-actions"><button type="button" onclick="capturePhoto('after')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-600 transition">📸 AMBIL FOTO</button><button type="button" onclick="closeCamera('after')" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-600 transition">❌ TUTUP</button></div></div><input type="file" id="file-input-after" accept="image/*" class="hidden" onchange="handleFileSelect('after', event)"></div><div class="text-center"><p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW FOTO AFTER</p><div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center"><img id="preview-after" src="${tag.foto_after||'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'}" class="max-w-full max-h-32 rounded-lg object-contain"></div><input type="hidden" id="modal-foto-after-data" value=""><p id="file-size-after" class="text-xs mt-1 text-slate-500"></p></div></div></div><div class="flex flex-col sm:flex-row gap-2 mt-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE DENGAN FOTO</button></div></div>`; } modal.classList.remove('hidden'); };
             window.closeModal=function(){ document.getElementById('update-modal').classList.add('hidden'); if(currentStreamAfter){ currentStreamAfter.getTracks().forEach(t=>t.stop()); currentStreamAfter=null; } };
             window.submitWR=async function(tagId){ const wr=document.getElementById('modal-wr')?.value.trim().toUpperCase(); if(!wr){ showToast('NOMOR WR HARUS DIISI','error'); return; } await updateTag(tagId,{wr_number:wr,updated_at:new Date().toISOString()}); closeModal(); };
-            window.submitStatus=async function(tagId){ const status=document.getElementById('modal-status').value; const note=document.getElementById('modal-note').value.trim().toUpperCase(); const fotoAfter=document.getElementById('modal-foto-after-data')?.value; const update={status:status,progress_note:note,updated_at:new Date().toISOString()}; if(fotoAfter) update.foto_after=fotoAfter; if(status==='CLOSED'){ update.closed_by=currentUser; update.closed_at=new Date().toISOString(); } await updateTag(tagId,update); closeModal(); };
+            window.submitStatus=async function(tagId){ const status=document.getElementById('modal-status').value; const note=document.getElementById('modal-note').value.trim().toUpperCase(); const fotoAfter=document.getElementById('modal-foto-after-data')?.value; const update={status:status,progress_note:note,updated_at:new Date().toISOString()}; if(status==='CLOSED' && fotoAfter) update.foto_after=fotoAfter; if(status==='CLOSED'){ update.closed_by=currentUser; update.closed_at=new Date().toISOString(); } await updateTag(tagId,update); closeModal(); };
             window.openEditModal=function(type,oldValue){ const modal=document.getElementById('edit-modal'); document.getElementById('edit-modal-title').textContent=`EDIT ${type.toUpperCase()}`; document.getElementById('edit-modal-content').innerHTML=`<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">EDIT: ${oldValue}</p><input type="text" id="edit-value" value="${oldValue}" placeholder="MASUKKAN NILAI BARU" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-yellow-500 focus:outline-none transition uppercase" autocomplete="off"><div class="flex flex-col sm:flex-row gap-2"><button onclick="closeEditModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitEdit('${type}','${oldValue}')" class="w-full sm:flex-1 py-3 bg-yellow-500 text-white rounded-xl font-semibold uppercase hover:bg-yellow-600 transition">UPDATE</button></div></div>`; modal.classList.remove('hidden'); };
             window.closeEditModal=function(){ document.getElementById('edit-modal').classList.add('hidden'); };
             window.submitEdit=async function(type,oldValue){ const newVal=document.getElementById('edit-value').value.trim().toUpperCase(); if(!newVal) return showToast('NILAI BARU HARUS DIISI','error'); if(newVal===oldValue) return showToast('TIDAK ADA PERUBAHAN','error'); let success=false; try{ if(type==='operator'){ if(operators.includes(newVal)){ showToast('INISIAL SUDAH TERDAFTAR','error'); return; } await supabase.from('operators').update({initial:newVal}).eq('initial',oldValue); success=true; }else if(type==='engineering'){ if(engineerings.includes(newVal)){ showToast('INISIAL SUDAH TERDAFTAR','error'); return; } await supabase.from('engineerings').update({initial:newVal}).eq('initial',oldValue); success=true; }else if(type==='machine'){ if(machines.includes(newVal)){ showToast('NAMA MESIN SUDAH TERDAFTAR','error'); return; } await supabase.from('machines').update({machine:newVal}).eq('machine',oldValue); success=true; }else if(type==='utility'){ if(utilities.includes(newVal)){ showToast('NAMA UTILITY SUDAH TERDAFTAR','error'); return; } await supabase.from('utilities').update({utility:newVal}).eq('utility',oldValue); success=true; }else if(type==='building'){ if(buildings.includes(newVal)){ showToast('NAMA BANGUNAN SUDAH TERDAFTAR','error'); return; } await supabase.from('buildings').update({building:newVal}).eq('building',oldValue); success=true; } }catch(e){ showToast('GAGAL UPDATE DATA','error'); } if(success){ closeEditModal(); showToast('DATA BERHASIL DIUPDATE','success'); if(type==='operator') invalidateCache('operators'); else if(type==='engineering') invalidateCache('engineerings'); else if(type==='machine') invalidateCache('machines'); else if(type==='utility') invalidateCache('utilities'); else if(type==='building') invalidateCache('buildings'); await refreshData(true); } };
@@ -696,8 +626,46 @@
             function stopAutoRefresh(){ if(autoRefreshTimer){ clearInterval(autoRefreshTimer); autoRefreshTimer=null; } }
             function updateLiveClock(){ const now=new Date(); const dateEl=document.getElementById('clock-date'); const timeEl=document.getElementById('clock-time'); if(dateEl) dateEl.textContent=now.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}); if(timeEl) timeEl.textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
             window.showPage=function(page){ document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); document.getElementById(`page-${page}`).classList.remove('hidden'); document.querySelectorAll('.nav-btn').forEach(btn=>{ btn.classList.remove('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); btn.classList.add('bg-white/50'); }); const active=document.querySelector(`[data-nav="${page}"]`); if(active){ active.classList.add('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); active.classList.remove('bg-white/50'); } if(page==='input'){ const today=new Date().toISOString().split('T')[0]; const dateInp=document.getElementById('input-date'); if(dateInp) dateInp.value=today; } };
-            window.handleLogin=async function(){ const init=document.getElementById('login-initial').value.trim().toUpperCase(); const err=document.getElementById('login-error'); if(!init){ err.textContent='MASUKKAN INISIAL ANDA'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); return; } const isAdmin=init==='ERW'; const isOperator=operators.includes(init); const isEngineering=engineerings.includes(init); const isUtility=utilities.includes(init); if(!isAdmin && !isOperator && !isEngineering && !isUtility){ err.textContent='INISIAL TIDAK TERDAFTAR'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); return; } currentUser=init; if(isAdmin) userRole='admin'; else if(isOperator) userRole='operator'; else if(isEngineering) userRole='engineering'; else if(isUtility) userRole='utility'; document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('current-user').textContent=`${init} (${userRole.toUpperCase()})`; const navInput=document.getElementById('nav-input'); if(navInput) navInput.classList.toggle('hidden',userRole!=='operator'&&userRole!=='utility'&&userRole!=='admin'); const navMgmt=document.getElementById('nav-management'); if(navMgmt) navMgmt.classList.toggle('hidden',userRole!=='admin'); startAutoRefresh(); showPage('dashboard'); applyDashboardFilter(); };
-            window.handleGuestLogin=function(){ currentUser='GUEST'; userRole='guest'; document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('current-user').textContent='GUEST (GUEST)'; const navInput=document.getElementById('nav-input'); if(navInput) navInput.classList.add('hidden'); const navMgmt=document.getElementById('nav-management'); if(navMgmt) navMgmt.classList.add('hidden'); startAutoRefresh(); showPage('dashboard'); applyDashboardFilter(); };
+            window.handleLogin=async function(){ 
+                await refreshData(false);
+                const init=document.getElementById('login-initial').value.trim().toUpperCase(); 
+                const err=document.getElementById('login-error'); 
+                if(!init){ err.textContent='MASUKKAN INISIAL ANDA'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); return; } 
+                const isAdmin=init==='ERW'; 
+                const isOperator=operators.includes(init); 
+                const isEngineering=engineerings.includes(init); 
+                const isUtility=utilities.includes(init); 
+                if(!isAdmin && !isOperator && !isEngineering && !isUtility){ err.textContent='INISIAL TIDAK TERDAFTAR'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); return; } 
+                currentUser=init; 
+                if(isAdmin) userRole='admin'; 
+                else if(isOperator) userRole='operator'; 
+                else if(isEngineering) userRole='engineering'; 
+                else if(isUtility) userRole='utility'; 
+                document.getElementById('login-screen').classList.add('hidden'); 
+                document.getElementById('main-app').classList.remove('hidden'); 
+                document.getElementById('current-user').textContent=`${init} (${userRole.toUpperCase()})`; 
+                const navInput=document.getElementById('nav-input'); 
+                if(navInput) navInput.classList.toggle('hidden',userRole!=='operator'&&userRole!=='utility'&&userRole!=='admin'); 
+                const navMgmt=document.getElementById('nav-management'); 
+                if(navMgmt) navMgmt.classList.toggle('hidden',userRole!=='admin'); 
+                startAutoRefresh(); 
+                showPage('dashboard'); 
+                updateDashboard();
+            };
+            window.handleGuestLogin=function(){ 
+                currentUser='GUEST'; 
+                userRole='guest'; 
+                document.getElementById('login-screen').classList.add('hidden'); 
+                document.getElementById('main-app').classList.remove('hidden'); 
+                document.getElementById('current-user').textContent='GUEST (GUEST)'; 
+                const navInput=document.getElementById('nav-input'); 
+                if(navInput) navInput.classList.add('hidden'); 
+                const navMgmt=document.getElementById('nav-management'); 
+                if(navMgmt) navMgmt.classList.add('hidden'); 
+                startAutoRefresh(); 
+                showPage('dashboard'); 
+                updateDashboard();
+            };
             window.handleLogout=function(){ currentUser=null; userRole=null; stopAutoRefresh(); if(currentStream){ currentStream.getTracks().forEach(t=>t.stop()); currentStream=null; } if(currentStreamAfter){ currentStreamAfter.getTracks().forEach(t=>t.stop()); currentStreamAfter=null; } document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('main-app').classList.add('hidden'); document.getElementById('login-initial').value=''; document.getElementById('login-error').classList.add('hidden'); };
             window.handleKeyPress=function(event,action){ if(event.key==='Enter'){ event.preventDefault(); if(action==='login') handleLogin(); else if(action==='addOperator') addOperator(); else if(action==='addEngineering') addEngineering(); else if(action==='addMachine') addMachine(); else if(action==='addUtility') addUtility(); else if(action==='addBuilding') addBuilding(); } };
             document.getElementById('tag-form')?.addEventListener('submit',async(e)=>{ e.preventDefault(); if(!currentUser){ showToast('SILAKAN LOGIN TERLEBIH DAHULU','error'); return; } const tagType=document.getElementById('input-tag-type').value; const status=tagType==='WHITE'?'CLOSED':'OPEN'; let machineValue='',location=''; if(tagType==='WHITE'||tagType==='RED'){ machineValue=document.getElementById('input-machine').value; if(!machineValue){ showToast('PILIH MESIN TERLEBIH DAHULU','error'); return; } location='MACHINE'; }else if(tagType==='BLUE'){ machineValue=document.getElementById('input-building').value; if(!machineValue){ showToast('PILIH BANGUNAN TERLEBIH DAHULU','error'); return; } location='BUILDING'; }else{ showToast('PILIH JENIS TAG TERLEBIH DAHULU','error'); return; } const newTag={ date:document.getElementById('input-date').value, initial:currentUser, tag_type:tagType, location:location, machine:machineValue, abnormality:document.getElementById('input-abnormality').value.toUpperCase(), impact:document.getElementById('input-impact').value.toUpperCase(), risk:document.getElementById('input-risk').value, action:document.getElementById('input-action')?.value?.toUpperCase()||'', status:status, wr_number:'', progress_note:'', created_at:new Date().toISOString(), updated_at:new Date().toISOString() }; if(tagType==='WHITE'){ newTag.closed_by=currentUser; newTag.closed_at=new Date().toISOString(); } if(tagType==='RED'||tagType==='BLUE'){ const fotoBefore=document.getElementById('foto-before-data')?.value; if(fotoBefore){ newTag.foto_before=fotoBefore; }else{ showToast('FOTO BEFORE WAJIB DIISI UNTUK RED/BLUE TAG','error'); return; } } const btn=document.getElementById('submit-btn'); btn.disabled=true; btn.innerHTML='<span class="animate-pulse">MENYIMPAN...</span>'; await insertTag(newTag); btn.disabled=false; btn.innerHTML='<span>SUBMIT TAG</span>'; document.getElementById('tag-form')?.reset(); document.getElementById('preview-before').src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'; document.getElementById('foto-before-data').value=''; const today=new Date().toISOString().split('T')[0]; const dateInp=document.getElementById('input-date'); if(dateInp) dateInp.value=today; });
