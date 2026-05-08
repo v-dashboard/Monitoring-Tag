@@ -48,6 +48,8 @@
         .input-management:focus { border-color: #3b82f6; outline: none; }
         .login-loading { display: none; }
         .login-loading.active { display: inline-block; }
+        .btn-icon { transition: all 0.2s ease; }
+        .btn-icon:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="h-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-900">
@@ -81,7 +83,7 @@
             </div>
         </div>
 
-        <!-- MAIN APP (sama seperti sebelumnya, gue singkat karena panjang, tapi isinya sama persis) -->
+        <!-- MAIN APP -->
         <div id="main-app" class="hidden min-h-full flex flex-col">
             <!-- HEADER -->
             <header class="bg-white/80 backdrop-blur-lg border-b border-white/20 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
@@ -209,15 +211,17 @@
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="table-container">
                             <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 sticky top-0"><tr id="detail-table-header">...</tr></thead>
+                                <thead class="bg-slate-50/50 sticky top-0"><tr id="detail-table-header"></tr></thead>
                                 <tbody id="detail-table-body"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- INPUT PAGE & MANAGEMENT PAGE (sama, gue skip biar ga kepanjangan, isinya sama) -->
+                <!-- INPUT PAGE -->
                 <div id="page-input" class="page hidden"><div class="max-w-4xl mx-auto"><div class="bg-white/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 border border-white/20 shadow-xl"><h2 class="font-black uppercase text-lg sm:text-xl mb-6 flex items-center gap-2"><span class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white shadow-lg">➕</span> INPUT TAG BARU</h2><form id="tag-form" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><div><label class="block text-sm font-bold uppercase mb-2">TANGGAL</label><input type="date" id="input-date" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition text-sm"></div><div><label class="block text-sm font-bold uppercase mb-2">JENIS TAG</label><select id="input-tag-type" required onchange="handleTagTypeChange()" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="RED">🔴 RED (MESIN)</option><option value="WHITE">⚪ WHITE (MESIN)</option><option value="BLUE">🔵 BLUE (BANGUNAN)</option></select></div><div id="machine-field" class="hidden"><label class="block text-sm font-bold uppercase mb-2">MESIN</label><select id="input-machine" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH MESIN</option></select></div><div id="building-field" class="hidden"><label class="block text-sm font-bold uppercase mb-2">BANGUNAN</label><select id="input-building" class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH BANGUNAN</option></select></div><div><label class="block text-sm font-bold uppercase mb-2">KATEGORI</label><select id="input-risk" required class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition uppercase text-sm"><option value="">PILIH</option><option value="QUALITY">🎯 QUALITY</option><option value="PRODUCTIVITY">⚡ PRODUCTIVITY</option><option value="SAFETY">🛡️ SAFETY</option><option value="5R">🧹 5R</option><option value="INFRA">🏗️ INFRASTRUKTUR</option></select></div></div><div><label class="block text-sm font-bold uppercase mb-2">ABNORMALITAS</label><textarea id="input-abnormality" required rows="3" placeholder="DESKRIPSIKAN ABNORMALITAS..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition break-word"></textarea></div><div id="foto-before-section" class="foto-section-hidden bg-slate-50 p-4 rounded-xl border-2 border-dashed border-emerald-300"><label class="block text-sm font-bold uppercase mb-3 text-emerald-600 flex items-center gap-2"><span>📸</span> FOTO BEFORE (ABNORMALITAS) - MAX 100KB</label><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><div class="flex gap-2 mb-3"><button type="button" onclick="openCamera('before')" class="flex-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-bold uppercase hover:from-blue-600 hover:to-indigo-600 transition">📷 BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('before')" class="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-bold uppercase hover:from-purple-600 hover:to-pink-600 transition">🖼️ PILIH FILE</button></div><div id="camera-container-before" class="camera-container hidden"><video id="video-before" autoplay playsinline class="w-full rounded-lg mb-2"></video><div class="photo-actions"><button type="button" onclick="capturePhoto('before')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-600 transition">📸 AMBIL FOTO</button><button type="button" onclick="closeCamera('before')" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-600 transition">❌ TUTUP</button></div></div><input type="file" id="file-input-before" accept="image/*" class="hidden" onchange="handleFileSelect('before', event)"></div><div class="text-center"><p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW</p><div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center"><img id="preview-before" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23e2e8f0'/%3E%3Ctext x='10' y='55' font-family='Arial' font-size='12' fill='%2364748b'%3ENo Image%3C/text%3E%3C/svg%3E" class="max-w-full max-h-32 rounded-lg object-contain"></div><input type="hidden" id="foto-before-data" value=""><p id="file-size-before" class="text-xs mt-1 text-slate-500"></p></div></div></div><div><label class="block text-sm font-bold uppercase mb-2">DAMPAK JIKA TIDAK DITANGGULANGI</label><textarea id="input-impact" required rows="2" placeholder="JELASKAN DAMPAKNYA..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition break-word"></textarea></div><div id="white-tag-action" class="hidden"><label class="block text-sm font-bold uppercase mb-2">ACTION (TINDAKAN PERBAIKAN)</label><textarea id="input-action" rows="3" placeholder="JELASKAN TINDAKAN PERBAIKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 focus:outline-none transition break-word"></textarea></div><button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white font-black rounded-xl uppercase tracking-wide hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 transition shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"><span>SUBMIT TAG</span></button></form></div></div></div>
+                
+                <!-- MANAGEMENT PAGE -->
                 <div id="page-management" class="page hidden"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6"><div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden"><div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>👷</span> OPERATOR</h3></div><div class="p-4"><div class="flex gap-2 mb-4"><input type="text" id="new-operator" placeholder="INISIAL OPERATOR" class="input-management" maxlength="10" onkeypress="handleKeyPress(event, 'addOperator')"><button onclick="addOperator()" class="btn-add">ADD</button></div><div id="operator-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div></div></div><div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden"><div class="p-4 bg-gradient-to-r from-purple-600 to-pink-600"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🔧</span> ENGINEERING</h3></div><div class="p-4"><div class="flex gap-2 mb-4"><input type="text" id="new-engineering" placeholder="INISIAL ENGINEERING" class="input-management" maxlength="10" onkeypress="handleKeyPress(event, 'addEngineering')"><button onclick="addEngineering()" class="btn-add">ADD</button></div><div id="engineering-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div></div></div><div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden"><div class="p-4 bg-gradient-to-r from-emerald-600 to-teal-600"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏭</span> MESIN</h3></div><div class="p-4"><div class="flex gap-2 mb-4"><input type="text" id="new-machine" placeholder="NAMA MESIN" class="input-management" maxlength="20" onkeypress="handleKeyPress(event, 'addMachine')"><button onclick="addMachine()" class="btn-add">ADD</button></div><div id="machine-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div></div></div><div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden"><div class="p-4 bg-gradient-to-r from-amber-600 to-orange-600"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>⚡</span> UTILITY</h3></div><div class="p-4"><div class="flex gap-2 mb-4"><input type="text" id="new-utility" placeholder="NAMA UTILITY" class="input-management" maxlength="20" onkeypress="handleKeyPress(event, 'addUtility')"><button onclick="addUtility()" class="btn-add">ADD</button></div><div id="utility-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div></div></div><div class="bg-white/80 backdrop-blur-lg rounded-xl border border-white/20 shadow-xl overflow-hidden"><div class="p-4 bg-gradient-to-r from-blue-600 to-cyan-600"><h3 class="font-bold uppercase text-white flex items-center gap-2"><span>🏢</span> BANGUNAN</h3></div><div class="p-4"><div class="flex gap-2 mb-4"><input type="text" id="new-building" placeholder="NAMA BANGUNAN" class="input-management" maxlength="20" onkeypress="handleKeyPress(event, 'addBuilding')"><button onclick="addBuilding()" class="btn-add">ADD</button></div><div id="building-list" class="space-y-2 max-h-80 overflow-auto pr-1"></div></div></div></div></div>
             </main>
         </div>
@@ -232,45 +236,58 @@
             const SUPABASE_URL = 'https://hzvjoewuprlkgwetqpau.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6dmpvZXd1cHJsa2d3ZXRxcGF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MTAxNzQsImV4cCI6MjA4NzM4NjE3NH0.i0SgR9fmdb_gDNEDh2lt4Q9cgLEVGX6EDzB_jJQPa8w';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            const CACHE_TTL = 60 * 60 * 1000;
+            const CACHE_TTL = 60000; // 60 detik
             let cache = { tags: { data: [], timestamp: 0 }, operators: { data: [], timestamp: 0 }, engineerings: { data: [], timestamp: 0 }, machines: { data: [], timestamp: 0 }, utilities: { data: [], timestamp: 0 }, buildings: { data: [], timestamp: 0 } };
             let allData = [], operators=[], engineerings=[], machines=[], utilities=[], buildings=[];
             let currentUser=null, userRole=null, currentStream=null, currentStreamAfter=null;
             let currentDetailTagType = 'RED';
             let currentDetailFiltered = [];
             let isLoggingIn = false;
+            let realtimeSubscription = null;
 
             function isCacheValid(key){ return cache[key] && (Date.now() - cache[key].timestamp) < CACHE_TTL; }
             function updateCache(key,data){ cache[key]={data,timestamp:Date.now()}; }
             function invalidateCache(key){ if(cache[key]) cache[key].timestamp=0; }
-            async function fetchWithCache(table,key,force=false){
+            
+            async function fetchData(table, key, force=false){
                 if(isCacheValid(key) && !force) return cache[key].data;
                 const {data,error}=await supabase.from(table).select('*').order('created_at',{ascending:false});
                 if(error) throw error;
                 updateCache(key,data||[]);
                 return data||[];
             }
-            async function refreshData(force=false){
-                const loader=document.getElementById('dashboard-loading'); if(loader && !force) loader.classList.remove('hidden');
+            
+            async function refreshData(force=false, showLoader=false){
+                if(showLoader){
+                    const loader=document.getElementById('dashboard-loading');
+                    if(loader) loader.classList.remove('hidden');
+                }
                 try{
                     const [tags,ops,engs,machs,utils,builds]=await Promise.all([
-                        fetchWithCache('tags','tags',force),fetchWithCache('operators','operators',force),
-                        fetchWithCache('engineerings','engineerings',force),fetchWithCache('machines','machines',force),
-                        fetchWithCache('utilities','utilities',force),fetchWithCache('buildings','buildings',force)
+                        fetchData('tags','tags',force),fetchData('operators','operators',force),
+                        fetchData('engineerings','engineerings',force),fetchData('machines','machines',force),
+                        fetchData('utilities','utilities',force),fetchData('buildings','buildings',force)
                     ]);
                     allData=tags; operators=(ops||[]).map(o=>o.initial).sort(); engineerings=(engs||[]).map(e=>e.initial).sort();
                     machines=(machs||[]).map(m=>m.machine).sort(); utilities=(utils||[]).map(u=>u.utility).sort(); buildings=(builds||[]).map(b=>b.building).sort();
-                    if(document.getElementById('operator-list')) renderManagementLists(); 
-                    updateDashboardCards();
-                    if(document.getElementById('operator-stacked-bars')) renderOperatorStackedBars(allData);
-                    if(document.getElementById('engineering-bars')) renderEngineeringBars(allData);
-                    if(document.getElementById('machine-bars')) renderMachineBars(allData);
-                    if(document.getElementById('building-bars')) renderBuildingBars(allData);
-                    if(!document.getElementById('page-dashboard').classList.contains('hidden') && !document.getElementById('page-detail').classList.contains('hidden')){
-                        applyDetailFilter();
+                    
+                    if(document.getElementById('operator-list') && !document.getElementById('page-management').classList.contains('hidden')) renderManagementLists(); 
+                    
+                    const dashboardVisible = !document.getElementById('page-dashboard').classList.contains('hidden');
+                    if(dashboardVisible){
+                        updateDashboardCards();
+                        renderOperatorStackedBars(allData);
+                        renderEngineeringBars(allData);
+                        renderMachineBars(allData);
+                        renderBuildingBars(allData);
+                    }
+                    
+                    const detailVisible = !document.getElementById('page-detail').classList.contains('hidden');
+                    if(detailVisible){
+                        await applyDetailFilter();
                     }
                 }catch(e){ console.error(e); showToast('GAGAL REFRESH DATA','error'); }
-                finally{ if(loader) loader.classList.add('hidden'); }
+                finally{ if(showLoader){ const loader=document.getElementById('dashboard-loading'); if(loader) loader.classList.add('hidden'); } }
             }
             
             function renderManagementLists(){
@@ -365,10 +382,10 @@
                 if(document.getElementById('blue-closed')) document.getElementById('blue-closed').textContent = blueTags.filter(t=>t.status==='CLOSED').length;
                 if(document.getElementById('blue-percent')) document.getElementById('blue-percent').textContent = blueTags.length ? Math.round((blueTags.filter(t=>t.status==='CLOSED').length / blueTags.length)*100)+'%' : '0%';
                 
-                if(document.getElementById('operator-stacked-bars')) renderOperatorStackedBars(filtered);
-                if(document.getElementById('engineering-bars')) renderEngineeringBars(filtered);
-                if(document.getElementById('machine-bars')) renderMachineBars(filtered);
-                if(document.getElementById('building-bars')) renderBuildingBars(filtered);
+                renderOperatorStackedBars(filtered);
+                renderEngineeringBars(filtered);
+                renderMachineBars(filtered);
+                renderBuildingBars(filtered);
             }
             
             window.applyDashboardDateFilter = function(){
@@ -397,7 +414,7 @@
                 if(document.getElementById('back-to-dashboard-btn')) document.getElementById('back-to-dashboard-btn').classList.remove('hidden');
             };
             
-            window.applyDetailFilter = function(){
+            window.applyDetailFilter = async function(){
                 const dateFrom = document.getElementById('detail-date-from')?.value || '';
                 const dateTo = document.getElementById('detail-date-to')?.value || '';
                 const status = document.getElementById('detail-status')?.value || '';
@@ -498,7 +515,7 @@
                 if(!tag.wr_number){
                     content.innerHTML = `<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">MASUKKAN NOMOR WR UNTUK TAG INI</p><input type="text" id="modal-wr" placeholder="NOMOR WR" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase" autocomplete="off"><div class="flex flex-col sm:flex-row gap-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitWR('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button></div></div>`;
                 } else {
-                    content.innerHTML = `<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900">${tag.wr_number}</span></p><div><label class="block text-sm font-semibold uppercase mb-2">STATUS</label><select id="modal-status" onchange="toggleFotoAfterSection()" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase"><option value="ON PROGRESS" ${tag.status==='ON PROGRESS'?'selected':''}>ON PROGRESS</option><option value="CLOSED" ${tag.status==='CLOSED'?'selected':''}>CLOSED</option></select></div><div><label class="block text-sm font-semibold uppercase mb-2">ACTION</label><textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition break-word">${tag.progress_note||''}</textarea></div><div id="foto-after-section" class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-blue-300 ${tag.status==='CLOSED'?'':'hidden'}"><label class="block text-sm font-bold uppercase mb-3 text-blue-600 flex items-center gap-2"><span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB</label><div class="grid grid-cols-1 gap-4"><div><div class="flex gap-2 mb-3"><button type="button" onclick="openCamera('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-bold uppercase hover:from-blue-600 hover:to-indigo-600 transition">📷 BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-bold uppercase hover:from-purple-600 hover:to-pink-600 transition">🖼️ PILIH FILE</button></div><div id="camera-container-after" class="camera-container hidden"><video id="video-after" autoplay playsinline class="w-full rounded-lg mb-2"></video><div class="photo-actions"><button type="button" onclick="capturePhoto('after')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-600 transition">📸 AMBIL FOTO</button><button type="button" onclick="closeCamera('after')" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-600 transition">❌ TUTUP</button></div></div><input type="file" id="file-input-after" accept="image/*" class="hidden" onchange="handleFileSelect('after', event)"></div><div class="text-center"><p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW FOTO AFTER</p><div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center"><img id="preview-after" src="${tag.foto_after||'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'}" class="max-w-full max-h-32 rounded-lg object-contain"></div><input type="hidden" id="modal-foto-after-data" value=""><p id="file-size-after" class="text-xs mt-1 text-slate-500"></p></div></div></div><div class="flex flex-col sm:flex-row gap-2 mt-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button></div></div>`;
+                    content.innerHTML = `<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900">${tag.wr_number}</span></p><div><label class="block text-sm font-semibold uppercase mb-2">STATUS</label><select id="modal-status" onchange="toggleFotoAfterSection()" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase"><option value="ON PROGRESS" ${tag.status==='ON PROGRESS'?'selected':''}>ON PROGRESS</option><option value="CLOSED" ${tag.status==='CLOSED'?'selected':''}>CLOSED</option></select></div><div><label class="block text-sm font-semibold uppercase mb-2">ACTION</label><textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition break-word">${tag.progress_note||''}</textarea></div><div id="foto-after-section" class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-blue-300 ${tag.status==='CLOSED'?'':'hidden'}"><label class="block text-sm font-bold uppercase mb-3 text-blue-600 flex items-center gap-2"><span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB</label><div class="grid grid-cols-1 gap-4"><div><div class="flex gap-2 mb-3"><button type="button" onclick="openCamera('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-bold uppercase hover:from-blue-600 hover:to-indigo-600 transition">📷 BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-bold uppercase hover:from-purple-600 hover:to-pink-600 transition">🖼️ PILIH FILE</button></div><div id="camera-container-after" class="camera-container hidden"><video id="video-after" autoplay playsinline class="w-full rounded-lg mb-2"></video><div class="photo-actions"><button type="button" onclick="capturePhoto('after')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-600 transition">📸 AMBIL FOTO</button><button type="button" onclick="closeCamera('after')" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-600 transition">❌ TUTUP</button></div></div><input type="file" id="file-input-after" accept="image/*" class="hidden" onchange="handleFileSelect('after', event)"></div><div class="text-center"><p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW FOTO AFTER</p><div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center"><img id="preview-after" src="${tag.foto_after||'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'}" class="max-w-full max-h-32 rounded-lg object-contain"></div><input type="hidden" id="modal-foto-after-data" value="${tag.foto_after||''}"><p id="file-size-after" class="text-xs mt-1 text-slate-500"></p></div></div></div><div class="flex flex-col sm:flex-row gap-2 mt-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button></div></div>`;
                 }
                 modal.classList.remove('hidden');
             };
@@ -547,20 +564,118 @@
             window.capturePhoto=async function(type){ const video=document.getElementById(`video-${type}`); if(!video) return; const canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight; canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height); const raw=canvas.toDataURL('image/jpeg',0.9); showToast('MENGKOMPRES FOTO...','info'); const comp=await compressImage(raw,100); const preview=document.getElementById(`preview-${type}`); if(preview) preview.src=comp; const hidden=document.getElementById(type==='before'?'foto-before-data':'modal-foto-after-data'); if(hidden) hidden.value=comp; const sizeSpan=document.getElementById(`file-size-${type}`); if(sizeSpan){ const kb=Math.round(comp.length/1024); sizeSpan.textContent=`Ukuran: ${kb} KB`; } closeCamera(type); showToast('FOTO BERHASIL DIAMBIL','success'); };
             window.handleFileSelect=async function(type,event){ const file=event.target.files[0]; if(!file) return; showToast('MEMPROSES FOTO...','info'); const reader=new FileReader(); reader.onload=async function(e){ const comp=await compressImage(e.target.result,100); const preview=document.getElementById(`preview-${type}`); if(preview) preview.src=comp; const hidden=document.getElementById(type==='before'?'foto-before-data':'modal-foto-after-data'); if(hidden) hidden.value=comp; const sizeSpan=document.getElementById(`file-size-${type}`); if(sizeSpan){ const kb=Math.round(comp.length/1024); sizeSpan.textContent=`Ukuran: ${kb} KB`; } showToast('FILE BERHASIL DIPILIH','success'); }; reader.readAsDataURL(file); };
             
-            window.handleTagTypeChange=async function(){ const tagType=document.getElementById('input-tag-type').value; const machineField=document.getElementById('machine-field'),buildingField=document.getElementById('building-field'),whiteAction=document.getElementById('white-tag-action'),fotoSec=document.getElementById('foto-before-section'),actionInp=document.getElementById('input-action'),machineSel=document.getElementById('input-machine'),buildingSel=document.getElementById('input-building'); if(machineField) machineField.classList.add('hidden'); if(buildingField) buildingField.classList.add('hidden'); if(machineSel) machineSel.required=false; if(buildingSel) buildingSel.required=false; if(tagType==='WHITE'||tagType==='RED'){ if(machineField) machineField.classList.remove('hidden'); if(machineSel) machineSel.required=true; const machinesData=await fetchWithCache('machines','machines'); if(machineSel){ machineSel.innerHTML='<option value="">PILIH MESIN</option>'; machinesData.forEach(m=>{ machineSel.innerHTML+=`<option value="${m.machine}">🏭 ${m.machine}</option>`; }); } }else if(tagType==='BLUE'){ if(buildingField) buildingField.classList.remove('hidden'); if(buildingSel) buildingSel.required=true; const buildingsData=await fetchWithCache('buildings','buildings'); if(buildingSel){ buildingSel.innerHTML='<option value="">PILIH BANGUNAN</option>'; buildingsData.forEach(b=>{ buildingSel.innerHTML+=`<option value="${b.building}">🏢 ${b.building}</option>`; }); } } if(tagType==='WHITE'){ if(whiteAction) whiteAction.classList.remove('hidden'); if(fotoSec) fotoSec.classList.add('foto-section-hidden'); if(actionInp) actionInp.required=true; }else if(tagType==='RED'||tagType==='BLUE'){ if(whiteAction) whiteAction.classList.add('hidden'); if(fotoSec) fotoSec.classList.remove('foto-section-hidden'); if(actionInp) actionInp.required=false; }else{ if(whiteAction) whiteAction.classList.add('hidden'); if(fotoSec) fotoSec.classList.add('foto-section-hidden'); if(actionInp) actionInp.required=false; } };
+            window.handleTagTypeChange=async function(){ 
+                const tagType=document.getElementById('input-tag-type').value; 
+                const machineField=document.getElementById('machine-field'),buildingField=document.getElementById('building-field'),whiteAction=document.getElementById('white-tag-action'),fotoSec=document.getElementById('foto-before-section'),actionInp=document.getElementById('input-action'),machineSel=document.getElementById('input-machine'),buildingSel=document.getElementById('input-building'); 
+                if(machineField) machineField.classList.add('hidden'); 
+                if(buildingField) buildingField.classList.add('hidden'); 
+                if(machineSel) machineSel.required=false; 
+                if(buildingSel) buildingSel.required=false; 
+                if(tagType==='WHITE'||tagType==='RED'){ 
+                    if(machineField) machineField.classList.remove('hidden'); 
+                    if(machineSel) machineSel.required=true; 
+                    const machinesData=await fetchData('machines','machines'); 
+                    if(machineSel){ 
+                        machineSel.innerHTML='<option value="">PILIH MESIN</option>'; 
+                        machinesData.forEach(m=>{ machineSel.innerHTML+=`<option value="${m.machine}">🏭 ${m.machine}</option>`; }); 
+                    } 
+                }else if(tagType==='BLUE'){ 
+                    if(buildingField) buildingField.classList.remove('hidden'); 
+                    if(buildingSel) buildingSel.required=true; 
+                    const buildingsData=await fetchData('buildings','buildings'); 
+                    if(buildingSel){ 
+                        buildingSel.innerHTML='<option value="">PILIH BANGUNAN</option>'; 
+                        buildingsData.forEach(b=>{ buildingSel.innerHTML+=`<option value="${b.building}">🏢 ${b.building}</option>`; }); 
+                    } 
+                } 
+                if(tagType==='WHITE'){ 
+                    if(whiteAction) whiteAction.classList.remove('hidden'); 
+                    if(fotoSec) fotoSec.classList.add('foto-section-hidden'); 
+                    if(actionInp) actionInp.required=true; 
+                }else if(tagType==='RED'||tagType==='BLUE'){ 
+                    if(whiteAction) whiteAction.classList.add('hidden'); 
+                    if(fotoSec) fotoSec.classList.remove('foto-section-hidden'); 
+                    if(actionInp) actionInp.required=false; 
+                }else{ 
+                    if(whiteAction) whiteAction.classList.add('hidden'); 
+                    if(fotoSec) fotoSec.classList.add('foto-section-hidden'); 
+                    if(actionInp) actionInp.required=false; 
+                } 
+            };
             
-            async function insertTag(tagData){ try{ const {error}=await supabase.from('tags').insert([tagData]); if(error) throw error; showToast('TAG BERHASIL DISIMPAN','success'); invalidateCache('tags'); await refreshData(true); if(!document.getElementById('page-input').classList.contains('hidden')) setTimeout(()=>showPage('dashboard'),500); return true; }catch(e){ console.error(e); showToast('GAGAL MENYIMPAN TAG','error'); return false; } }
+            async function insertTag(tagData){ 
+                try{ 
+                    const {error}=await supabase.from('tags').insert([tagData]); 
+                    if(error) throw error; 
+                    showToast('TAG BERHASIL DISIMPAN','success'); 
+                    invalidateCache('tags'); 
+                    await refreshData(true); 
+                    setTimeout(()=>showPage('dashboard'),500); 
+                    return true; 
+                }catch(e){ 
+                    console.error(e); 
+                    showToast('GAGAL MENYIMPAN TAG','error'); 
+                    return false; 
+                } 
+            }
             
-            function showToast(msg,type='success'){ const existing=document.querySelectorAll('.toast-message'); existing.forEach(t=>t.remove()); const toast=document.createElement('div'); toast.className=`toast-message fixed bottom-4 right-4 px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-xs sm:text-sm transition-all duration-300 transform translate-y-0 ${type==='success'?'bg-emerald-500 text-white':type==='error'?'bg-red-500 text-white':'bg-blue-500 text-white'}`; toast.textContent=msg; document.body.appendChild(toast); setTimeout(()=>{ toast.classList.add('opacity-0','translate-y-4'); setTimeout(()=>toast.remove(),300); },3000); }
+            function showToast(msg,type='success'){ 
+                const existing=document.querySelectorAll('.toast-message'); 
+                existing.forEach(t=>t.remove()); 
+                const toast=document.createElement('div'); 
+                toast.className=`toast-message fixed bottom-4 right-4 px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-xs sm:text-sm transition-all duration-300 transform translate-y-0 ${type==='success'?'bg-emerald-500 text-white':type==='error'?'bg-red-500 text-white':'bg-blue-500 text-white'}`; 
+                toast.textContent=msg; 
+                document.body.appendChild(toast); 
+                setTimeout(()=>{ toast.classList.add('opacity-0','translate-y-4'); setTimeout(()=>toast.remove(),300); },3000); 
+            }
             
-            function setupRealtime(){ supabase.channel('tags-channel').on('postgres_changes',{event:'*',schema:'public',table:'tags'},()=>{ invalidateCache('tags'); if(!document.getElementById('page-dashboard').classList.contains('hidden')) setTimeout(()=>refreshData(true),500); else if(!document.getElementById('page-detail').classList.contains('hidden')) setTimeout(()=>{ applyDetailFilter(); refreshData(true); },500); }).subscribe(); supabase.channel('ops').on('postgres_changes',{event:'*',schema:'public',table:'operators'},()=>invalidateCache('operators')).subscribe(); supabase.channel('engs').on('postgres_changes',{event:'*',schema:'public',table:'engineerings'},()=>invalidateCache('engineerings')).subscribe(); supabase.channel('machs').on('postgres_changes',{event:'*',schema:'public',table:'machines'},()=>invalidateCache('machines')).subscribe(); supabase.channel('utils').on('postgres_changes',{event:'*',schema:'public',table:'utilities'},()=>invalidateCache('utilities')).subscribe(); supabase.channel('blds').on('postgres_changes',{event:'*',schema:'public',table:'buildings'},()=>invalidateCache('buildings')).subscribe(); }
+            function setupRealtime(){ 
+                if(realtimeSubscription) realtimeSubscription.unsubscribe();
+                realtimeSubscription = supabase.channel('all-changes')
+                    .on('postgres_changes',{event:'*',schema:'public',table:'tags'},()=>{ 
+                        invalidateCache('tags'); 
+                        refreshData(false);
+                    })
+                    .on('postgres_changes',{event:'*',schema:'public',table:'operators'},()=>invalidateCache('operators'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'engineerings'},()=>invalidateCache('engineerings'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'machines'},()=>invalidateCache('machines'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'utilities'},()=>invalidateCache('utilities'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'buildings'},()=>invalidateCache('buildings'))
+                    .subscribe();
+            }
             
             let autoRefreshTimer=null;
-            function startAutoRefresh(){ if(autoRefreshTimer) clearInterval(autoRefreshTimer); autoRefreshTimer=setInterval(()=>refreshData(true),CACHE_TTL); }
+            function startAutoRefresh(){ if(autoRefreshTimer) clearInterval(autoRefreshTimer); autoRefreshTimer=setInterval(()=>refreshData(false),CACHE_TTL); }
             function stopAutoRefresh(){ if(autoRefreshTimer){ clearInterval(autoRefreshTimer); autoRefreshTimer=null; } }
             function updateLiveClock(){ const now=new Date(); const dateEl=document.getElementById('clock-date'); const timeEl=document.getElementById('clock-time'); if(dateEl) dateEl.textContent=now.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}); if(timeEl) timeEl.textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
             
-            window.showPage=function(page){ document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); const targetPage = document.getElementById(`page-${page}`); if(targetPage) targetPage.classList.remove('hidden'); document.querySelectorAll('.nav-btn').forEach(btn=>{ btn.classList.remove('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); btn.classList.add('bg-white/50'); }); const active=document.querySelector(`[data-nav="${page}"]`); if(active){ active.classList.add('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); active.classList.remove('bg-white/50'); } if(page==='input'){ const today=new Date().toISOString().split('T')[0]; const dateInp=document.getElementById('input-date'); if(dateInp) dateInp.value=today; } if(page==='dashboard'){ const backBtn = document.getElementById('back-to-dashboard-btn'); if(backBtn) backBtn.classList.add('hidden'); updateDashboardCards(); } };
+            window.showPage=function(page){ 
+                document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); 
+                const targetPage = document.getElementById(`page-${page}`); 
+                if(targetPage) targetPage.classList.remove('hidden'); 
+                document.querySelectorAll('.nav-btn').forEach(btn=>{ 
+                    btn.classList.remove('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); 
+                    btn.classList.add('bg-white/50'); 
+                }); 
+                const active=document.querySelector(`[data-nav="${page}"]`); 
+                if(active){ 
+                    active.classList.add('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); 
+                    active.classList.remove('bg-white/50'); 
+                } 
+                if(page==='input'){ 
+                    const today=new Date().toISOString().split('T')[0]; 
+                    const dateInp=document.getElementById('input-date'); 
+                    if(dateInp) dateInp.value=today; 
+                } 
+                if(page==='dashboard'){ 
+                    const backBtn = document.getElementById('back-to-dashboard-btn'); 
+                    if(backBtn) backBtn.classList.add('hidden'); 
+                    updateDashboardCards(); 
+                } 
+                if(page==='management'){ 
+                    renderManagementLists(); 
+                }
+            };
             
             window.handleLoginEnter = function(event){ if(event.key === 'Enter') handleLogin(); };
             
@@ -573,7 +688,6 @@
                 const init = loginInitial.value.trim().toUpperCase();
                 const err = document.getElementById('login-error');
                 
-                // Show loading
                 if(loginBtn) loginBtn.disabled = true;
                 if(loginSpinner) loginSpinner.classList.add('active');
                 
@@ -586,8 +700,7 @@
                 }
                 
                 try {
-                    // Load data first
-                    await refreshData(true);
+                    await refreshData(true, true);
                     
                     const isAdmin = init === 'ERW';
                     const isOperator = operators.includes(init);
@@ -641,6 +754,7 @@
                 if(navInput) navInput.classList.add('hidden'); 
                 const navMgmt = document.getElementById('nav-management'); 
                 if(navMgmt) navMgmt.classList.add('hidden'); 
+                refreshData(false);
                 startAutoRefresh(); 
                 showPage('dashboard'); 
                 updateDashboardCards(); 
@@ -734,7 +848,6 @@
                 if(dateInp) dateInp.value = today;
             });
             
-            // Initial load
             refreshData(false);
             setupRealtime();
             updateLiveClock();
