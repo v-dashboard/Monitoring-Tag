@@ -211,9 +211,9 @@
                     <div class="glass-card rounded-xl overflow-hidden">
                         <div class="table-container">
                             <table class="w-full text-sm">
-                                <thead class="bg-slate-50/50 sticky top-0"><tr id="detail-table-header"></tr></thead>
+                                <thead class="bg-slate-50/50 sticky top-0"><tr id="detail-table-header"> </td></thead>
                                 <tbody id="detail-table-body"></tbody>
-                            </table>
+                             </table>
                         </div>
                     </div>
                 </div>
@@ -244,6 +244,7 @@
             let currentDetailFiltered = [];
             let isLoggingIn = false;
             let realtimeSubscription = null;
+            let currentFilteredData = [];
 
             function isCacheValid(key){ return cache[key] && (Date.now() - cache[key].timestamp) < CACHE_TTL; }
             function updateCache(key,data){ cache[key]={data,timestamp:Date.now()}; }
@@ -257,34 +258,55 @@
                 return data||[];
             }
             
+            function getFilteredDataByDate(){
+                const dateFrom = document.getElementById('dashboard-date-from')?.value || '';
+                const dateTo = document.getElementById('dashboard-date-to')?.value || '';
+                let filtered = [...allData];
+                if(dateFrom && dateTo) filtered = filtered.filter(t => t.date >= dateFrom && t.date <= dateTo);
+                else { if(dateFrom) filtered = filtered.filter(t => t.date >= dateFrom); if(dateTo) filtered = filtered.filter(t => t.date <= dateTo); }
+                return filtered;
+            }
+            
             async function refreshData(force=false, showLoader=false){
-                if(showLoader){ const loader=document.getElementById('dashboard-loading'); if(loader) loader.classList.remove('hidden'); }
+                if(showLoader){
+                    const loader=document.getElementById('dashboard-loading');
+                    if(loader) loader.classList.remove('hidden');
+                }
                 try{
                     const [tags,ops,engs,machs,utils,builds]=await Promise.all([
                         fetchData('tags','tags',force),fetchData('operators','operators',force),
                         fetchData('engineerings','engineerings',force),fetchData('machines','machines',force),
                         fetchData('utilities','utilities',force),fetchData('buildings','buildings',force)
                     ]);
-                    allData=tags; operators=(ops||[]).map(o=>o.initial).sort(); engineerings=(engs||[]).map(e=>e.initial).sort();
-                    machines=(machs||[]).map(m=>m.machine).sort(); utilities=(utils||[]).map(u=>u.utility).sort(); buildings=(builds||[]).map(b=>b.building).sort();
+                    allData = tags || [];
+                    operators = (ops||[]).map(o=>o.initial).filter(Boolean).sort();
+                    engineerings = (engs||[]).map(e=>e.initial).filter(Boolean).sort();
+                    machines = (machs||[]).map(m=>m.machine).filter(Boolean).sort();
+                    utilities = (utils||[]).map(u=>u.utility).filter(Boolean).sort();
+                    buildings = (builds||[]).map(b=>b.building).filter(Boolean).sort();
                     
                     if(document.getElementById('operator-list') && !document.getElementById('page-management').classList.contains('hidden')) renderManagementLists(); 
                     
+                    const filteredData = getFilteredDataByDate();
+                    
                     const dashboardVisible = !document.getElementById('page-dashboard').classList.contains('hidden');
                     if(dashboardVisible){
-                        updateDashboardCards();
-                        renderOperatorStackedBars(allData);
-                        renderEngineeringBars(allData);
-                        renderMachineBars(allData);
-                        renderBuildingBars(allData);
+                        updateDashboardCardsWithData(filteredData);
+                        renderOperatorStackedBars(filteredData);
+                        renderEngineeringBars(filteredData);
+                        renderMachineBars(filteredData);
+                        renderBuildingBars(filteredData);
                     }
+                    
                     const detailVisible = !document.getElementById('page-detail').classList.contains('hidden');
-                    if(detailVisible) await applyDetailFilter();
+                    if(detailVisible){
+                        await applyDetailFilter();
+                    }
                 }catch(e){ console.error(e); showToast('GAGAL REFRESH DATA','error'); }
                 finally{ if(showLoader){ const loader=document.getElementById('dashboard-loading'); if(loader) loader.classList.add('hidden'); } }
             }
             
-            function renderManagementLists(){ /* same logic, omitted for brevity but identical to original */ 
+            function renderManagementLists(){
                 const opDiv=document.getElementById('operator-list'); if(opDiv) opDiv.innerHTML=operators.length?operators.map(o=>`<div class="management-item"><span>${o}</span><div class="management-actions"><button onclick="deleteOperator('${o}')" class="btn-delete">×</button></div></div>`).join(''):'<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA OPERATOR</p>';
                 const engDiv=document.getElementById('engineering-list'); if(engDiv) engDiv.innerHTML=engineerings.length?engineerings.map(e=>`<div class="management-item"><span>${e}</span><div class="management-actions"><button onclick="deleteEngineering('${e}')" class="btn-delete">×</button></div></div>`).join(''):'<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA ENGINEERING</p>';
                 const macDiv=document.getElementById('machine-list'); if(macDiv) macDiv.innerHTML=machines.length?machines.map(m=>`<div class="management-item"><span>${m}</span><div class="management-actions"><button onclick="deleteMachine('${m}')" class="btn-delete">×</button></div></div>`).join(''):'<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA MESIN</p>';
@@ -292,55 +314,286 @@
                 const bldDiv=document.getElementById('building-list'); if(bldDiv) bldDiv.innerHTML=buildings.length?buildings.map(b=>`<div class="management-item"><span>${b}</span><div class="management-actions"><button onclick="deleteBuilding('${b}')" class="btn-delete">×</button></div></div>`).join(''):'<p class="text-slate-500 text-sm uppercase text-center py-4">BELUM ADA BANGUNAN</p>';
             }
             
-            function renderOperatorStackedBars(tags){ /* same as original, omitted for brevity */ }
-            function renderEngineeringBars(tags){ /* same */ }
-            function renderMachineBars(tags){ /* same */ }
-            function renderBuildingBars(tags){ /* same */ }
-            function updateDashboardCards(){ /* same logic */ 
-                const dateFrom=document.getElementById('dashboard-date-from')?.value||'', dateTo=document.getElementById('dashboard-date-to')?.value||'';
-                let filtered=allData; if(dateFrom&&dateTo) filtered=filtered.filter(t=>t.date>=dateFrom&&t.date<=dateTo); else{if(dateFrom)filtered=filtered.filter(t=>t.date>=dateFrom);if(dateTo)filtered=filtered.filter(t=>t.date<=dateTo);}
-                const allTotal = filtered.length; const allOpen = filtered.filter(t=>t.status==='OPEN').length; const allProgress = filtered.filter(t=>t.status==='ON PROGRESS').length; const allClosed = filtered.filter(t=>t.status==='CLOSED').length; const allPercent = allTotal ? Math.round((allClosed/allTotal)*100) : 0;
-                document.getElementById('all-total').textContent=allTotal; document.getElementById('all-open').textContent=allOpen; document.getElementById('all-progress').textContent=allProgress; document.getElementById('all-closed').textContent=allClosed; document.getElementById('all-percent').textContent=allPercent+'%';
-                const red=filtered.filter(t=>t.tag_type==='RED'); document.getElementById('red-total').textContent=red.length; document.getElementById('red-open').textContent=red.filter(t=>t.status==='OPEN').length; document.getElementById('red-progress').textContent=red.filter(t=>t.status==='ON PROGRESS').length; document.getElementById('red-closed').textContent=red.filter(t=>t.status==='CLOSED').length; document.getElementById('red-percent').textContent=red.length?Math.round((red.filter(t=>t.status==='CLOSED').length/red.length)*100)+'%':'0%';
-                const white=filtered.filter(t=>t.tag_type==='WHITE'); document.getElementById('white-total').textContent=white.length; document.getElementById('white-open').textContent=white.filter(t=>t.status==='OPEN').length; document.getElementById('white-progress').textContent=white.filter(t=>t.status==='ON PROGRESS').length; document.getElementById('white-closed').textContent=white.filter(t=>t.status==='CLOSED').length; document.getElementById('white-percent').textContent=white.length?Math.round((white.filter(t=>t.status==='CLOSED').length/white.length)*100)+'%':'0%';
-                const blue=filtered.filter(t=>t.tag_type==='BLUE'); document.getElementById('blue-total').textContent=blue.length; document.getElementById('blue-open').textContent=blue.filter(t=>t.status==='OPEN').length; document.getElementById('blue-progress').textContent=blue.filter(t=>t.status==='ON PROGRESS').length; document.getElementById('blue-closed').textContent=blue.filter(t=>t.status==='CLOSED').length; document.getElementById('blue-percent').textContent=blue.length?Math.round((blue.filter(t=>t.status==='CLOSED').length/blue.length)*100)+'%':'0%';
-                renderOperatorStackedBars(filtered); renderEngineeringBars(filtered); renderMachineBars(filtered); renderBuildingBars(filtered);
+            function renderOperatorStackedBars(tags){
+                const container=document.getElementById('operator-stacked-bars'); 
+                if(!container) return;
+                
+                const allInis = [...new Set([...operators, ...engineerings, ...utilities])];
+                
+                if(allInis.length === 0){
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Belum ada data operator/engineering/utility</div>';
+                    return;
+                }
+                
+                const stats = {};
+                allInis.forEach(init => { stats[init] = { red: 0, white: 0, blue: 0, total: 0 }; });
+                
+                if(tags && tags.length){
+                    tags.forEach(t => { 
+                        if(t && t.initial && stats[t.initial]){ 
+                            if(t.tag_type === 'RED') stats[t.initial].red++; 
+                            else if(t.tag_type === 'WHITE') stats[t.initial].white++; 
+                            else if(t.tag_type === 'BLUE') stats[t.initial].blue++; 
+                            stats[t.initial].total++; 
+                        } 
+                    });
+                }
+                
+                const entries = Object.entries(stats).filter(([_,s]) => s.total > 0).sort((a,b) => b[1].total - a[1].total);
+                
+                if(entries.length === 0){ 
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Tidak ada data tag pada periode ini</div>'; 
+                    return; 
+                }
+                
+                const maxTot = Math.max(...entries.map(([_,s])=>s.total), 1);
+                
+                container.innerHTML = entries.map(([init,s]) => `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">${init}</span>
+                            <span class="text-sm font-bold text-slate-700">${s.total}</span>
+                        </div>
+                        <div class="stacked-bar bg-slate-200">
+                            <div class="stacked-bar-red" style="width:${(s.red/maxTot)*100}%"></div>
+                            <div class="stacked-bar-white" style="width:${(s.white/maxTot)*100}%"></div>
+                            <div class="stacked-bar-blue" style="width:${(s.blue/maxTot)*100}%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-red-600 font-semibold">🔴 ${s.red}</span>
+                            <span class="text-slate-600 font-semibold">⚪ ${s.white}</span>
+                            <span class="text-blue-600 font-semibold">🔵 ${s.blue}</span>
+                        </div>
+                    </div>
+                `).join('');
             }
             
-            window.applyDashboardDateFilter = function(){ updateDashboardCards(); showToast('Filter tanggal diterapkan','success'); };
+            function renderEngineeringBars(tags){
+                const container=document.getElementById('engineering-bars'); 
+                if(!container) return;
+                
+                const allClosedBy = [...new Set([...engineerings, ...utilities])];
+                
+                if(allClosedBy.length === 0){
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Belum ada data engineering/utility</div>';
+                    return;
+                }
+                
+                const stats = {};
+                allClosedBy.forEach(i => stats[i] = { closed: 0 });
+                
+                if(tags && tags.length){
+                    tags.forEach(t => { 
+                        if(t && t.status === 'CLOSED' && t.closed_by && stats[t.closed_by]){ 
+                            stats[t.closed_by].closed++; 
+                        } 
+                    });
+                }
+                
+                const entries = Object.entries(stats).filter(([_,s])=>s.closed>0).sort((a,b)=>b[1].closed-a[1].closed);
+                
+                if(entries.length === 0){ 
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Tidak ada closed tag pada periode ini</div>'; 
+                    return; 
+                }
+                
+                const maxCl = Math.max(...entries.map(([_,s])=>s.closed), 1);
+                container.innerHTML = entries.map(([init,s]) => `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">${init}</span>
+                            <span class="text-sm font-bold text-emerald-600">${s.closed}</span>
+                        </div>
+                        <div class="h-6 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style="width:${(s.closed/maxCl)*100}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function renderMachineBars(tags){
+                const container=document.getElementById('machine-bars'); 
+                if(!container) return;
+                
+                if(!tags) tags = [];
+                const machineTags = tags.filter(t => t && t.location === 'MACHINE');
+                const stats = {};
+                
+                machineTags.forEach(t => { 
+                    const m = t.machine || 'UNKNOWN'; 
+                    if(!stats[m]) stats[m] = { red: 0, white: 0, open: 0, closed: 0, total: 0 }; 
+                    if(t.tag_type === 'RED') stats[m].red++; 
+                    else if(t.tag_type === 'WHITE') stats[m].white++; 
+                    if(t.status === 'OPEN' || t.status === 'ON PROGRESS') stats[m].open++; 
+                    else if(t.status === 'CLOSED') stats[m].closed++; 
+                    stats[m].total++; 
+                });
+                
+                const entries = Object.entries(stats).filter(([_,s])=>s.total>0).sort((a,b)=>b[1].total-a[1].total);
+                
+                if(entries.length === 0){ 
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Tidak ada data mesin pada periode ini</div>'; 
+                    return; 
+                }
+                
+                const maxRed = Math.max(...entries.map(([_,s])=>s.red), 1);
+                container.innerHTML = entries.map(([m,s]) => `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">🏭 ${m}</span>
+                            <div class="text-sm space-x-3">
+                                <span class="text-slate-600">⚪ ${s.white}</span>
+                                <span class="font-bold text-blue-600">📊 ${s.total}</span>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-red-600 font-semibold">🔴 OPEN: ${s.open}</span>
+                                <span class="text-emerald-600 font-semibold">✅ CLOSED: ${s.closed}</span>
+                            </div>
+                            <div class="h-6 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-red-500 to-red-400" style="width:${(s.red/maxRed)*100}%"></div>
+                            </div>
+                            <div class="text-xs text-center text-slate-500 font-semibold">Total RED: ${s.red}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function renderBuildingBars(tags){
+                const container=document.getElementById('building-bars'); 
+                if(!container) return;
+                
+                if(!tags) tags = [];
+                const buildingTags = tags.filter(t => t && t.location === 'BUILDING');
+                const stats = {};
+                
+                buildingTags.forEach(t => { 
+                    const b = t.machine || 'UNKNOWN'; 
+                    if(!stats[b]) stats[b] = { blue: 0, open: 0, closed: 0, total: 0 }; 
+                    stats[b].blue++; 
+                    if(t.status === 'OPEN' || t.status === 'ON PROGRESS') stats[b].open++; 
+                    else if(t.status === 'CLOSED') stats[b].closed++; 
+                    stats[b].total++; 
+                });
+                
+                const entries = Object.entries(stats).filter(([_,s])=>s.total>0).sort((a,b)=>b[1].total-a[1].total);
+                
+                if(entries.length === 0){ 
+                    container.innerHTML = '<div class="text-center text-slate-400 text-xs py-4">Tidak ada data bangunan pada periode ini</div>'; 
+                    return; 
+                }
+                
+                const maxBlue = Math.max(...entries.map(([_,s])=>s.blue), 1);
+                container.innerHTML = entries.map(([b,s]) => `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-semibold uppercase bg-slate-100 px-2 py-1 rounded-lg">🏢 ${b}</span>
+                            <span class="font-bold text-blue-600">📊 ${s.total}</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-red-600 font-semibold">🔵 OPEN: ${s.open}</span>
+                                <span class="text-emerald-600 font-semibold">✅ CLOSED: ${s.closed}</span>
+                            </div>
+                            <div class="h-6 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400" style="width:${(s.blue/maxBlue)*100}%"></div>
+                            </div>
+                            <div class="text-xs text-center text-slate-500 font-semibold">Total BLUE: ${s.blue}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function updateDashboardCardsWithData(filtered){
+                const allTotal = filtered.length;
+                const allOpen = filtered.filter(t=>t.status==='OPEN').length;
+                const allProgress = filtered.filter(t=>t.status==='ON PROGRESS').length;
+                const allClosed = filtered.filter(t=>t.status==='CLOSED').length;
+                const allPercent = allTotal ? Math.round((allClosed / allTotal)*100) : 0;
+                if(document.getElementById('all-total')) document.getElementById('all-total').textContent = allTotal;
+                if(document.getElementById('all-open')) document.getElementById('all-open').textContent = allOpen;
+                if(document.getElementById('all-progress')) document.getElementById('all-progress').textContent = allProgress;
+                if(document.getElementById('all-closed')) document.getElementById('all-closed').textContent = allClosed;
+                if(document.getElementById('all-percent')) document.getElementById('all-percent').textContent = allPercent+'%';
+                
+                const redTags = filtered.filter(t=>t.tag_type==='RED');
+                if(document.getElementById('red-total')) document.getElementById('red-total').textContent = redTags.length;
+                if(document.getElementById('red-open')) document.getElementById('red-open').textContent = redTags.filter(t=>t.status==='OPEN').length;
+                if(document.getElementById('red-progress')) document.getElementById('red-progress').textContent = redTags.filter(t=>t.status==='ON PROGRESS').length;
+                if(document.getElementById('red-closed')) document.getElementById('red-closed').textContent = redTags.filter(t=>t.status==='CLOSED').length;
+                if(document.getElementById('red-percent')) document.getElementById('red-percent').textContent = redTags.length ? Math.round((redTags.filter(t=>t.status==='CLOSED').length / redTags.length)*100)+'%' : '0%';
+                
+                const whiteTags = filtered.filter(t=>t.tag_type==='WHITE');
+                if(document.getElementById('white-total')) document.getElementById('white-total').textContent = whiteTags.length;
+                if(document.getElementById('white-open')) document.getElementById('white-open').textContent = whiteTags.filter(t=>t.status==='OPEN').length;
+                if(document.getElementById('white-progress')) document.getElementById('white-progress').textContent = whiteTags.filter(t=>t.status==='ON PROGRESS').length;
+                if(document.getElementById('white-closed')) document.getElementById('white-closed').textContent = whiteTags.filter(t=>t.status==='CLOSED').length;
+                if(document.getElementById('white-percent')) document.getElementById('white-percent').textContent = whiteTags.length ? Math.round((whiteTags.filter(t=>t.status==='CLOSED').length / whiteTags.length)*100)+'%' : '0%';
+                
+                const blueTags = filtered.filter(t=>t.tag_type==='BLUE');
+                if(document.getElementById('blue-total')) document.getElementById('blue-total').textContent = blueTags.length;
+                if(document.getElementById('blue-open')) document.getElementById('blue-open').textContent = blueTags.filter(t=>t.status==='OPEN').length;
+                if(document.getElementById('blue-progress')) document.getElementById('blue-progress').textContent = blueTags.filter(t=>t.status==='ON PROGRESS').length;
+                if(document.getElementById('blue-closed')) document.getElementById('blue-closed').textContent = blueTags.filter(t=>t.status==='CLOSED').length;
+                if(document.getElementById('blue-percent')) document.getElementById('blue-percent').textContent = blueTags.length ? Math.round((blueTags.filter(t=>t.status==='CLOSED').length / blueTags.length)*100)+'%' : '0%';
+            }
+            
+            function updateDashboardCards(){
+                const filteredData = getFilteredDataByDate();
+                updateDashboardCardsWithData(filteredData);
+            }
+            
+            window.applyDashboardDateFilter = function(){
+                const filteredData = getFilteredDataByDate();
+                updateDashboardCardsWithData(filteredData);
+                renderOperatorStackedBars(filteredData);
+                renderEngineeringBars(filteredData);
+                renderMachineBars(filteredData);
+                renderBuildingBars(filteredData);
+                showToast('Filter tanggal diterapkan','success');
+            };
             
             window.showDetailPage = function(tagType){
                 currentDetailTagType = tagType;
                 if(document.getElementById('detail-date-from')) document.getElementById('detail-date-from').value = '';
                 if(document.getElementById('detail-date-to')) document.getElementById('detail-date-to').value = '';
                 if(document.getElementById('detail-status')) document.getElementById('detail-status').value = '';
+                
                 const titleMap = { 'RED': '🔴 RED TAG DETAIL - MESIN', 'WHITE': '⚪ WHITE TAG DETAIL - MESIN', 'BLUE': '🔵 BLUE TAG DETAIL - BANGUNAN' };
-                document.getElementById('detail-title').innerHTML = titleMap[tagType];
+                if(document.getElementById('detail-title')) document.getElementById('detail-title').innerHTML = titleMap[tagType];
+                
                 const statusContainer = document.getElementById('detail-status-container');
-                if(tagType === 'WHITE') statusContainer.style.display = 'none';
-                else statusContainer.style.display = 'block';
+                if(tagType === 'WHITE'){
+                    if(statusContainer) statusContainer.style.display = 'none';
+                } else {
+                    if(statusContainer) statusContainer.style.display = 'block';
+                }
+                
                 applyDetailFilter();
                 showPage('detail');
-                document.getElementById('back-to-dashboard-btn').classList.remove('hidden');
+                if(document.getElementById('back-to-dashboard-btn')) document.getElementById('back-to-dashboard-btn').classList.remove('hidden');
             };
             
             window.applyDetailFilter = async function(){
                 const dateFrom = document.getElementById('detail-date-from')?.value || '';
                 const dateTo = document.getElementById('detail-date-to')?.value || '';
                 const status = document.getElementById('detail-status')?.value || '';
+                
                 let filtered = allData.filter(t => t.tag_type === currentDetailTagType);
                 if(dateFrom && dateTo) filtered = filtered.filter(t => t.date >= dateFrom && t.date <= dateTo);
                 else { if(dateFrom) filtered = filtered.filter(t => t.date >= dateFrom); if(dateTo) filtered = filtered.filter(t => t.date <= dateTo); }
                 if(status && currentDetailTagType !== 'WHITE') filtered = filtered.filter(t => t.status === status);
+                
                 currentDetailFiltered = filtered;
                 renderDetailTable();
                 showToast(`Menampilkan ${filtered.length} data`, 'success');
             };
             
             window.resetDetailFilter = function(){
-                document.getElementById('detail-date-from').value = '';
-                document.getElementById('detail-date-to').value = '';
-                document.getElementById('detail-status').value = '';
+                if(document.getElementById('detail-date-from')) document.getElementById('detail-date-from').value = '';
+                if(document.getElementById('detail-date-to')) document.getElementById('detail-date-to').value = '';
+                if(document.getElementById('detail-status')) document.getElementById('detail-status').value = '';
                 applyDetailFilter();
             };
             
@@ -348,74 +601,451 @@
                 const tbody = document.getElementById('detail-table-body');
                 const thead = document.getElementById('detail-table-header');
                 if(!tbody || !thead) return;
+                
                 if(currentDetailTagType === 'WHITE'){
                     thead.innerHTML = `<th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">MESIN</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th>`;
-                    if(!currentDetailFiltered.length) tbody.innerHTML = '<tr><td colspan="6" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA WHITE TAG</td></tr>';
-                    else tbody.innerHTML = currentDetailFiltered.slice(0,200).map(t=>`<tr><td class="px-2 sm:px-4 py-2 text-xs">${t.date?.split('T')[0]||'-'}</td><td class="px-2 sm:px-4 py-2 text-xs font-semibold">${t.initial||'-'}</td><td class="px-2 sm:px-4 py-2 text-xs">${t.machine||'-'}</td><td class="px-2 sm:px-4 py-2 break-word text-xs max-w-[280px]">${t.abnormality||'-'}</td><td class="px-2 sm:px-4 py-2 break-word text-xs max-w-[200px]">${t.action||'-'}</td><td class="px-2 sm:px-4 py-2"><span class="px-2 py-1 rounded-full text-xs bg-slate-100">${t.risk||'-'}</span></td></tr>`).join('');
+                    if(!currentDetailFiltered.length){
+                        tbody.innerHTML = '<tr><td colspan="6" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA WHITE TAG</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = currentDetailFiltered.slice(0,200).map(t => {
+                        const riskClass = t.risk==='SAFETY'?'bg-red-100 text-red-700':t.risk==='QUALITY'?'bg-blue-100 text-blue-700':t.risk==='PRODUCTIVITY'?'bg-amber-100 text-amber-700':t.risk==='5R'?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-700';
+                        return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${t.date?t.date.split('T')[0]:'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${t.initial||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs">${t.machine||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:280px">${t.abnormality||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:200px">${t.action||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${riskClass}">${t.risk||'-'}</span></td></tr>`;
+                    }).join('');
                 } else {
-                    // Perbaikan: header untuk BLUE tag menggunakan "OPERATOR" bukan "UTILITY"
-                    const operatorLabel = (currentDetailTagType === 'BLUE') ? 'OPERATOR' : (currentDetailTagType === 'RED' ? 'OPERATOR' : 'UTILITY');
-                    thead.innerHTML = `<th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">${currentDetailTagType==='RED'?'MESIN':'BANGUNAN'}</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">${operatorLabel}</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO AFTER</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th><th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th><th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th>`;
-                    if(!currentDetailFiltered.length) tbody.innerHTML = `<tr><td colspan="12" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA ${currentDetailTagType} TAG</td></tr>`;
-                    else tbody.innerHTML = currentDetailFiltered.slice(0,200).map(tag=>{
+                    // PERBAIKAN: Kolom UTILITY diganti jadi OPERATOR
+                    thead.innerHTML = `<th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">TANGGAL</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">${currentDetailTagType==='RED'?'MESIN':'BANGUNAN'}</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">KATEGORI</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">OPERATOR</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ABNORMALITAS</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO BEFORE</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">ACTION</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">FOTO AFTER</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">NO WR</th>
+                        <th class="px-2 sm:px-4 py-3 text-left uppercase font-bold text-[10px] sm:text-xs">STATUS</th>
+                        <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">AKSI / CLOSED BY</th>
+                        <th class="px-2 sm:px-4 py-3 text-center uppercase font-bold text-[10px] sm:text-xs">TGL UPDATE</th>`;
+                    
+                    if(!currentDetailFiltered.length){
+                        tbody.innerHTML = `<tr><td colspan="12" class="px-2 sm:px-4 py-8 text-center text-slate-500 uppercase text-xs">TIDAK ADA ${currentDetailTagType} TAG</td></tr>`;
+                        return;
+                    }
+                    tbody.innerHTML = currentDetailFiltered.slice(0,200).map(tag => {
                         const statusColor = tag.status==='OPEN'?'bg-red-100 text-red-700':tag.status==='ON PROGRESS'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700';
                         let actionBtn = '';
-                        if(tag.status==='CLOSED') actionBtn = `<div class="${currentDetailTagType==='RED'?'closed-by-badge':'blue-closed-by-badge'}"><span>✓</span><span>${tag.closed_by||'Unknown'}</span></div>`;
-                        else if(!tag.wr_number){ if(userRole==='operator'||userRole==='admin') actionBtn = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase whitespace-nowrap">INPUT WR</button>`; else actionBtn = '<span class="text-xs text-slate-500">-</span>'; }
-                        else { if(((userRole==='engineering'||userRole==='admin') && currentDetailTagType==='RED') || ((userRole==='utility'||userRole==='admin') && currentDetailTagType==='BLUE')) actionBtn = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 py-1 bg-blue-500 text-white rounded-lg text-xs font-semibold uppercase whitespace-nowrap">UPDATE</button>`; else actionBtn = '<span class="text-xs text-slate-500">-</span>'; }
-                        const fb = tag.foto_before ? `<img src="${tag.foto_before}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_before}')">` : '<span class="text-xs text-slate-400">-</span>';
-                        const fa = tag.foto_after ? `<img src="${tag.foto_after}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_after}')">` : '<span class="text-xs text-slate-400">-</span>';
-                        const riskClass = tag.risk==='SAFETY'?'bg-red-100':tag.risk==='QUALITY'?'bg-blue-100':tag.risk==='PRODUCTIVITY'?'bg-amber-100':tag.risk==='5R'?'bg-emerald-100':'bg-slate-100';
-                        return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 text-xs">${tag.date?.split('T')[0]||'-'}</td><td class="px-2 sm:px-4 py-2 text-xs font-semibold">${tag.machine||'-'}</td><td class="px-2 sm:px-4 py-2"><span class="px-2 py-1 rounded-full text-xs ${riskClass}">${tag.risk||'-'}</span></td><td class="px-2 sm:px-4 py-2 text-xs font-semibold">${tag.initial||'-'}</td><td class="px-2 sm:px-4 py-2 break-word text-xs max-w-[280px]">${tag.abnormality||'-'}</td><td class="px-2 sm:px-4 py-2 text-center">${fb}</td><td class="px-2 sm:px-4 py-2 break-word text-xs max-w-[200px]">${tag.progress_note||'-'}</td><td class="px-2 sm:px-4 py-2 text-center">${fa}</td><td class="px-2 sm:px-4 py-2 text-xs font-mono">${tag.wr_number||'-'}</td><td class="px-2 sm:px-4 py-2"><span class="px-2 py-1 rounded-full text-xs ${statusColor}">${tag.status||'-'}</span></td><td class="px-2 sm:px-4 py-2 text-center">${actionBtn}</td><td class="px-2 sm:px-4 py-2 text-center text-xs">${tag.updated_at?.split('T')[0]||'-'}</td></tr>`;
+                        if(tag.status==='CLOSED'){
+                            actionBtn = `<div class="${currentDetailTagType==='RED'?'closed-by-badge':'blue-closed-by-badge'}"><span>✓</span><span>${tag.closed_by||'Unknown'}</span></div>`;
+                        } else if(!tag.wr_number){
+                            if(userRole==='operator'||userRole==='admin') actionBtn = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">INPUT WR</button>`;
+                            else actionBtn = '<span class="text-xs text-slate-500">-</span>';
+                        } else {
+                            if(((userRole==='engineering'||userRole==='admin') && currentDetailTagType==='RED') || ((userRole==='utility'||userRole==='admin') && currentDetailTagType==='BLUE')){
+                                actionBtn = `<button onclick="openUpdateModal('${tag.id}')" class="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold uppercase hover:bg-blue-600 transition whitespace-nowrap">UPDATE</button>`;
+                            } else {
+                                actionBtn = '<span class="text-xs text-slate-500">-</span>';
+                            }
+                        }
+                        const fb = tag.foto_before ? `<img src="${tag.foto_before}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_before}')" title="Klik untuk perbesar">` : '<span class="text-xs text-slate-400">-</span>';
+                        const fa = tag.foto_after ? `<img src="${tag.foto_after}" class="photo-thumbnail" onclick="openPhotoModal('${tag.foto_after}')" title="Klik untuk perbesar">` : '<span class="text-xs text-slate-400">-</span>';
+                        const riskClass = tag.risk==='SAFETY'?'bg-red-100 text-red-700':tag.risk==='QUALITY'?'bg-blue-100 text-blue-700':tag.risk==='PRODUCTIVITY'?'bg-amber-100 text-amber-700':tag.risk==='5R'?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-700';
+                        return `<tr class="hover:bg-slate-50"><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-medium">${tag.date?tag.date.split('T')[0]:'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.machine||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${riskClass}">${tag.risk||'-'}</span></td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-semibold">${tag.initial||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:280px">${tag.abnormality||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fb}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><div class="break-word text-xs" style="max-width:200px">${tag.progress_note||'-'}</div></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${fa}</td><td class="px-2 sm:px-4 py-2 sm:py-3 uppercase text-[10px] sm:text-xs font-mono">${tag.wr_number||'-'}</td><td class="px-2 sm:px-4 py-2 sm:py-3"><span class="px-2 py-1 rounded-full text-[8px] sm:text-xs font-semibold uppercase inline-block ${statusColor}">${tag.status||'-'}</span></td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center">${actionBtn}</td><td class="px-2 sm:px-4 py-2 sm:py-3 text-center font-mono text-xs text-slate-600">${tag.updated_at?tag.updated_at.split('T')[0]:'-'}</td></tr>`;
                     }).join('');
                 }
             }
             
-            // other functions (goBackToDashboard, exportDetailToExcel, openUpdateModal, etc) remain exactly as original
-            window.goBackToDashboard = function(){ showPage('dashboard'); document.getElementById('back-to-dashboard-btn').classList.add('hidden'); updateDashboardCards(); };
-            window.exportDetailToExcel = function(){ /* original implementation */ if(!currentDetailFiltered.length){ showToast('TIDAK ADA DATA','error'); return; } let csv=""; if(currentDetailTagType==='WHITE'){ csv="Tanggal,Operator,Mesin,Abnormalitas,Action,Kategori\n"; currentDetailFiltered.forEach(t=>{ csv+=`"${t.date?.split('T')[0]}","${t.initial}","${t.machine}","${(t.abnormality||'').replace(/"/g,'""')}","${(t.action||'').replace(/"/g,'""')}","${t.risk}"\n`;}); } else{ csv="Tanggal,"+(currentDetailTagType==='RED'?"Mesin":"Bangunan")+",Kategori,"+(currentDetailTagType==='RED'?"Operator":"Operator")+",Abnormalitas,Foto Before,Action,Foto After,No WR,Status,Closed By,Tgl Update\n"; currentDetailFiltered.forEach(t=>{ csv+=`"${t.date?.split('T')[0]}","${t.machine}","${t.risk}","${t.initial}","${(t.abnormality||'').replace(/"/g,'""')}","${t.foto_before?'Ada':'-'}","${(t.progress_note||'').replace(/"/g,'""')}","${t.foto_after?'Ada':'-'}","${t.wr_number||''}","${t.status}","${t.closed_by||''}","${t.updated_at?.split('T')[0]||''}"\n`;}); } const blob=new Blob(["\uFEFF"+csv],{type:"text/csv"}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`${currentDetailTagType}_TAG_${new Date().toISOString().split('T')[0]}.csv`; link.click(); showToast('EXPORT BERHASIL','success'); };
+            window.goBackToDashboard = function(){
+                showPage('dashboard');
+                if(document.getElementById('back-to-dashboard-btn')) document.getElementById('back-to-dashboard-btn').classList.add('hidden');
+                const filteredData = getFilteredDataByDate();
+                updateDashboardCardsWithData(filteredData);
+                renderOperatorStackedBars(filteredData);
+                renderEngineeringBars(filteredData);
+                renderMachineBars(filteredData);
+                renderBuildingBars(filteredData);
+            };
             
-            window.openUpdateModal = function(tagId){ /* keep original */ const tag=allData.find(t=>t.id===tagId); if(!tag) return; const modal=document.getElementById('update-modal'),content=document.getElementById('modal-content'); if(!tag.wr_number){ content.innerHTML=`<div class="space-y-4"><p class="text-sm uppercase">MASUKKAN NOMOR WR</p><input type="text" id="modal-wr" class="w-full px-4 py-3 rounded-xl border-2"><div class="flex gap-2"><button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 rounded-xl">BATAL</button><button onclick="submitWR('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl">SIMPAN</button></div></div>`; } else { content.innerHTML=`<div class="space-y-4"><p>NO WR: ${tag.wr_number}</p><select id="modal-status" onchange="toggleFotoAfterSection()"><option value="ON PROGRESS" ${tag.status==='ON PROGRESS'?'selected':''}>ON PROGRESS</option><option value="CLOSED" ${tag.status==='CLOSED'?'selected':''}>CLOSED</option></select><textarea id="modal-note" rows="3">${tag.progress_note||''}</textarea><div id="foto-after-section" class="${tag.status==='CLOSED'?'':'hidden'}"><div><button type="button" onclick="openCamera('after')">BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('after')">PILIH FILE</button></div><div id="camera-container-after" class="hidden"><video id="video-after" autoplay></video><button onclick="capturePhoto('after')">AMBIL</button><button onclick="closeCamera('after')">TUTUP</button></div><input type="file" id="file-input-after" hidden onchange="handleFileSelect('after', event)"><div><img id="preview-after" src="${tag.foto_after||''}" style="max-height:100px"><input type="hidden" id="modal-foto-after-data" value="${tag.foto_after||''}"></div></div><div class="flex gap-2"><button onclick="closeModal()" class="flex-1 py-3 bg-slate-200 rounded-xl">BATAL</button><button onclick="submitStatus('${tag.id}')" class="flex-1 py-3 bg-emerald-500 text-white rounded-xl">UPDATE</button></div></div>`; } modal.classList.remove('hidden'); };
-            window.toggleFotoAfterSection = function(){ const sel=document.getElementById('modal-status'),sec=document.getElementById('foto-after-section'); if(sel&&sec){ if(sel.value==='CLOSED') sec.classList.remove('hidden'); else sec.classList.add('hidden'); } };
+            window.exportDetailToExcel = function(){
+                if(!currentDetailFiltered.length){ showToast('TIDAK ADA DATA UNTUK DIEXPORT','error'); return; }
+                let csv = "";
+                if(currentDetailTagType === 'WHITE'){
+                    csv = "Tanggal,Operator,Mesin,Abnormalitas,Action,Kategori\n";
+                    currentDetailFiltered.forEach(t => {
+                        csv += `"${t.date?.split('T')[0] || ''}","${t.initial || ''}","${t.machine || ''}","${(t.abnormality || '').replace(/"/g, '""')}","${(t.action || '').replace(/"/g, '""')}","${t.risk || ''}"\n`;
+                    });
+                } else {
+                    csv = "Tanggal,"+(currentDetailTagType==='RED'?"Mesin":"Bangunan")+",Kategori,Operator,Abnormalitas,Foto Before,Action,Foto After,No WR,Status,Closed By,Tgl Update\n";
+                    currentDetailFiltered.forEach(t => {
+                        csv += `"${t.date?.split('T')[0] || ''}","${t.machine || ''}","${t.risk || ''}","${t.initial || ''}","${(t.abnormality || '').replace(/"/g, '""')}","${t.foto_before ? 'Ada' : '-'}","${(t.progress_note || '').replace(/"/g, '""')}","${t.foto_after ? 'Ada' : '-'}","${t.wr_number || ''}","${t.status || ''}","${t.closed_by || ''}","${t.updated_at?.split('T')[0] || ''}"\n`;
+                    });
+                }
+                const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8;"});
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `${currentDetailTagType}_TAG_${new Date().toISOString().split('T')[0]}.csv`;
+                link.click();
+                showToast('EXPORT BERHASIL','success');
+            };
+            
+            window.openUpdateModal = function(tagId){
+                const tag = allData.find(t=>t.id===tagId);
+                if(!tag){ showToast('TAG TIDAK DITEMUKAN','error'); return; }
+                const modal=document.getElementById('update-modal'),content=document.getElementById('modal-content');
+                if(!tag.wr_number){
+                    content.innerHTML = `<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">MASUKKAN NOMOR WR UNTUK TAG INI</p><input type="text" id="modal-wr" placeholder="NOMOR WR" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase" autocomplete="off"><div class="flex flex-col sm:flex-row gap-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitWR('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">SIMPAN</button></div></div>`;
+                } else {
+                    content.innerHTML = `<div class="space-y-4"><p class="text-sm uppercase text-slate-500 break-word">NO WR: <span class="font-bold text-slate-900">${tag.wr_number}</span></p><div><label class="block text-sm font-semibold uppercase mb-2">STATUS</label><select id="modal-status" onchange="toggleFotoAfterSection()" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition uppercase"><option value="ON PROGRESS" ${tag.status==='ON PROGRESS'?'selected':''}>ON PROGRESS</option><option value="CLOSED" ${tag.status==='CLOSED'?'selected':''}>CLOSED</option></select></div><div><label class="block text-sm font-semibold uppercase mb-2">ACTION</label><textarea id="modal-note" rows="3" placeholder="TINDAKAN YANG DILAKUKAN..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-emerald-500 focus:outline-none transition break-word">${tag.progress_note||''}</textarea></div><div id="foto-after-section" class="bg-slate-50 p-4 rounded-xl border-2 border-dashed border-blue-300 ${tag.status==='CLOSED'?'':'hidden'}"><label class="block text-sm font-bold uppercase mb-3 text-blue-600 flex items-center gap-2"><span>📸</span> FOTO AFTER (HASIL PERBAIKAN) - MAX 100KB</label><div class="grid grid-cols-1 gap-4"><div><div class="flex gap-2 mb-3"><button type="button" onclick="openCamera('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-xs font-bold uppercase hover:from-blue-600 hover:to-indigo-600 transition">📷 BUKA KAMERA</button><button type="button" onclick="uploadFromGallery('after')" class="flex-1 px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-xs font-bold uppercase hover:from-purple-600 hover:to-pink-600 transition">🖼️ PILIH FILE</button></div><div id="camera-container-after" class="camera-container hidden"><video id="video-after" autoplay playsinline class="w-full rounded-lg mb-2"></video><div class="photo-actions"><button type="button" onclick="capturePhoto('after')" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-emerald-600 transition">📸 AMBIL FOTO</button><button type="button" onclick="closeCamera('after')" class="px-4 py-2 bg-red-500 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-600 transition">❌ TUTUP</button></div></div><input type="file" id="file-input-after" accept="image/*" class="hidden" onchange="handleFileSelect('after', event)"></div><div class="text-center"><p class="text-xs font-semibold uppercase mb-2 text-slate-600">PREVIEW FOTO AFTER</p><div class="border-2 border-dashed border-slate-300 rounded-lg p-2 min-h-[120px] flex items-center justify-center"><img id="preview-after" src="${tag.foto_after||'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'}" class="max-w-full max-h-32 rounded-lg object-contain"></div><input type="hidden" id="modal-foto-after-data" value="${tag.foto_after||''}"><p id="file-size-after" class="text-xs mt-1 text-slate-500"></p></div></div></div><div class="flex flex-col sm:flex-row gap-2 mt-2"><button onclick="closeModal()" class="w-full sm:flex-1 py-3 bg-slate-200 rounded-xl font-semibold uppercase hover:bg-slate-300 transition">BATAL</button><button onclick="submitStatus('${tag.id}')" class="w-full sm:flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold uppercase hover:bg-emerald-600 transition">UPDATE</button></div></div>`;
+                }
+                modal.classList.remove('hidden');
+            };
+            
+            window.toggleFotoAfterSection = function(){
+                const statusSelect = document.getElementById('modal-status');
+                const fotoSection = document.getElementById('foto-after-section');
+                if(statusSelect && fotoSection){
+                    if(statusSelect.value === 'CLOSED') fotoSection.classList.remove('hidden');
+                    else fotoSection.classList.add('hidden');
+                }
+            };
+            
             window.openPhotoModal = (src)=>{ const modal=document.getElementById('photo-modal'),img=document.getElementById('photo-modal-img'); if(img) img.src=src; if(modal) modal.classList.remove('hidden'); };
-            window.closePhotoModal = ()=>{ document.getElementById('photo-modal').classList.add('hidden'); };
+            window.closePhotoModal = ()=>{ const modal=document.getElementById('photo-modal'); if(modal) modal.classList.add('hidden'); };
             window.closeModal = function(){ document.getElementById('update-modal').classList.add('hidden'); if(currentStreamAfter){ currentStreamAfter.getTracks().forEach(t=>t.stop()); currentStreamAfter=null; } };
-            window.submitWR = async function(tagId){ const wr=document.getElementById('modal-wr')?.value.trim().toUpperCase(); if(!wr){ showToast('WR WAJIB DIISI','error'); return; } await updateTag(tagId,{wr_number:wr,updated_at:new Date().toISOString()}); closeModal(); };
+            window.submitWR = async function(tagId){ const wr=document.getElementById('modal-wr')?.value.trim().toUpperCase(); if(!wr){ showToast('NOMOR WR HARUS DIISI','error'); return; } await updateTag(tagId,{wr_number:wr,updated_at:new Date().toISOString()}); closeModal(); };
             window.submitStatus = async function(tagId){ const status=document.getElementById('modal-status').value; const note=document.getElementById('modal-note').value.trim().toUpperCase(); const fotoAfter=document.getElementById('modal-foto-after-data')?.value; const update={status:status,progress_note:note,updated_at:new Date().toISOString()}; if(status==='CLOSED' && fotoAfter) update.foto_after=fotoAfter; if(status==='CLOSED'){ update.closed_by=currentUser; update.closed_at=new Date().toISOString(); } await updateTag(tagId,update); closeModal(); };
-            async function updateTag(tagId,updateData){ try{ const {error}=await supabase.from('tags').update(updateData).eq('id',tagId); if(error) throw error; showToast('BERHASIL UPDATE','success'); invalidateCache('tags'); await refreshData(true); } catch(e){ showToast('GAGAL UPDATE','error'); } }
-            // delete & add functions (omitted but same)
-            window.deleteOperator=async function(name){ if(confirm(`Hapus ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('initial',name); if(used?.length){ showToast(`Masih ${used.length} tag terkait`,'error'); return; } await supabase.from('operators').delete().eq('initial',name); invalidateCache('operators'); await refreshData(true); } };
-            window.deleteEngineering=async function(name){ if(confirm(`Hapus ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('closed_by',name); if(used?.length){ showToast(`Masih ${used.length} closed tag`,'error'); return; } await supabase.from('engineerings').delete().eq('initial',name); invalidateCache('engineerings'); await refreshData(true); } };
-            window.deleteMachine=async function(name){ if(confirm(`Hapus ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('machine',name).eq('location','MACHINE'); if(used?.length){ showToast(`Masih ${used.length} tag`,'error'); return; } await supabase.from('machines').delete().eq('machine',name); invalidateCache('machines'); await refreshData(true); } };
-            window.deleteUtility=async function(name){ if(confirm(`Hapus ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('closed_by',name); if(used?.length){ showToast(`Masih ${used.length} tag`,'error'); return; } await supabase.from('utilities').delete().eq('utility',name); invalidateCache('utilities'); await refreshData(true); } };
-            window.deleteBuilding=async function(name){ if(confirm(`Hapus ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('machine',name).eq('location','BUILDING'); if(used?.length){ showToast(`Masih ${used.length} tag`,'error'); return; } await supabase.from('buildings').delete().eq('building',name); invalidateCache('buildings'); await refreshData(true); } };
-            window.addOperator=async function(){ const inp=document.getElementById('new-operator'),val=inp.value.trim().toUpperCase(); if(!val) return; if(operators.includes(val)){ showToast('Sudah ada','error'); inp.value=''; return; } await supabase.from('operators').insert([{initial:val}]); invalidateCache('operators'); await refreshData(true); inp.value=''; };
-            window.addEngineering=async function(){ const inp=document.getElementById('new-engineering'),val=inp.value.trim().toUpperCase(); if(!val) return; if(engineerings.includes(val)){ showToast('Sudah ada','error'); inp.value=''; return; } await supabase.from('engineerings').insert([{initial:val}]); invalidateCache('engineerings'); await refreshData(true); inp.value=''; };
-            window.addMachine=async function(){ const inp=document.getElementById('new-machine'),val=inp.value.trim().toUpperCase(); if(!val) return; if(machines.includes(val)){ showToast('Sudah ada','error'); inp.value=''; return; } await supabase.from('machines').insert([{machine:val}]); invalidateCache('machines'); await refreshData(true); inp.value=''; };
-            window.addUtility=async function(){ const inp=document.getElementById('new-utility'),val=inp.value.trim().toUpperCase(); if(!val) return; if(utilities.includes(val)){ showToast('Sudah ada','error'); inp.value=''; return; } await supabase.from('utilities').insert([{utility:val}]); invalidateCache('utilities'); await refreshData(true); inp.value=''; };
-            window.addBuilding=async function(){ const inp=document.getElementById('new-building'),val=inp.value.trim().toUpperCase(); if(!val) return; if(buildings.includes(val)){ showToast('Sudah ada','error'); inp.value=''; return; } await supabase.from('buildings').insert([{building:val}]); invalidateCache('buildings'); await refreshData(true); inp.value=''; };
             
-            // camera helpers simplified (same as original but functional)
-            window.openCamera = function(type){ const container=document.getElementById(`camera-container-${type}`),video=document.getElementById(`video-${type}`); if(container) container.classList.remove('hidden'); navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{ if(type==='before') currentStream=stream; else currentStreamAfter=stream; if(video) video.srcObject=stream; }).catch(()=>{ showToast('Gagal akses kamera','error'); if(container) container.classList.add('hidden'); }); };
+            async function updateTag(tagId,updateData){
+                try{
+                    const {error}=await supabase.from('tags').update(updateData).eq('id',tagId);
+                    if(error) throw error;
+                    showToast('DATA BERHASIL DIUPDATE','success');
+                    invalidateCache('tags');
+                    await refreshData(true);
+                } catch(e){ showToast('GAGAL MENGUPDATE DATA','error'); }
+            }
+            
+            window.deleteOperator=async function(name){ if(confirm(`HAPUS OPERATOR ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('initial',name); if(used&&used.length){ showToast(`TIDAK BISA DIHAPUS: MASIH MEMILIKI ${used.length} TAG`,'error'); return; } await supabase.from('operators').delete().eq('initial',name); showToast('OPERATOR DIHAPUS','success'); invalidateCache('operators'); await refreshData(true); } };
+            window.deleteEngineering=async function(name){ if(confirm(`HAPUS ENGINEERING ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('closed_by',name); if(used&&used.length){ showToast(`TIDAK BISA DIHAPUS: MASIH ${used.length} CLOSED TAG`,'error'); return; } await supabase.from('engineerings').delete().eq('initial',name); showToast('ENGINEERING DIHAPUS','success'); invalidateCache('engineerings'); await refreshData(true); } };
+            window.deleteMachine=async function(name){ if(confirm(`HAPUS MESIN ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('machine',name).eq('location','MACHINE'); if(used&&used.length){ showToast(`TIDAK BISA DIHAPUS: DIGUNAKAN DI ${used.length} TAG`,'error'); return; } await supabase.from('machines').delete().eq('machine',name); showToast('MESIN DIHAPUS','success'); invalidateCache('machines'); await refreshData(true); } };
+            window.deleteUtility=async function(name){ if(confirm(`HAPUS UTILITY ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('closed_by',name); if(used&&used.length){ showToast(`TIDAK BISA DIHAPUS: MASIH ${used.length} CLOSED TAG`,'error'); return; } await supabase.from('utilities').delete().eq('utility',name); showToast('UTILITY DIHAPUS','success'); invalidateCache('utilities'); await refreshData(true); } };
+            window.deleteBuilding=async function(name){ if(confirm(`HAPUS BANGUNAN ${name}?`)){ const {data:used}=await supabase.from('tags').select('id').eq('machine',name).eq('location','BUILDING'); if(used&&used.length){ showToast(`TIDAK BISA DIHAPUS: DIGUNAKAN DI ${used.length} TAG`,'error'); return; } await supabase.from('buildings').delete().eq('building',name); showToast('BANGUNAN DIHAPUS','success'); invalidateCache('buildings'); await refreshData(true); } };
+            
+            window.addOperator=async function(){ const inp=document.getElementById('new-operator'); const val=inp.value.trim().toUpperCase(); if(!val) return showToast('MASUKKAN INISIAL OPERATOR','error'); if(operators.includes(val)){ showToast('INISIAL SUDAH TERDAFTAR','error'); inp.value=''; return; } await supabase.from('operators').insert([{initial:val}]); invalidateCache('operators'); await refreshData(true); inp.value=''; };
+            window.addEngineering=async function(){ const inp=document.getElementById('new-engineering'); const val=inp.value.trim().toUpperCase(); if(!val) return showToast('MASUKKAN INISIAL ENGINEERING','error'); if(engineerings.includes(val)){ showToast('INISIAL SUDAH TERDAFTAR','error'); inp.value=''; return; } await supabase.from('engineerings').insert([{initial:val}]); invalidateCache('engineerings'); await refreshData(true); inp.value=''; };
+            window.addMachine=async function(){ const inp=document.getElementById('new-machine'); const val=inp.value.trim().toUpperCase(); if(!val) return showToast('MASUKKAN NAMA MESIN','error'); if(machines.includes(val)){ showToast('NAMA MESIN SUDAH TERDAFTAR','error'); inp.value=''; return; } await supabase.from('machines').insert([{machine:val}]); invalidateCache('machines'); await refreshData(true); inp.value=''; };
+            window.addUtility=async function(){ const inp=document.getElementById('new-utility'); const val=inp.value.trim().toUpperCase(); if(!val) return showToast('MASUKKAN NAMA UTILITY','error'); if(utilities.includes(val)){ showToast('NAMA UTILITY SUDAH TERDAFTAR','error'); inp.value=''; return; } await supabase.from('utilities').insert([{utility:val}]); invalidateCache('utilities'); await refreshData(true); inp.value=''; };
+            window.addBuilding=async function(){ const inp=document.getElementById('new-building'); const val=inp.value.trim().toUpperCase(); if(!val) return showToast('MASUKKAN NAMA BANGUNAN','error'); if(buildings.includes(val)){ showToast('NAMA BANGUNAN SUDAH TERDAFTAR','error'); inp.value=''; return; } await supabase.from('buildings').insert([{building:val}]); invalidateCache('buildings'); await refreshData(true); inp.value=''; };
+            
+            window.openCamera=function(type){ const container=document.getElementById(`camera-container-${type}`),video=document.getElementById(`video-${type}`); if(container) container.classList.remove('hidden'); navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(stream=>{ if(type==='before') currentStream=stream; else currentStreamAfter=stream; if(video) video.srcObject=stream; video.play(); }).catch(()=>{ showToast('TIDAK DAPAT MENGAKSES KAMERA','error'); if(container) container.classList.add('hidden'); }); };
             window.closeCamera=function(type){ const container=document.getElementById(`camera-container-${type}`),video=document.getElementById(`video-${type}`); if(type==='before' && currentStream){ currentStream.getTracks().forEach(t=>t.stop()); currentStream=null; }else if(type==='after' && currentStreamAfter){ currentStreamAfter.getTracks().forEach(t=>t.stop()); currentStreamAfter=null; } if(video) video.srcObject=null; if(container) container.classList.add('hidden'); };
             window.uploadFromGallery=function(type){ document.getElementById(`file-input-${type}`).click(); };
-            async function compressImage(dataUrl,maxSizeKB=100){ return new Promise(resolve=>{ const img=new Image(); img.src=dataUrl; img.onload=()=>{ let w=img.width,h=img.height; const maxDim=800; if(w>maxDim){ h=(h*maxDim)/w; w=maxDim; } if(h>maxDim){ w=(w*maxDim)/h; h=maxDim; } const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); let q=0.7; let comp=canvas.toDataURL('image/jpeg',q); while(comp.length>maxSizeKB*1024 && q>0.1){ q-=0.1; comp=canvas.toDataURL('image/jpeg',q); } resolve(comp); }; }); }
-            window.capturePhoto=async function(type){ const video=document.getElementById(`video-${type}`); if(!video) return; const canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight; canvas.getContext('2d').drawImage(video,0,0); const raw=canvas.toDataURL('image/jpeg',0.9); const comp=await compressImage(raw,100); const preview=document.getElementById(`preview-${type}`); if(preview) preview.src=comp; const hidden=document.getElementById(type==='before'?'foto-before-data':'modal-foto-after-data'); if(hidden) hidden.value=comp; const sizeSpan=document.getElementById(`file-size-${type}`); if(sizeSpan) sizeSpan.textContent=`Ukuran: ${Math.round(comp.length/1024)} KB`; closeCamera(type); showToast('Foto berhasil diambil','success'); };
-            window.handleFileSelect=async function(type,event){ const file=event.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=async function(e){ const comp=await compressImage(e.target.result,100); const preview=document.getElementById(`preview-${type}`); if(preview) preview.src=comp; const hidden=document.getElementById(type==='before'?'foto-before-data':'modal-foto-after-data'); if(hidden) hidden.value=comp; const sizeSpan=document.getElementById(`file-size-${type}`); if(sizeSpan) sizeSpan.textContent=`Ukuran: ${Math.round(comp.length/1024)} KB`; showToast('File berhasil dipilih','success'); }; reader.readAsDataURL(file); };
-            window.handleTagTypeChange = async function(){ /* keep original, omitted for brevity but functional */ };
-            async function insertTag(tagData){ try{ const {error}=await supabase.from('tags').insert([tagData]); if(error) throw error; showToast('TAG BERHASIL DISIMPAN','success'); invalidateCache('tags'); await refreshData(true); setTimeout(()=>showPage('dashboard'),500); return true; }catch(e){ console.error(e); showToast('GAGAL MENYIMPAN','error'); return false; } }
-            function showToast(msg,type='success'){ const toast=document.createElement('div'); toast.className=`toast-message fixed bottom-4 right-4 px-4 py-2 rounded-xl shadow-lg z-50 font-semibold uppercase text-xs ${type==='success'?'bg-emerald-500 text-white':type==='error'?'bg-red-500 text-white':'bg-blue-500 text-white'}`; toast.textContent=msg; document.body.appendChild(toast); setTimeout(()=>toast.remove(),3000); }
-            function setupRealtime(){ if(realtimeSubscription) realtimeSubscription.unsubscribe(); realtimeSubscription = supabase.channel('all-changes').on('postgres_changes',{event:'*',schema:'public',table:'tags'},()=>{ invalidateCache('tags'); refreshData(false); }).on('postgres_changes',{event:'*',schema:'public',table:'operators'},()=>invalidateCache('operators')).on('postgres_changes',{event:'*',schema:'public',table:'engineerings'},()=>invalidateCache('engineerings')).on('postgres_changes',{event:'*',schema:'public',table:'machines'},()=>invalidateCache('machines')).on('postgres_changes',{event:'*',schema:'public',table:'utilities'},()=>invalidateCache('utilities')).on('postgres_changes',{event:'*',schema:'public',table:'buildings'},()=>invalidateCache('buildings')).subscribe(); }
-            let autoRefreshTimer=null; function startAutoRefresh(){ if(autoRefreshTimer) clearInterval(autoRefreshTimer); autoRefreshTimer=setInterval(()=>refreshData(false),CACHE_TTL); } function stopAutoRefresh(){ if(autoRefreshTimer){ clearInterval(autoRefreshTimer); autoRefreshTimer=null; } }
-            function updateLiveClock(){ const now=new Date(); const dateEl=document.getElementById('clock-date'); const timeEl=document.getElementById('clock-time'); if(dateEl) dateEl.textContent=now.toLocaleDateString('id-ID'); if(timeEl) timeEl.textContent=now.toLocaleTimeString('id-ID'); }
-            window.showPage=function(page){ document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); document.getElementById(`page-${page}`).classList.remove('hidden'); document.querySelectorAll('.nav-btn').forEach(btn=>{ btn.classList.remove('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); btn.classList.add('bg-white/50'); }); const active=document.querySelector(`[data-nav="${page}"]`); if(active){ active.classList.add('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); active.classList.remove('bg-white/50'); } if(page==='input'){ const today=new Date().toISOString().split('T')[0]; const dateInp=document.getElementById('input-date'); if(dateInp) dateInp.value=today; } if(page==='dashboard'){ document.getElementById('back-to-dashboard-btn').classList.add('hidden'); updateDashboardCards(); } if(page==='management') renderManagementLists(); };
-            window.handleLogin=async function(){ if(isLoggingIn) return; isLoggingIn=true; const btn=document.getElementById('login-btn'),spinner=document.getElementById('login-spinner'),init=document.getElementById('login-initial').value.trim().toUpperCase(),err=document.getElementById('login-error'); if(btn) btn.disabled=true; if(spinner) spinner.classList.add('active'); if(!init){ if(err){ err.textContent='MASUKKAN INISIAL'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); } if(btn) btn.disabled=false; if(spinner) spinner.classList.remove('active'); isLoggingIn=false; return; } try{ await refreshData(true,true); const isAdmin=init==='ERW'; const isOperator=operators.includes(init); const isEngineering=engineerings.includes(init); const isUtility=utilities.includes(init); if(!isAdmin&&!isOperator&&!isEngineering&&!isUtility){ if(err){ err.textContent='INISIAL TIDAK TERDAFTAR'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); } if(btn) btn.disabled=false; if(spinner) spinner.classList.remove('active'); isLoggingIn=false; return; } currentUser=init; if(isAdmin) userRole='admin'; else if(isOperator) userRole='operator'; else if(isEngineering) userRole='engineering'; else if(isUtility) userRole='utility'; document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('current-user').textContent=`${init} (${userRole.toUpperCase()})`; const navInput=document.getElementById('nav-input'); if(navInput) navInput.classList.toggle('hidden', userRole !=='operator' && userRole !=='utility' && userRole !=='admin'); const navMgmt=document.getElementById('nav-management'); if(navMgmt) navMgmt.classList.toggle('hidden', userRole !=='admin'); startAutoRefresh(); showPage('dashboard'); updateDashboardCards(); }catch(e){ console.error(e); if(err){ err.textContent='GAGAL MEMUAT DATA'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); } }finally{ if(btn) btn.disabled=false; if(spinner) spinner.classList.remove('active'); isLoggingIn=false; } };
-            window.handleGuestLogin = function(){ currentUser='GUEST'; userRole='guest'; document.getElementById('login-screen').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('current-user').textContent='GUEST (GUEST)'; const navInput=document.getElementById('nav-input'); if(navInput) navInput.classList.add('hidden'); const navMgmt=document.getElementById('nav-management'); if(navMgmt) navMgmt.classList.add('hidden'); refreshData(false); startAutoRefresh(); showPage('dashboard'); updateDashboardCards(); };
-            window.handleLogout = function(){ currentUser=null; userRole=null; stopAutoRefresh(); if(currentStream){ currentStream.getTracks().forEach(t=>t.stop()); currentStream=null; } if(currentStreamAfter){ currentStreamAfter.getTracks().forEach(t=>t.stop()); currentStreamAfter=null; } document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('main-app').classList.add('hidden'); document.getElementById('login-initial').value=''; document.getElementById('login-error').classList.add('hidden'); };
+            function compressImage(dataUrl,maxSizeKB=100){ return new Promise(resolve=>{ const img=new Image(); img.src=dataUrl; img.onload=()=>{ let w=img.width,h=img.height; const maxDim=800; if(w>h && w>maxDim){ h=Math.round((h*maxDim)/w); w=maxDim; }else if(h>maxDim){ w=Math.round((w*maxDim)/h); h=maxDim; } const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); let q=0.7; let comp=canvas.toDataURL('image/jpeg',q); while(comp.length>maxSizeKB*1024 && q>0.1){ q-=0.1; comp=canvas.toDataURL('image/jpeg',q); } resolve(comp); }; }); }
+            window.capturePhoto=async function(type){ const video=document.getElementById(`video-${type}`); if(!video) return; const canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight; canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height); const raw=canvas.toDataURL('image/jpeg',0.9); showToast('MENGKOMPRES FOTO...','info'); const comp=await compressImage(raw,100); const preview=document.getElementById(`preview-${type}`); if(preview) preview.src=comp; const hidden=document.getElementById(type==='before'?'foto-before-data':'modal-foto-after-data'); if(hidden) hidden.value=comp; const sizeSpan=document.getElementById(`file-size-${type}`); if(sizeSpan){ const kb=Math.round(comp.length/1024); sizeSpan.textContent=`Ukuran: ${kb} KB`; } closeCamera(type); showToast('FOTO BERHASIL DIAMBIL','success'); };
+            window.handleFileSelect=async function(type,event){ const file=event.target.files[0]; if(!file) return; showToast('MEMPROSES FOTO...','info'); const reader=new FileReader(); reader.onload=async function(e){ const comp=await compressImage(e.target.result,100); const preview=document.getElementById(`preview-${type}`); if(preview) preview.src=comp; const hidden=document.getElementById(type==='before'?'foto-before-data':'modal-foto-after-data'); if(hidden) hidden.value=comp; const sizeSpan=document.getElementById(`file-size-${type}`); if(sizeSpan){ const kb=Math.round(comp.length/1024); sizeSpan.textContent=`Ukuran: ${kb} KB`; } showToast('FILE BERHASIL DIPILIH','success'); }; reader.readAsDataURL(file); };
+            
+            window.handleTagTypeChange=async function(){ 
+                const tagType=document.getElementById('input-tag-type').value; 
+                const machineField=document.getElementById('machine-field'),buildingField=document.getElementById('building-field'),whiteAction=document.getElementById('white-tag-action'),fotoSec=document.getElementById('foto-before-section'),actionInp=document.getElementById('input-action'),machineSel=document.getElementById('input-machine'),buildingSel=document.getElementById('input-building'); 
+                if(machineField) machineField.classList.add('hidden'); 
+                if(buildingField) buildingField.classList.add('hidden'); 
+                if(machineSel) machineSel.required=false; 
+                if(buildingSel) buildingSel.required=false; 
+                if(tagType==='WHITE'||tagType==='RED'){ 
+                    if(machineField) machineField.classList.remove('hidden'); 
+                    if(machineSel) machineSel.required=true; 
+                    const machinesData=await fetchData('machines','machines'); 
+                    if(machineSel){ 
+                        machineSel.innerHTML='<option value="">PILIH MESIN</option>'; 
+                        machinesData.forEach(m=>{ machineSel.innerHTML+=`<option value="${m.machine}">🏭 ${m.machine}</option>`; }); 
+                    } 
+                }else if(tagType==='BLUE'){ 
+                    if(buildingField) buildingField.classList.remove('hidden'); 
+                    if(buildingSel) buildingSel.required=true; 
+                    const buildingsData=await fetchData('buildings','buildings'); 
+                    if(buildingSel){ 
+                        buildingSel.innerHTML='<option value="">PILIH BANGUNAN</option>'; 
+                        buildingsData.forEach(b=>{ buildingSel.innerHTML+=`<option value="${b.building}">🏢 ${b.building}</option>`; }); 
+                    } 
+                } 
+                if(tagType==='WHITE'){ 
+                    if(whiteAction) whiteAction.classList.remove('hidden'); 
+                    if(fotoSec) fotoSec.classList.add('foto-section-hidden'); 
+                    if(actionInp) actionInp.required=true; 
+                }else if(tagType==='RED'||tagType==='BLUE'){ 
+                    if(whiteAction) whiteAction.classList.add('hidden'); 
+                    if(fotoSec) fotoSec.classList.remove('foto-section-hidden'); 
+                    if(actionInp) actionInp.required=false; 
+                }else{ 
+                    if(whiteAction) whiteAction.classList.add('hidden'); 
+                    if(fotoSec) fotoSec.classList.add('foto-section-hidden'); 
+                    if(actionInp) actionInp.required=false; 
+                } 
+            };
+            
+            async function insertTag(tagData){ 
+                try{ 
+                    const {error}=await supabase.from('tags').insert([tagData]); 
+                    if(error) throw error; 
+                    showToast('TAG BERHASIL DISIMPAN','success'); 
+                    invalidateCache('tags'); 
+                    await refreshData(true); 
+                    setTimeout(()=>showPage('dashboard'),500); 
+                    return true; 
+                }catch(e){ 
+                    console.error(e); 
+                    showToast('GAGAL MENYIMPAN TAG','error'); 
+                    return false; 
+                } 
+            }
+            
+            function showToast(msg,type='success'){ 
+                const existing=document.querySelectorAll('.toast-message'); 
+                existing.forEach(t=>t.remove()); 
+                const toast=document.createElement('div'); 
+                toast.className=`toast-message fixed bottom-4 right-4 px-4 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg z-50 font-semibold uppercase text-xs sm:text-sm transition-all duration-300 transform translate-y-0 ${type==='success'?'bg-emerald-500 text-white':type==='error'?'bg-red-500 text-white':'bg-blue-500 text-white'}`; 
+                toast.textContent=msg; 
+                document.body.appendChild(toast); 
+                setTimeout(()=>{ toast.classList.add('opacity-0','translate-y-4'); setTimeout(()=>toast.remove(),300); },3000); 
+            }
+            
+            function setupRealtime(){ 
+                if(realtimeSubscription) realtimeSubscription.unsubscribe();
+                realtimeSubscription = supabase.channel('all-changes')
+                    .on('postgres_changes',{event:'*',schema:'public',table:'tags'},()=>{ 
+                        invalidateCache('tags'); 
+                        refreshData(false);
+                    })
+                    .on('postgres_changes',{event:'*',schema:'public',table:'operators'},()=>invalidateCache('operators'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'engineerings'},()=>invalidateCache('engineerings'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'machines'},()=>invalidateCache('machines'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'utilities'},()=>invalidateCache('utilities'))
+                    .on('postgres_changes',{event:'*',schema:'public',table:'buildings'},()=>invalidateCache('buildings'))
+                    .subscribe();
+            }
+            
+            let autoRefreshTimer=null;
+            function startAutoRefresh(){ if(autoRefreshTimer) clearInterval(autoRefreshTimer); autoRefreshTimer=setInterval(()=>refreshData(false),CACHE_TTL); }
+            function stopAutoRefresh(){ if(autoRefreshTimer){ clearInterval(autoRefreshTimer); autoRefreshTimer=null; } }
+            function updateLiveClock(){ const now=new Date(); const dateEl=document.getElementById('clock-date'); const timeEl=document.getElementById('clock-time'); if(dateEl) dateEl.textContent=now.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}); if(timeEl) timeEl.textContent=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+            
+            window.showPage=function(page){ 
+                document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); 
+                const targetPage = document.getElementById(`page-${page}`); 
+                if(targetPage) targetPage.classList.remove('hidden'); 
+                document.querySelectorAll('.nav-btn').forEach(btn=>{ 
+                    btn.classList.remove('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); 
+                    btn.classList.add('bg-white/50'); 
+                }); 
+                const active=document.querySelector(`[data-nav="${page}"]`); 
+                if(active){ 
+                    active.classList.add('bg-gradient-to-r','from-emerald-500','to-teal-500','text-white'); 
+                    active.classList.remove('bg-white/50'); 
+                } 
+                if(page==='input'){ 
+                    const today=new Date().toISOString().split('T')[0]; 
+                    const dateInp=document.getElementById('input-date'); 
+                    if(dateInp) dateInp.value=today; 
+                } 
+                if(page==='dashboard'){ 
+                    const backBtn = document.getElementById('back-to-dashboard-btn'); 
+                    if(backBtn) backBtn.classList.add('hidden'); 
+                    const filteredData = getFilteredDataByDate();
+                    updateDashboardCardsWithData(filteredData);
+                    renderOperatorStackedBars(filteredData);
+                    renderEngineeringBars(filteredData);
+                    renderMachineBars(filteredData);
+                    renderBuildingBars(filteredData);
+                } 
+                if(page==='management'){ 
+                    renderManagementLists(); 
+                }
+            };
+            
             window.handleLoginEnter = function(event){ if(event.key === 'Enter') handleLogin(); };
-            window.handleKeyPress = function(event,action){ if(event.key === 'Enter'){ event.preventDefault(); if(action==='addOperator') addOperator(); else if(action==='addEngineering') addEngineering(); else if(action==='addMachine') addMachine(); else if(action==='addUtility') addUtility(); else if(action==='addBuilding') addBuilding(); } };
-            document.getElementById('tag-form')?.addEventListener('submit', async(e)=>{ e.preventDefault(); if(!currentUser){ showToast('SILAKAN LOGIN','error'); return; } const tagType=document.getElementById('input-tag-type').value; const status=tagType==='WHITE'?'CLOSED':'OPEN'; let machineValue='',location=''; if(tagType==='WHITE'||tagType==='RED'){ machineValue=document.getElementById('input-machine').value; if(!machineValue){ showToast('PILIH MESIN','error'); return; } location='MACHINE'; } else if(tagType==='BLUE'){ machineValue=document.getElementById('input-building').value; if(!machineValue){ showToast('PILIH BANGUNAN','error'); return; } location='BUILDING'; } else { showToast('PILIH JENIS TAG','error'); return; } const newTag={ date:document.getElementById('input-date').value, initial:currentUser, tag_type:tagType, location:location, machine:machineValue, abnormality:document.getElementById('input-abnormality').value.toUpperCase(), impact:document.getElementById('input-impact').value.toUpperCase(), risk:document.getElementById('input-risk').value, action:document.getElementById('input-action')?.value?.toUpperCase()||'', status:status, wr_number:'', progress_note:'', created_at:new Date().toISOString(), updated_at:new Date().toISOString() }; if(tagType==='WHITE'){ newTag.closed_by=currentUser; newTag.closed_at=new Date().toISOString(); } if(tagType==='RED'||tagType==='BLUE'){ const fotoBefore=document.getElementById('foto-before-data')?.value; if(!fotoBefore){ showToast('FOTO BEFORE WAJIB','error'); return; } newTag.foto_before=fotoBefore; } const btn=document.getElementById('submit-btn'); btn.disabled=true; btn.innerHTML='<span>MENYIMPAN...</span>'; await insertTag(newTag); btn.disabled=false; btn.innerHTML='<span>SUBMIT TAG</span>'; document.getElementById('tag-form')?.reset(); document.getElementById('preview-before').src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E'; document.getElementById('foto-before-data').value=''; const today=new Date().toISOString().split('T')[0]; document.getElementById('input-date').value=today; });
-            refreshData(false); setupRealtime(); updateLiveClock(); setInterval(updateLiveClock,1000);
+            
+            window.handleLogin = async function(){ 
+                if(isLoggingIn) return;
+                isLoggingIn = true;
+                const loginBtn = document.getElementById('login-btn');
+                const loginSpinner = document.getElementById('login-spinner');
+                const loginInitial = document.getElementById('login-initial');
+                const init = loginInitial.value.trim().toUpperCase();
+                const err = document.getElementById('login-error');
+                
+                if(loginBtn) loginBtn.disabled = true;
+                if(loginSpinner) loginSpinner.classList.add('active');
+                
+                if(!init){ 
+                    if(err){ err.textContent='MASUKKAN INISIAL ANDA'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); }
+                    if(loginBtn) loginBtn.disabled = false;
+                    if(loginSpinner) loginSpinner.classList.remove('active');
+                    isLoggingIn = false;
+                    return; 
+                }
+                
+                try {
+                    await refreshData(true, true);
+                    
+                    const isAdmin = init === 'ERW';
+                    const isOperator = operators.includes(init);
+                    const isEngineering = engineerings.includes(init);
+                    const isUtility = utilities.includes(init);
+                    
+                    if(!isAdmin && !isOperator && !isEngineering && !isUtility){
+                        if(err){ err.textContent='INISIAL TIDAK TERDAFTAR'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); }
+                        if(loginBtn) loginBtn.disabled = false;
+                        if(loginSpinner) loginSpinner.classList.remove('active');
+                        isLoggingIn = false;
+                        return;
+                    }
+                    
+                    currentUser = init;
+                    if(isAdmin) userRole = 'admin';
+                    else if(isOperator) userRole = 'operator';
+                    else if(isEngineering) userRole = 'engineering';
+                    else if(isUtility) userRole = 'utility';
+                    
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
+                    document.getElementById('current-user').textContent = `${init} (${userRole.toUpperCase()})`;
+                    
+                    const navInput = document.getElementById('nav-input');
+                    if(navInput) navInput.classList.toggle('hidden', userRole !== 'operator' && userRole !== 'utility' && userRole !== 'admin');
+                    const navMgmt = document.getElementById('nav-management');
+                    if(navMgmt) navMgmt.classList.toggle('hidden', userRole !== 'admin');
+                    
+                    startAutoRefresh();
+                    showPage('dashboard');
+                    const filteredData = getFilteredDataByDate();
+                    updateDashboardCardsWithData(filteredData);
+                    renderOperatorStackedBars(filteredData);
+                    renderEngineeringBars(filteredData);
+                    renderMachineBars(filteredData);
+                    renderBuildingBars(filteredData);
+                    
+                } catch(e) {
+                    console.error(e);
+                    if(err){ err.textContent='GAGAL MEMUAT DATA'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),3000); }
+                } finally {
+                    if(loginBtn) loginBtn.disabled = false;
+                    if(loginSpinner) loginSpinner.classList.remove('active');
+                    isLoggingIn = false;
+                }
+            };
+            
+            window.handleGuestLogin = function(){ 
+                currentUser = 'GUEST'; 
+                userRole = 'guest'; 
+                document.getElementById('login-screen').classList.add('hidden'); 
+                document.getElementById('main-app').classList.remove('hidden'); 
+                document.getElementById('current-user').textContent = 'GUEST (GUEST)'; 
+                const navInput = document.getElementById('nav-input'); 
+                if(navInput) navInput.classList.add('hidden'); 
+                const navMgmt = document.getElementById('nav-management'); 
+                if(navMgmt) navMgmt.classList.add('hidden'); 
+                refreshData(false);
+                startAutoRefresh(); 
+                showPage('dashboard'); 
+                const filteredData = getFilteredDataByDate();
+                updateDashboardCardsWithData(filteredData);
+                renderOperatorStackedBars(filteredData);
+                renderEngineeringBars(filteredData);
+                renderMachineBars(filteredData);
+                renderBuildingBars(filteredData);
+            };
+            
+            window.handleLogout = function(){ 
+                currentUser = null; 
+                userRole = null; 
+                stopAutoRefresh(); 
+                if(currentStream){ currentStream.getTracks().forEach(t=>t.stop()); currentStream = null; } 
+                if(currentStreamAfter){ currentStreamAfter.getTracks().forEach(t=>t.stop()); currentStreamAfter = null; } 
+                document.getElementById('login-screen').classList.remove('hidden'); 
+                document.getElementById('main-app').classList.add('hidden'); 
+                const loginInput = document.getElementById('login-initial');
+                if(loginInput) loginInput.value = ''; 
+                const loginErr = document.getElementById('login-error');
+                if(loginErr) loginErr.classList.add('hidden'); 
+            };
+            
+            window.handleKeyPress = function(event,action){ 
+                if(event.key === 'Enter'){ 
+                    event.preventDefault(); 
+                    if(action === 'addOperator') addOperator(); 
+                    else if(action === 'addEngineering') addEngineering(); 
+                    else if(action === 'addMachine') addMachine(); 
+                    else if(action === 'addUtility') addUtility(); 
+                    else if(action === 'addBuilding') addBuilding(); 
+                } 
+            };
+            
+            document.getElementById('tag-form')?.addEventListener('submit', async(e)=>{ 
+                e.preventDefault(); 
+                if(!currentUser){ showToast('SILAKAN LOGIN TERLEBIH DAHULU','error'); return; } 
+                const tagType = document.getElementById('input-tag-type').value; 
+                const status = tagType === 'WHITE' ? 'CLOSED' : 'OPEN'; 
+                let machineValue = '', location = ''; 
+                if(tagType === 'WHITE' || tagType === 'RED'){ 
+                    machineValue = document.getElementById('input-machine').value; 
+                    if(!machineValue){ showToast('PILIH MESIN TERLEBIH DAHULU','error'); return; } 
+                    location = 'MACHINE'; 
+                } else if(tagType === 'BLUE'){ 
+                    machineValue = document.getElementById('input-building').value; 
+                    if(!machineValue){ showToast('PILIH BANGUNAN TERLEBIH DAHULU','error'); return; } 
+                    location = 'BUILDING'; 
+                } else { 
+                    showToast('PILIH JENIS TAG TERLEBIH DAHULU','error'); 
+                    return; 
+                } 
+                const newTag = { 
+                    date: document.getElementById('input-date').value, 
+                    initial: currentUser, 
+                    tag_type: tagType, 
+                    location: location, 
+                    machine: machineValue, 
+                    abnormality: document.getElementById('input-abnormality').value.toUpperCase(), 
+                    impact: document.getElementById('input-impact').value.toUpperCase(), 
+                    risk: document.getElementById('input-risk').value, 
+                    action: document.getElementById('input-action')?.value?.toUpperCase() || '', 
+                    status: status, 
+                    wr_number: '', 
+                    progress_note: '', 
+                    created_at: new Date().toISOString(), 
+                    updated_at: new Date().toISOString() 
+                }; 
+                if(tagType === 'WHITE'){ 
+                    newTag.closed_by = currentUser; 
+                    newTag.closed_at = new Date().toISOString(); 
+                } 
+                if(tagType === 'RED' || tagType === 'BLUE'){ 
+                    const fotoBefore = document.getElementById('foto-before-data')?.value; 
+                    if(fotoBefore){ 
+                        newTag.foto_before = fotoBefore; 
+                    } else { 
+                        showToast('FOTO BEFORE WAJIB DIISI UNTUK RED/BLUE TAG','error'); 
+                        return; 
+                    } 
+                } 
+                const btn = document.getElementById('submit-btn'); 
+                btn.disabled = true; 
+                btn.innerHTML = '<span class="animate-pulse">MENYIMPAN...</span>'; 
+                await insertTag(newTag); 
+                btn.disabled = false; 
+                btn.innerHTML = '<span>SUBMIT TAG</span>'; 
+                document.getElementById('tag-form')?.reset(); 
+                const previewImg = document.getElementById('preview-before');
+                if(previewImg) previewImg.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/%3E%3Ctext x=\'10\' y=\'55\' font-family=\'Arial\' font-size=\'12\' fill=\'%2364748b\'%3ENo Image%3C/text%3E%3C/svg%3E';
+                const fotoData = document.getElementById('foto-before-data');
+                if(fotoData) fotoData.value = '';
+                const today = new Date().toISOString().split('T')[0];
+                const dateInp = document.getElementById('input-date');
+                if(dateInp) dateInp.value = today;
+            });
+            
+            refreshData(false);
+            setupRealtime();
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
         })();
     </script>
 </body>
